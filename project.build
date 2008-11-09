@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<project name="LinqToExcel" default="build">
+	<property name="nant.settings.currentframework" value="net-3.5" />
+
+	<property name="base.dir" value="${directory::get-current-directory()}" />
+	<property name="bin.dir" value="${path::combine(base.dir, 'bin')}" />
+	<property name="project.file" value="${base.dir}\src\LinqToExcel\LinqToExcel.csproj" />
+	
+	<target name="build" depends="clean, compile" />
+	
+	<target name="clean" description="deletes folders used in the build">
+		<delete dir="${bin.dir}" if="${directory::exists(bin.dir)}" />
+	</target>
+	
+	<target name="compile" description="compiles the project">
+		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
+			commandline="&quot;${project.file}&quot; /p:OutputPath=&quot;${bin.dir}\\&quot;" />
+	</target>
+</project>
