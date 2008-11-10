@@ -3,10 +3,11 @@
 	<property name="nant.settings.currentframework" value="net-3.5" />
 
 	<property name="base.dir" value="${directory::get-current-directory()}" />
-	<property name="bin.dir" value="${path::combine(base.dir, 'bin')}" />
+	<property name="bin.dir" value="${base.dir}\bin" />
 	<property name="project.file" value="${base.dir}\src\LinqToExcel\LinqToExcel.csproj" />
 	
 	<target name="build" depends="clean, compile" />
+	<target name="publish" depends="build, zip" />
 	
 	<target name="clean" description="deletes folders used in the build">
 		<delete dir="${bin.dir}" if="${directory::exists(bin.dir)}" />
@@ -15,5 +16,13 @@
 	<target name="compile" description="compiles the project">
 		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
 			commandline="&quot;${project.file}&quot; /p:OutputPath=&quot;${bin.dir}\\&quot;" />
+	</target>
+	
+	<target name="zip" description="zips the contents of the bin folder to the zip.dir">
+		<zip zipfile="${base.dir}\publish.zip">
+			<fileset basedir="${bin.dir}">
+				<include name="**/*" />
+			</fileset>
+		</zip>
 	</target>
 </project>
