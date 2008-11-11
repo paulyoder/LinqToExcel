@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>TypeFixture</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for TypeFixture</Description>
+      <HelpUrl>http://www.mertner.com/confluence/display/MbUnit/TypeFixture</HelpUrl>
+      <Shortcut>typefixture</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>namespace</ID>
+          <ToolTip>Test namespace</ToolTip>
+          <Default>MbUnitTests</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>Tested type</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>instanceName</ID>
+          <Default>instanceName</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="VB"><![CDATA[Imports System
+Imports MbUnit.Core.Framework
+Imports MbUnit.Framework
+
+Namespace $namespace$
+    ''' <summary>
+    ''' A TypeFixture for the $type$ class.
+    ''' </summary>
+    <TypeFixture(GetType($type$)), _
+    TestsOn(GetType($type$))> _
+    Public Class $type$Test
+        #Region "SetUp and TearDown"
+        ''' <summary>
+        ''' Initializes the fixture
+        ''' </summary>
+        <SetUp()> _
+        Public Sub SetUp(ByVal value As $type$)
+        End Sub
+        ''' <summary>
+        ''' Cleans up the fixture
+        ''' </summary>
+        <TearDown()> _
+        Public Sub TearDown(ByVal value As $type$)
+        End Sub
+        #End Region
+    
+        #Region "Test cases"
+        <Test()> _
+        Public Sub Test(ByVal value As $type$)
+        End Sub
+        #End Region
+		
+		#Region "Providers"
+		<Provider(typeof($type$))> _
+    	Public Function Provider$type$() As $type$
+    	    Dim $instanceName$ As $type$ = New $type$()
+	        Return $instanceName$
+		End Function
+		#End Region
+    End Class
+End Namespace
+	]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

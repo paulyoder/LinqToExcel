@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>ProcessTestFixture</Title>
+      <Author>MbUnit</Author>
+      <HelpUrl>http://www.mertner.com/confluence/display/MbUnit/ProcessTestFixture</HelpUrl>
+      <Shortcut>processfixture</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>namespace</ID>
+          <Default>MbUnitTests</Default>
+        </Literal>
+        <Literal>
+          <ID>testName1</ID>
+          <Default>Test1</Default>
+        </Literal>
+        <Literal>
+          <ID>testName2</ID>
+          <Default>Test2</Default>
+        </Literal>
+        <Literal>
+          <ID>testName3</ID>
+          <Default>Test3</Default>
+        </Literal>
+        <Literal>
+          <ID>testName4</ID>
+          <Default>Test4</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>The class being tested</ToolTip>
+          <Default>type</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="VB"><![CDATA[Imports System
+Imports MbUnit.Framework
+
+Namespace $namespace$
+
+    <ProcessTestFixture()> _
+    Public Class $type$Test
+
+        <Test(), _
+        TestSequence(1)> _
+        Public Sub $testName1$()
+
+        End Sub
+
+        <Test(), _
+        TestSequence(2)> _
+        Public Sub $testName2$()
+
+        End Sub
+
+        <Test(), _
+        TestSequence(3)> _
+        Public Sub $testName3$()
+
+        End Sub
+
+        <Test(), _
+        TestSequence(4)> _
+        Public Sub $testName4$()
+
+        End Sub
+
+    End Class
+
+End Namespace]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

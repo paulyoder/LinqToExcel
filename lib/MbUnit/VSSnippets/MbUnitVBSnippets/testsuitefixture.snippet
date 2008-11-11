@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>TestSuiteFixture</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for TestSuiteFixture</Description>
+      <Shortcut>testsuitefixture</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>namespace</ID>
+          <ToolTip>Test namespace</ToolTip>
+          <Default>MbUnitTests</Default>
+        </Literal>
+        <Literal>
+          <ID>name</ID>
+          <ToolTip>Fixture name</ToolTip>
+          <Default>My</Default>
+        </Literal>
+        <Literal>
+          <ID>suiteName</ID>
+          <ToolTip>Suite name</ToolTip>
+          <Default>Suite</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="VB"><![CDATA[Imports System
+Imports MbUnit.Framework
+
+Namespace $namespace$
+    <TestSuiteFixture()> _
+    Public Class $name$Test
+        <TestSuite()> _
+        Public Function $suiteName$() As TestSuite 
+            Dim suite As TestSuite = New TestSuite("$suiteName$")
+			                   
+            Return suite
+        End Function
+    End Class
+End Namespace 
+	]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>TestFixture</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for TestFixture</Description>
+      <Shortcut>testfixture</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>namespace</ID>
+          <ToolTip>Test namespace</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>Tested type</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp"><![CDATA[using System;
+using MbUnit.Framework;
+
+namespace $namespace$
+{
+    /// <summary>
+    /// A <see cref="TestFixture"/> for the <see cref="$type$"/> class.
+    /// </summary>
+    [TestFixture]
+    [TestsOn(typeof($type$))]
+    public class $type$Test
+    {
+        #region Fields, SetUp and TearDown
+        private $type$ target = null;
+        
+        /// <summary>
+        /// Sets up the fixture
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+            this.target = new $type$();
+        }
+        /// <summary>
+        /// Cleans up the fixture
+        /// </summary>
+        [TearDown]
+        public void TearDown()
+        {
+            IDisposable disposable = this.target as IDisposable;
+            if (disposable!=null)
+                disposable.Dispose();
+        }
+        #endregion
+    
+        #region Test cases
+        [Test]
+        public void Test()
+        {
+            $end$
+        }
+        #endregion    
+    }
+}
+	]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

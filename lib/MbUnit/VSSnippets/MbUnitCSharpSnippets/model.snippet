@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Model</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for a Model</Description>
+      <Shortcut>model</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>namespace</ID>
+          <ToolTip>Model namespace</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>Modelled type</ToolTip>
+          <Default>Put the modelled type here</Default>
+        </Literal>
+        <Literal>
+          <ID>basetype</ID>
+          <ToolTip>Modelled Base Type</ToolTip>
+          <Default>Object</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp"><![CDATA[using System;
+using TestFu;
+using TestFu.Models;
+
+namespace $namespace$
+{
+    /// <summary>
+    /// A <see cref="IModel"/> implementation for the 
+    /// <see cref="$type$"/> type.
+    /// </summary>
+    [Model(typeof($type$))]
+    // [State("Put a state name here")]
+    // [SubModel("Put a submodel name here")]
+    public class $type$Model : $basetype$Model
+    {
+        #region Constructors
+        /// <summary>
+        /// Initializes a new <see cref="$name$Model"/> instance.
+        /// </summary>
+        public $type$Model()
+        :base()
+        {}
+    
+        /// <summary>
+        /// Initializes a new <see cref="$name$Model"/> instance
+        /// to model the <paramref name="modelledType"/> type.
+        /// </summary>
+        /// <param name="modelledType">
+        /// Target <see cref="Type"/> of the model
+        /// </param>
+        public $type$Model(Type modelledType)
+        :base(modelledType)
+        {
+            if (!typeof($type$).IsAssignableFrom(modelledType))
+                throw new ArgumentException("$type$ is not assignable from "+modelledType.FullName,"modelledType");            
+        }    
+        #endregion
+    
+        #region Transitions
+        [Transition]
+        public void SampleTransition($type$ target)
+        {
+            throw new NotImplemented();
+        }
+     
+        /// <summary>
+        /// Gets the active <see cref="ITransition"/> instance for
+        /// current <paramref name="target"/>.
+        /// </summary>
+        /// <param name="transitions">
+        /// Collection of active <see cref="ITransition"/> names
+        /// </param>
+        /// <param name="target">
+        /// Current tested instance
+        /// </param>
+        protected override void GetActiveTransitions(
+            ITransitionNameCollection transitions,
+            Object target
+            )
+        {
+            base.GetActiveTransitions(transitions,target);
+            $type$ current = ($type$)target;
+    
+            $end$
+        }   
+        #endregion
+    }
+}
+	]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
