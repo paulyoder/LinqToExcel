@@ -2,43 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Linq.Expressions;
-using System.Collections;
 
 namespace LinqToExcel
 {
-    public class ExcelRepository<TData> : IQueryable<TData>
+    public class ExcelRepository
     {
-        public Expression Expression { get; private set; }
-        public IQueryProvider Provider { get; private set; }
-        public Type ElementType { get { return typeof(TData); } }
-
         /// <summary>
-        /// This constructor is called by the client to create the data source.
+        /// Excel File Name
         /// </summary>
-        public ExcelRepository()
+        public string FileName { get; private set; }
+
+        /// <param name="fileName">Excel File Name</param>
+        public ExcelRepository(string fileName)
         {
-            this.Provider = new ExcelQueryProvider();
-            this.Expression = Expression.Constant(this);
+            this.FileName = fileName;
         }
 
         /// <summary>
-        /// This constructor is called by Provider.CreateQuery().
+        /// Creates a Linq queryable interface to an Excel sheet
         /// </summary>
-        public ExcelRepository(IQueryProvider provider, Expression expression)
+        /// <typeparam name="SheetDataType">A Class representing the data in the Excel sheet</typeparam>
+        /// <returns>Returns a Linq queryable interface to an Excel sheet</returns>
+        public IQueryable<SheetDataType> GetSheet<SheetDataType>()
         {
-            this.Provider = provider;
-            this.Expression = expression;
+            return new QueryableExcelSheet<SheetDataType>(this.FileName);
         }
 
-        public IEnumerator<TData> GetEnumerator()
+        /// <summary>
+        /// Creates a Linq queryable interface to an Excel sheet
+        /// </summary>
+        /// <typeparam name="SheetDataType">A Class representing the data in the Excel sheet</typeparam>
+        /// <returns>Returns a Linq queryable interface to an Excel sheet</returns>
+        public static IQueryable<SheetDataType> GetSheet<SheetDataType>(string fileName)
         {
-            return (Provider.Execute<IEnumerable<TData>>(this.Expression)).GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (Provider.Execute<System.Collections.IEnumerable>(this.Expression)).GetEnumerator();
+            return new QueryableExcelSheet<SheetDataType>(fileName);
         }
     }
 }

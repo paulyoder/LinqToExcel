@@ -11,5 +11,6 @@ namespace LinqToExcel.Prototype
         public string FirstName { get; set; }
         public string FavoriteColor { get; set; }
         public int Age { get; set; }
+        public DateTime BirthDate { get; set; }
     }
 }

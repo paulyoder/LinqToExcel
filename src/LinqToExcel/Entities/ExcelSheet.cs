@@ -5,7 +5,7 @@ using System.Text;
 using System.Data.OleDb;
 using System.Reflection;
 
-namespace LinqToExcel
+namespace LinqToExcel.Old
 {
     public class ExcelSheet<T> : IEnumerable<T>
     {

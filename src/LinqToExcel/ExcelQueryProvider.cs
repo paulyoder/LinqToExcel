@@ -8,26 +8,36 @@ namespace LinqToExcel
 {
     public class ExcelQueryProvider : IQueryProvider
     {
+        /// <summary>
+        /// Excel File Name
+        /// </summary>
+        private string _fileName;
+
+        /// <param name="fileName">Excel File Name</param>
+        public ExcelQueryProvider(string fileName)
+        {
+            _fileName = fileName;
+        }
+
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            return new ExcelRepository<TElement>(this, expression);
+            return new QueryableExcelSheet<TElement>(this, expression);
         }
 
         public IQueryable CreateQuery(Expression expression)
         {
-            return (IQueryable)Activator.CreateInstance(typeof(ExcelRepository<>).MakeGenericType(expression.Type), new object[] { this, expression });
+            return (IQueryable)Activator.CreateInstance(typeof(QueryableExcelSheet<>).MakeGenericType(expression.Type), new object[] { this, expression });
         }
 
         public object Execute(Expression expression)
         {
-            ExcelSQL repo = new ExcelSQL();
-            return repo.ExecuteQuery(expression);
+            throw new NotImplementedException();
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
             ExcelSQL repo = new ExcelSQL();
-            return (TResult)repo.ExecuteQuery(expression);
+            return (TResult)repo.ExecuteQuery(expression, _fileName);
         }
     }
 }

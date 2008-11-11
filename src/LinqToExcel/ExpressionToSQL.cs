@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using YoderSolutions.Libs.ExpressionTree;
 using System.Reflection;
 using log4net;
+using System.Data.OleDb;
+using System.Collections;
 
 namespace LinqToExcel
 {
@@ -13,23 +15,32 @@ namespace LinqToExcel
     {
         private static ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private StringBuilder sb;
+        public string SQLStatement { get; private set; }
+        public IEnumerable<OleDbParameter> Parameters { get; private set; }
+        private List<OleDbParameter> _params;
 
         /// <summary>
         /// Builds the SQL Statement based upon the expression
         /// </summary>
         /// <param name="expression">Expression tree being used</param>
         /// <returns>Returns an SQL statement based upon the expression</returns>
-        public string BuildSQLStatement(Expression expression)
+        public void BuildSQLStatement(Expression expression)
         {
+            _params = new List<OleDbParameter>();
             sb = new StringBuilder();
+            
             sb.Append("SELECT * FROM [Sheet1$]");
-
             this.Visit(expression);
 
             if (_log.IsDebugEnabled)
+            {
                 _log.Debug("SQL: " + sb.ToString());
-            
-            return sb.ToString();
+                for (int i = 0; i < _params.Count; i++)
+                    _log.Debug(string.Format("Param[{0}]: {1}", i, _params[i].Value));
+            }
+
+            this.SQLStatement = sb.ToString();
+            this.Parameters = _params;
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression m)
@@ -46,17 +57,25 @@ namespace LinqToExcel
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
-            if (c.Value.GetType() == typeof(int))
-                sb.Append(c.Value);
-            else
-                sb.Append(string.Format("'{0}'",c.Value));
+            _params.Add(new OleDbParameter("?", c.Value));
+            sb.Append("?");
             return c;
         }
 
         protected override Expression VisitBinary(BinaryExpression b)
         {
             sb.Append("(");
-            this.Visit(b.Left);
+            
+            //We always want the MemberAccess (ColumnName) to be on the left side of the statement
+            Expression left = b.Left;
+            Expression right = b.Right;
+            if (b.Right.NodeType == ExpressionType.MemberAccess)
+            {
+                left = b.Right;
+                right = b.Left;
+            }
+
+            this.Visit(left);
             switch (b.NodeType)
             {
                 case ExpressionType.AndAlso:
@@ -87,7 +106,7 @@ namespace LinqToExcel
                     throw new NotSupportedException(string.Format("{0} statement is not supported", b.NodeType.ToString()));
                     break;
             }
-            this.Visit(b.Right);
+            this.Visit(right);
             sb.Append(")");
             return b;
         }
@@ -95,12 +114,20 @@ namespace LinqToExcel
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
             if (m.Member.MemberType == MemberTypes.Property)
-                sb.Append(string.Format("{0}", m.Member.Name));
+                sb.Append(string.Format("[{0}]", m.Member.Name));
             else if (m.Member.MemberType == MemberTypes.Field)
                 this.VisitConstant((ConstantExpression)m.Expression);
             else
                 throw new NotSupportedException(string.Format("{0} member type is not supported. Only fields and properties are supported", m.Member.MemberType.ToString()));
             return m;
+        }
+
+        protected override NewExpression VisitNew(NewExpression nex)
+        {
+            object newObject = Activator.CreateInstance(nex.Type, nex.Arguments);
+            _params.Add(new OleDbParameter("?", newObject));
+            sb.Append("?");
+            return nex;
         }
     }
 }
