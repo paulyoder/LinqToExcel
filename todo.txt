@@ -1,5 +1,4 @@
 LinqToExcel Todo List
 
-- Do not error off if the DataSheetType contains a property that does not correspond to a column within Excel
 - Map the Excel column names to the properties on the DataSheetType
 - Return the data in an array

@@ -122,5 +122,15 @@ namespace LinqToExcel.Tests
 
             Assert.AreEqual(1, companies.ToList().Count);
         }
+
+        [Test]
+        public void more_properties_on_class_than_columns_on_sheet()
+        {
+            var companies = from c in ExcelRepository.GetSheet<CompanyWithCity>(_excelFileName)
+                            select c;
+
+            foreach (CompanyWithCity company in companies)
+                Assert.IsTrue(String.IsNullOrEmpty(company.City));
+        }
     }
 }

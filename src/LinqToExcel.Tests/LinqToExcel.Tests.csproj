@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompanyWithoutCEO.cs" />
     <Compile Include="Convention_SQLStatements_UnitTests.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Convention_IntegrationTests.cs" />

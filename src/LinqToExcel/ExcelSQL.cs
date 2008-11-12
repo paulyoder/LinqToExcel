@@ -8,6 +8,7 @@ using System.Data.OleDb;
 using log4net;
 using System.Reflection;
 using YoderSolutions.Libs.Extensions.Reflection;
+using System.Data;
 
 namespace LinqToExcel
 {
@@ -35,16 +36,25 @@ namespace LinqToExcel
                 command.Parameters.Clear();
                 command.Parameters.AddRange(sql.Parameters.ToArray());
                 OleDbDataReader data = command.ExecuteReader();
+                
+                //Get the excel column names
+                List<string> columns = new List<string>();
+                DataTable sheetSchema = data.GetSchemaTable();
+                foreach (DataRow row in sheetSchema.Rows)
+                    columns.Add(row["ColumnName"].ToString());
+
                 while (data.Read())
                 {
                     object result = Activator.CreateInstance(dataType);
                     foreach (PropertyInfo prop in props)
-                        result.SetProperty(prop.Name, Convert.ChangeType(data[prop.Name], prop.PropertyType));
-
+                    {
+                        //Make sure there is a corresponding column for the class property
+                        if (columns.Contains(prop.Name))
+                            result.SetProperty(prop.Name, Convert.ChangeType(data[prop.Name], prop.PropertyType));
+                    }
                     results.CallMethod("Add", result);
                 }
             }
-
             return results;
         }
     }
