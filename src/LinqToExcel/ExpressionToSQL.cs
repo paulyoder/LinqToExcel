@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
-using YoderSolutions.Libs.ExpressionTree;
 using System.Reflection;
 using log4net;
 using System.Data.OleDb;
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace LinqToExcel
 {
-    public class ExpressionToSQL : ExpressionVisitor
+    internal class ExpressionToSQL : ExpressionVisitor
     {
         private static ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private StringBuilder sb;
@@ -69,7 +69,8 @@ namespace LinqToExcel
             //We always want the MemberAccess (ColumnName) to be on the left side of the statement
             Expression left = b.Left;
             Expression right = b.Right;
-            if (b.Right.NodeType == ExpressionType.MemberAccess)
+            if ((b.Right.NodeType == ExpressionType.MemberAccess) &&
+                (((MemberExpression)b.Right).Member.MemberType == MemberTypes.Property))
             {
                 left = b.Right;
                 right = b.Left;
@@ -116,7 +117,11 @@ namespace LinqToExcel
             if (m.Member.MemberType == MemberTypes.Property)
                 sb.Append(string.Format("[{0}]", m.Member.Name));
             else if (m.Member.MemberType == MemberTypes.Field)
-                this.VisitConstant((ConstantExpression)m.Expression);
+            {
+                object value = Expression.Lambda(m).Compile().DynamicInvoke();
+                _params.Add(new OleDbParameter("?", value));
+                sb.Append("?");
+            }
             else
                 throw new NotSupportedException(string.Format("{0} member type is not supported. Only fields and properties are supported", m.Member.MemberType.ToString()));
             return m;
@@ -124,10 +129,34 @@ namespace LinqToExcel
 
         protected override NewExpression VisitNew(NewExpression nex)
         {
-            object newObject = Activator.CreateInstance(nex.Type, nex.Arguments);
+            object[] args = GetConstructorArguments(nex.Arguments);
+            object newObject = Activator.CreateInstance(nex.Type, args);
             _params.Add(new OleDbParameter("?", newObject));
             sb.Append("?");
             return nex;
+        }
+
+        private object[] GetConstructorArguments(ReadOnlyCollection<Expression> constructorArguments)
+        {
+            List<object> args = new List<object>();
+            foreach (Expression exp in constructorArguments)
+            {
+                if (exp.NodeType == ExpressionType.Constant)
+                {
+                    args.Add(((ConstantExpression)exp).Value);
+                }
+                else if ((exp.NodeType == ExpressionType.MemberAccess) &&
+                         (((MemberExpression)exp).Member.MemberType == MemberTypes.Field))
+                {
+                    object value = Expression.Lambda(exp).Compile().DynamicInvoke();
+                    args.Add(value);
+                }
+                else
+                {
+                    throw new NotSupportedException(string.Format("{0} is not supported as a constructor argument", exp.NodeType));
+                }
+            }
+            return args.ToArray();
         }
     }
 }

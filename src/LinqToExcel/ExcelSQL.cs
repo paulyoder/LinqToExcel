@@ -18,19 +18,18 @@ namespace LinqToExcel
         public object ExecuteQuery(Expression expression, string fileName)
         {
             Type dataType = expression.Type.GetGenericArguments()[0];
-            object results = Activator.CreateInstance(typeof(List<>).MakeGenericType(dataType));
+            PropertyInfo[] props = dataType.GetProperties();
+
+            //Build the SQL string
+            ExpressionToSQL sql = new ExpressionToSQL();
+            sql.BuildSQLStatement(expression);
             string connString = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties= ""Excel 8.0;HDR=YES;""", fileName);
             if (_log.IsDebugEnabled) _log.Debug("Connection String: " + connString);
 
+            object results = Activator.CreateInstance(typeof(List<>).MakeGenericType(dataType));
             using (OleDbConnection conn = new OleDbConnection(connString))
             using (OleDbCommand command = conn.CreateCommand())
-            {
-                //Build the SQL string
-                ExpressionToSQL sql = new ExpressionToSQL();
-                sql.BuildSQLStatement(expression);
-
-                PropertyInfo[] props = dataType.GetProperties();
-                
+            {                
                 conn.Open();
                 command.CommandText = sql.SQLStatement;
                 command.Parameters.Clear();

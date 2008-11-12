@@ -2,27 +2,59 @@
 <project name="LinqToExcel" default="build">
 	<property name="nant.settings.currentframework" value="net-3.5" />
 
-	<property name="base.dir" value="${directory::get-current-directory()}" />
-	<property name="bin.dir" value="${base.dir}\bin" />
-	<property name="project.file" value="${base.dir}\src\LinqToExcel\LinqToExcel.csproj" />
+	<property name="dir.base" value="${directory::get-current-directory()}" />
+	<property name="dir.bin" value="${dir.base}\bin" />
+	<property name="dir.test" value="${dir.base}\tests" />
+	<property name="file.project" value="${dir.base}\src\LinqToExcel\LinqToExcel.csproj" />
+	<property name="file.project.test" value="${dir.base}\src\LinqToExcel.Tests\LinqToExcel.Tests.csproj" />
+	<property name="file.publish" value="${dir.base}\publish.zip" />
+	<property name="tool.MbUnit" value="${dir.base}\lib\MbUnit\MbUnit.Cons.exe" />
 	
 	<target name="build" depends="clean, compile" />
-	<target name="publish" depends="build, zip" />
+	<target name="publish" depends="test, build, zip" />
 	
 	<target name="clean" description="deletes folders used in the build">
-		<delete dir="${bin.dir}" if="${directory::exists(bin.dir)}" />
+		<delete dir="${dir.bin}" if="${directory::exists(dir.bin)}" />
+		<delete dir="${dir.test}" if="${directory::exists(dir.test)}" />
+		<delete file="${file.publish}" if="${file::exists(file.publish)}" />
 	</target>
 	
 	<target name="compile" description="compiles the project">
 		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
-			commandline="&quot;${project.file}&quot; /p:OutputPath=&quot;${bin.dir}\\&quot;" />
+			commandline="&quot;${file.project}&quot; /p:Configuration=Release;OutputPath=&quot;${dir.bin}\\&quot;" />
 	</target>
 	
 	<target name="zip" description="zips the contents of the bin folder to the zip.dir">
-		<zip zipfile="${base.dir}\publish.zip">
-			<fileset basedir="${bin.dir}">
+		<zip zipfile="${file.publish}">
+			<fileset basedir="${dir.bin}">
 				<include name="**/*" />
 			</fileset>
 		</zip>
+	</target>
+	
+	<target name="compile-test-project" description="compiles the test project">
+		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
+			commandline="&quot;${file.project.test}&quot; /p:OutputPath=&quot;${dir.test}\bin\\&quot;" />
+	</target>
+	
+	<target name="unit-test" depends="clean, compile-test-project" description="runs the unit tests">
+		<exec program="${tool.MbUnit}"
+			commandline="&quot;${dir.test}\bin\LinqToExcel.Tests.dll&quot; /report-folder:&quot;${dir.test}\reports\\&quot; /report-type:Html /filter-category:&quot;Unit&quot;" /> 
+		<!-- clean up the created directories if the unittests passed -->
+		<call target="clean" />
+	</target>
+	
+	<target name="integration-test" depends="clean, compile-test-project" description="runs the integration tests">
+		<exec program="${tool.MbUnit}"
+			commandline="&quot;${dir.test}\bin\LinqToExcel.Tests.dll&quot; /report-folder:&quot;${dir.test}\reports\\&quot; /report-type:Html /filter-category:&quot;Integration&quot;" /> 
+		<!-- clean up the created directories if the unittests passed -->
+		<call target="clean" />
+	</target>
+	
+	<target name="test" depends="clean, compile-test-project" description="runs all the tests">
+		<exec program="${tool.MbUnit}"
+			commandline="&quot;${dir.test}\bin\LinqToExcel.Tests.dll&quot; /report-folder:&quot;${dir.test}\reports\\&quot; /report-type:Html" /> 
+		<!-- clean up the created directories if the unittests passed -->
+		<call target="clean" />
 	</target>
 </project>

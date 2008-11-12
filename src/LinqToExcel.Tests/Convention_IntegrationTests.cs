@@ -11,23 +11,22 @@ namespace LinqToExcel.Tests
     [Author("Paul Yoder", "paulyoder@gmail.com")]
     [FixtureCategory("Integration")]
     [TestFixture]
-    public class ConventionIntegrationTests
+    public class Convention_IntegrationTests
     {
-        private Dictionary<string, string> _excelFiles;
+        private string _excelFileName;
 
         [TestFixtureSetUp]
         public void fs()
         {
             string testDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string excelFilesDirectory = Path.Combine(testDirectory, "ExcelFiles");
-            _excelFiles = new Dictionary<string, string>();
-            _excelFiles["BasicCompanies"] = Path.Combine(excelFilesDirectory, "Simple_Companies.xls");
+            _excelFileName = Path.Combine(excelFilesDirectory, "Simple_Companies.xls");
         }
 
         [Test]
         public void select_all()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             select c;
 
             Assert.AreEqual(7, companies.ToList().Count);
@@ -36,7 +35,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_string_equals()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.CEO == "Paul Yoder"
                             select c;
 
@@ -47,7 +46,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_string_not_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.CEO != "Bugs Bunny"
                             select c;
 
@@ -57,7 +56,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_equals()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.EmployeeCount == 25
                             select c;
 
@@ -67,7 +66,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_not_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.EmployeeCount != 98
                             select c;
 
@@ -77,7 +76,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_greater_than()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.EmployeeCount > 98
                             select c;
 
@@ -87,7 +86,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_greater_than_or_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.EmployeeCount >= 98
                             select c;
 
@@ -97,7 +96,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_less_than()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.EmployeeCount < 300
                             select c;
 
@@ -107,7 +106,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_less_than_or_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.EmployeeCount <= 300
                             select c;
             
@@ -117,7 +116,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_datetime_equals()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFiles["BasicCompanies"])
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
                             where c.StartDate == new DateTime(2008, 10, 9)
                             select c;
 

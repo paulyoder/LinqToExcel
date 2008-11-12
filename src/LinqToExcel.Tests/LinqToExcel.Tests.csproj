@@ -53,17 +53,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExpressionToSQLUnitTest.cs" />
+    <Compile Include="Convention_SQLStatements_UnitTests.cs" />
     <Compile Include="Company.cs" />
-    <Compile Include="ConventionIntegrationTests.cs" />
-    <Compile Include="Person.cs" />
+    <Compile Include="Convention_IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\ExpressionVisitor\ExpressionTree.csproj">
-      <Project>{0948F8D0-D6F5-44BD-94F1-3DC71BB5C029}</Project>
-      <Name>ExpressionTree</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LinqToExcel\LinqToExcel.csproj">
       <Project>{08F80D96-5387-4406-B88B-DCC0CB661702}</Project>
       <Name>LinqToExcel</Name>

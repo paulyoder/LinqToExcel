@@ -24,7 +24,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -52,20 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\ExcelColumnAttribute.cs" />
-    <Compile Include="Attributes\ExcelSheetAttribute.cs" />
-    <Compile Include="Entities\ChangeSet.cs" />
-    <Compile Include="Entities\ChangeState.cs" />
-    <Compile Include="Entities\ExcelSheet.cs" />
-    <Compile Include="Entities\ObjectState.cs" />
-    <Compile Include="ExcelMapReader.cs" />
-    <Compile Include="ExcelProvider.cs" />
     <Compile Include="ExcelQueryProvider.cs" />
     <Compile Include="ExcelRepository.cs" />
     <Compile Include="ExcelSQL.cs" />
     <Compile Include="ExpressionToSQL.cs" />
+    <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyManager.cs" />
     <Compile Include="QueryableExcelSheet.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -74,10 +66,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\ExpressionVisitor\ExpressionTree.csproj">
-      <Project>{0948F8D0-D6F5-44BD-94F1-3DC71BB5C029}</Project>
-      <Name>ExpressionTree</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\lib\YoderSolutionsExtensions\Extensions.csproj">
       <Project>{449E9528-3666-472E-9E85-0CA0BE2664C3}</Project>
       <Name>Extensions</Name>

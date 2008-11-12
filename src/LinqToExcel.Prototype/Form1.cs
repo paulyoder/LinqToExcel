@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using log4net;
 using System.Reflection;
+using System.IO;
 
 [assembly: log4net.Config.XmlConfigurator()]
 
@@ -24,10 +25,11 @@ namespace LinqToExcel.Prototype
 
         private void button1_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.ShowDialog();
-            var people = from p in ExcelRepository.GetSheet<Person>(openFile.FileName)
-                         where p.BirthDate == new DateTime(2008, 10, 9)
+            //This is used for debugging purposes while building the LinqToExcel library
+
+            string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExcelData.xls");
+            var people = from p in ExcelRepository.GetSheet<Person>(fileName)
+                         where p.BirthDate == new DateTime(2008, 9, 10)
                          select p;
 
             StringBuilder sb = new StringBuilder();
@@ -37,21 +39,6 @@ namespace LinqToExcel.Prototype
                 sb.AppendLine();
             }
             textBox1.Text = sb.ToString();
-
-            /*
-            string color = "Red";
-            ExcelSheet<Person> data = new ExcelSheet<Person>();
-            var redLovers = from p in data
-                            where p.FavoriteColor == color
-                            select p;
-
-            redLovers.GetEnumerator();
-            /*
-            foreach (var lover in redLovers)
-            {
-                Console.WriteLine("Name: " + lover.FirstName);
-            }
-             * */
         }
     }
 }
