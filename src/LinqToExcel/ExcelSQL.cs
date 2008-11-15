@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.DebuggerVisualizers;
 using System.Data.OleDb;
 using log4net;
 using System.Reflection;
-using YoderSolutions.Libs.Extensions.Reflection;
+using LinqToExcel.Extensions.Reflection;
 using System.Data;
 
 namespace LinqToExcel

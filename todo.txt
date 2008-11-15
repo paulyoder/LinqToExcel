@@ -2,3 +2,5 @@ LinqToExcel Todo List
 
 - Map the Excel column names to the properties on the DataSheetType
 - Return the data in an array
+- Unit test for ReflectionExtensions class
+   - It's an internal class and I don't know how to get to it

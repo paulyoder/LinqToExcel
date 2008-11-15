@@ -59,17 +59,12 @@
     <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExcelSheet.cs" />
+    <Compile Include="ReflectionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\lib\YoderSolutionsExtensions\Extensions.csproj">
-      <Project>{449E9528-3666-472E-9E85-0CA0BE2664C3}</Project>
-      <Name>Extensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
