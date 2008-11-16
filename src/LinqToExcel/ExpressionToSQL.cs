@@ -18,15 +18,21 @@ namespace LinqToExcel
         public string SQLStatement { get; private set; }
         public IEnumerable<OleDbParameter> Parameters { get; private set; }
         private List<OleDbParameter> _params;
+        private Dictionary<string, string> _map;
 
         /// <summary>
         /// Builds the SQL Statement based upon the expression
         /// </summary>
         /// <param name="expression">Expression tree being used</param>
+        /// <param name="columnMapping">
+        /// Property to column mapping. 
+        /// Properties are the dictionary keys and the dictionary values are the corresponding column names.
+        /// </param>
         /// <returns>Returns an SQL statement based upon the expression</returns>
-        public void BuildSQLStatement(Expression expression)
+        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping)
         {
             _params = new List<OleDbParameter>();
+            _map = columnMapping;
             sb = new StringBuilder();
             
             sb.Append("SELECT * FROM [Sheet1$]");
@@ -115,9 +121,14 @@ namespace LinqToExcel
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
             if (m.Member.MemberType == MemberTypes.Property)
-                sb.Append(string.Format("[{0}]", m.Member.Name));
+            {
+                //Set the column name to the property mapping if there is one, else use the property name for the column name
+                string columnName = (_map.ContainsKey(m.Member.Name)) ? _map[m.Member.Name] : m.Member.Name;
+                sb.Append(string.Format("[{0}]", columnName));
+            }
             else if (m.Member.MemberType == MemberTypes.Field)
             {
+                //A local field has been used as a value in the linq statement
                 object value = Expression.Lambda(m).Compile().DynamicInvoke();
                 _params.Add(new OleDbParameter("?", value));
                 sb.Append("?");

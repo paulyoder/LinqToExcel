@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using log4net;
 using System.Reflection;
 using System.IO;
+using System.Linq.Expressions;
 
 [assembly: log4net.Config.XmlConfigurator()]
 

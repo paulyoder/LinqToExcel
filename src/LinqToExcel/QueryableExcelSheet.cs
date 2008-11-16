@@ -16,9 +16,14 @@ namespace LinqToExcel
         /// <summary>
         /// This constructor is called by the client to create the data source.
         /// </summary>
-        public QueryableExcelSheet(string fileName)
+        /// <param name="fileName">File path to the excel workbook</param>
+        /// <param name="columnMappings">
+        /// Property to column mapping. 
+        /// Properties are the dictionary keys and the dictionary values are the corresponding column names.
+        /// </param>
+        public QueryableExcelSheet(string fileName, Dictionary<string, string> columnMappings)
         {
-            this.Provider = new ExcelQueryProvider(fileName);
+            this.Provider = new ExcelQueryProvider(fileName, columnMappings);
             this.Expression = Expression.Constant(this);
         }
 

@@ -12,11 +12,17 @@ namespace LinqToExcel
         /// Excel File Name
         /// </summary>
         private string _fileName;
+        private Dictionary<string, string> _columnMappings;
 
         /// <param name="fileName">Excel File Name</param>
-        public ExcelQueryProvider(string fileName)
+        /// <param name="columnMappings">
+        /// Property to column mapping. 
+        /// Properties are the dictionary keys and the dictionary values are the corresponding column names.
+        /// </param>
+        public ExcelQueryProvider(string fileName, Dictionary<string, string> columnMappings)
         {
             _fileName = fileName;
+            _columnMappings = columnMappings;
         }
 
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
@@ -37,7 +43,7 @@ namespace LinqToExcel
         public TResult Execute<TResult>(Expression expression)
         {
             ExcelSQL repo = new ExcelSQL();
-            return (TResult)repo.ExecuteQuery(expression, _fileName);
+            return (TResult)repo.ExecuteQuery(expression, _fileName, _columnMappings);
         }
     }
 }
