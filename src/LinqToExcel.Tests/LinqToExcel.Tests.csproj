@@ -56,6 +56,8 @@
     <Compile Include="ColumnMappings_IntegrationTests.cs" />
     <Compile Include="ColumnMappings_SQLStatements_UnitTests.cs" />
     <Compile Include="CompanyWithCity.cs" />
+    <Compile Include="ConfiguredWorksheetName_SQLStatements_UnitTests.cs" />
+    <Compile Include="ConfiguredWorksheetName_IntegrationTests.cs" />
     <Compile Include="Convention_SQLStatements_UnitTests.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Convention_IntegrationTests.cs" />
@@ -70,10 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ExcelFiles\ColumnMappings_Companies.xls">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ExcelFiles\Simple_Companies.xls">
+    <None Include="ExcelFiles\Companies.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

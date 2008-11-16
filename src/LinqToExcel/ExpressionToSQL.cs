@@ -28,14 +28,16 @@ namespace LinqToExcel
         /// Property to column mapping. 
         /// Properties are the dictionary keys and the dictionary values are the corresponding column names.
         /// </param>
+        /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns an SQL statement based upon the expression</returns>
-        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping)
+        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping, string worksheetName)
         {
             _params = new List<OleDbParameter>();
             _map = columnMapping;
             sb = new StringBuilder();
-            
-            sb.Append("SELECT * FROM [Sheet1$]");
+
+            string tableName = (String.IsNullOrEmpty(worksheetName)) ? "Sheet1" : worksheetName;
+            sb.Append(string.Format("SELECT * FROM [{0}$]", tableName));
             this.Visit(expression);
 
             if (_log.IsDebugEnabled)

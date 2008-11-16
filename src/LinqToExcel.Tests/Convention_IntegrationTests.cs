@@ -22,7 +22,7 @@ namespace LinqToExcel.Tests
         {
             string testDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string excelFilesDirectory = Path.Combine(testDirectory, "ExcelFiles");
-            _excelFileName = Path.Combine(excelFilesDirectory, "Simple_Companies.xls");
+            _excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
         }
 
         [Test]

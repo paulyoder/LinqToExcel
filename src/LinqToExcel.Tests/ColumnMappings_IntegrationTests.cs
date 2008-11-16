@@ -16,6 +16,7 @@ namespace LinqToExcel.Tests
     public class ColumnMappings_IntegrationTests : SQLLogStatements_Helper
     {
         private string _excelFileName;
+        private string _worksheetName;
 
         [TestFixtureSetUp]
         public void fs()
@@ -23,7 +24,8 @@ namespace LinqToExcel.Tests
             InstantiateLogger();
             string testDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string excelFilesDirectory = Path.Combine(testDirectory, "ExcelFiles");
-            _excelFileName = Path.Combine(excelFilesDirectory, "ColumnMappings_Companies.xls");
+            _excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
+            _worksheetName = "ColumnMappings";
         }
 
         [Test]
@@ -34,7 +36,7 @@ namespace LinqToExcel.Tests
             map["CEO"] = "Boss";
             map["EmployeeCount"] = "Number of People";
             map["StartDate"] = "Initiation Date";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map)
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
                             where c.Name == "Taylor University"
                             select c;
 
@@ -52,7 +54,7 @@ namespace LinqToExcel.Tests
             Dictionary<string, string> map = new Dictionary<string, string>();
             map["CEO"] = "Boss";
             map["StartDate"] = "Initiation Date";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map)
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
                             where c.Name == "Anderson University"
                             select c;
 
@@ -74,7 +76,7 @@ namespace LinqToExcel.Tests
         {
             Dictionary<string, string> map = new Dictionary<string, string>();
             map["CEO"] = "The Big Cheese";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map)
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
                             where c.CEO == "Bugs Bunny"
                             select c;
 
@@ -87,22 +89,18 @@ namespace LinqToExcel.Tests
             _loggedEvents.Clear();
             Dictionary<string, string> map = new Dictionary<string, string>();
             map["CEO"] = "The Big Cheese";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map)
-                            where c.Name == "Anderson University"
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
                             select c;
 
             companies.GetEnumerator();
-            bool warningLogged = false;
+            int warningsLogged = 0;
             foreach (LoggingEvent logEvent in _loggedEvents.GetEvents())
             {
                 if ((logEvent.Level == Level.Warn) &&
                     (logEvent.RenderedMessage == "'The Big Cheese' column that is mapped to the 'CEO' property does not exist in the 'Sheet1' worksheet"))
-                {
-                    warningLogged = true;
-                    break;
-                }
+                    warningsLogged++;
             }
-            Assert.IsTrue(warningLogged);
+            Assert.AreEqual(1, warningsLogged);
         }
     }
 }
