@@ -31,12 +31,13 @@ namespace LinqToExcel.Tests
         [Test]
         public void all_properties_have_column_mappings()
         {
-            Dictionary<string, string> map = new Dictionary<string, string>();
-            map["Name"] = "Company Title";
-            map["CEO"] = "Boss";
-            map["EmployeeCount"] = "Number of People";
-            map["StartDate"] = "Initiation Date";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
+            var mapping = ExcelRepository.CreateColumnMapping<Company>();
+            mapping.Add(x => x.Name, "Company Title");
+            mapping.Add(x => x.CEO, "Boss");
+            mapping.Add(x => x.EmployeeCount, "Number of People");
+            mapping.Add(x => x.StartDate, "Initiation Date");
+
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
                             where c.Name == "Taylor University"
                             select c;
 
@@ -51,10 +52,11 @@ namespace LinqToExcel.Tests
         [Test]
         public void some_properties_have_column_mappings()
         {
-            Dictionary<string, string> map = new Dictionary<string, string>();
-            map["CEO"] = "Boss";
-            map["StartDate"] = "Initiation Date";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
+            var mapping = ExcelRepository.CreateColumnMapping<Company>();
+            mapping.Add(x => x.CEO, "Boss");
+            mapping.Add(x => x.StartDate, "Initiation Date");
+
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
                             where c.Name == "Anderson University"
                             select c;
 
@@ -74,9 +76,10 @@ namespace LinqToExcel.Tests
         [Test]
         public void exception_on_property_with_column_mapping_used_in_where_clause_when_mapped_column_doesnt_exist()
         {
-            Dictionary<string, string> map = new Dictionary<string, string>();
-            map["CEO"] = "The Big Cheese";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
+            var mapping = ExcelRepository.CreateColumnMapping<Company>();
+            mapping.Add(x => x.CEO, "The Big Cheese");
+
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
                             where c.CEO == "Bugs Bunny"
                             select c;
 
@@ -87,9 +90,10 @@ namespace LinqToExcel.Tests
         public void log_warning_when_property_with_column_mapping_not_in_where_clause_when_mapped_column_doesnt_exist()
         {
             _loggedEvents.Clear();
-            Dictionary<string, string> map = new Dictionary<string, string>();
-            map["CEO"] = "The Big Cheese";
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, map, _worksheetName)
+            var mapping = ExcelRepository.CreateColumnMapping<Company>();
+            mapping.Add(x => x.CEO, "The Big Cheese");
+
+            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
                             select c;
 
             companies.GetEnumerator();

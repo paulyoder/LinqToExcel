@@ -34,7 +34,7 @@ namespace LinqToExcel
 
             //Build the SQL string
             ExpressionToSQL sql = new ExpressionToSQL();
-            sql.BuildSQLStatement(expression, columnMapping, worksheetName);
+            sql.BuildSQLStatement(expression, columnMapping, worksheetName, dataType);
 
             string connString = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties= ""Excel 8.0;HDR=YES;""", fileName);
             if (_log.IsDebugEnabled) _log.Debug("Connection String: " + connString);

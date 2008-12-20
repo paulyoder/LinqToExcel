@@ -19,6 +19,7 @@ namespace LinqToExcel
         public IEnumerable<OleDbParameter> Parameters { get; private set; }
         private List<OleDbParameter> _params;
         private Dictionary<string, string> _map;
+        private Type _sheetDataType;
 
         /// <summary>
         /// Builds the SQL Statement based upon the expression
@@ -30,10 +31,11 @@ namespace LinqToExcel
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns an SQL statement based upon the expression</returns>
-        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping, string worksheetName)
+        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping, string worksheetName, Type sheetDataType)
         {
             _params = new List<OleDbParameter>();
             _map = columnMapping;
+            _sheetDataType = sheetDataType;
             sb = new StringBuilder();
 
             string tableName = (String.IsNullOrEmpty(worksheetName)) ? "Sheet1" : worksheetName;
@@ -55,7 +57,7 @@ namespace LinqToExcel
         {
             if (m.Method.Name == "Where")
             {
-                sb.Append(" Where ");
+                sb.Append(" WHERE ");
                 this.Visit(m.Arguments[1]);
             }
             else if (m.Method.Name != "Select")
@@ -78,7 +80,7 @@ namespace LinqToExcel
             Expression left = b.Left;
             Expression right = b.Right;
             if ((b.Right.NodeType == ExpressionType.MemberAccess) &&
-                (((MemberExpression)b.Right).Member.MemberType == MemberTypes.Property))
+                (((MemberExpression)b.Right).Member.DeclaringType == _sheetDataType))
             {
                 left = b.Right;
                 right = b.Left;
@@ -122,15 +124,17 @@ namespace LinqToExcel
 
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
-            if (m.Member.MemberType == MemberTypes.Property)
+            if ((m.Member.MemberType == MemberTypes.Property) &&
+                (m.Member.DeclaringType == _sheetDataType))
             {
                 //Set the column name to the property mapping if there is one, else use the property name for the column name
                 string columnName = (_map.ContainsKey(m.Member.Name)) ? _map[m.Member.Name] : m.Member.Name;
                 sb.Append(string.Format("[{0}]", columnName));
             }
-            else if (m.Member.MemberType == MemberTypes.Field)
+            else if ((m.Member.MemberType == MemberTypes.Property) ||
+                (m.Member.MemberType == MemberTypes.Field))
             {
-                //A local field has been used as a value in the linq statement
+                //A field or property on another type has been used as a value in the linq statement
                 object value = Expression.Lambda(m).Compile().DynamicInvoke();
                 _params.Add(new OleDbParameter("?", value));
                 sb.Append("?");
@@ -158,8 +162,7 @@ namespace LinqToExcel
                 {
                     args.Add(((ConstantExpression)exp).Value);
                 }
-                else if ((exp.NodeType == ExpressionType.MemberAccess) &&
-                         (((MemberExpression)exp).Member.MemberType == MemberTypes.Field))
+                else if (exp.NodeType == ExpressionType.MemberAccess)
                 {
                     object value = Expression.Lambda(exp).Compile().DynamicInvoke();
                     args.Add(value);

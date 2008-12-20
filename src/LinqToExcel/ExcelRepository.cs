@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace LinqToExcel
 {
@@ -28,6 +30,11 @@ namespace LinqToExcel
             return new QueryableExcelSheet<SheetDataType>(this.FileName, new Dictionary<string,string>(), "");
         }
 
+        public static Dictionary<Expression<Func<SheetDataType, object>>, string> CreateColumnMapping<SheetDataType>()
+        {
+            return new Dictionary<Expression<Func<SheetDataType, object>>, string>();
+        }
+
         /// <summary>
         /// Creates a Linq queryable interface to an Excel sheet
         /// </summary>
@@ -36,7 +43,7 @@ namespace LinqToExcel
         /// <returns>Returns a Linq queryable interface to an Excel sheet</returns>
         public static IQueryable<SheetDataType> GetSheet<SheetDataType>(string fileName)
         {
-            return GetSheet<SheetDataType>(fileName, new Dictionary<string, string>(), "");
+            return GetSheet<SheetDataType>(fileName, new Dictionary<Expression<Func<SheetDataType, object>>, string>(), "");
         }
 
         /// <summary>
@@ -48,8 +55,9 @@ namespace LinqToExcel
         /// Property to column mapping. 
         /// Properties are the dictionary keys and the dictionary values are the corresponding column names.
         /// </param>
+        /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns a Linq queryable interface to an Excel sheet</returns>
-        public static IQueryable<SheetDataType> GetSheet<SheetDataType>(string fileName, Dictionary<string, string> columnMapping)
+        public static IQueryable<SheetDataType> GetSheet<SheetDataType>(string fileName, Dictionary<Expression<Func<SheetDataType, object>>, string> columnMapping)
         {
             return GetSheet<SheetDataType>(fileName, columnMapping, "");
         }
@@ -63,7 +71,7 @@ namespace LinqToExcel
         /// <returns>Returns a Linq queryable interface to an Excel sheet</returns>
         public static IQueryable<SheetDataType> GetSheet<SheetDataType>(string fileName, string worksheetName)
         {
-            return GetSheet<SheetDataType>(fileName, new Dictionary<string, string>(), worksheetName);
+            return GetSheet<SheetDataType>(fileName, new Dictionary<Expression<Func<SheetDataType, object>>, string>(), worksheetName);
         }
 
         /// <summary>
@@ -77,9 +85,26 @@ namespace LinqToExcel
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns a Linq queryable interface to an Excel sheet</returns>
-        public static IQueryable<SheetDataType> GetSheet<SheetDataType>(string fileName, Dictionary<string, string> columnMapping, string worksheetName)
+        public static IQueryable<SheetDataType> GetSheet<SheetDataType>(string fileName, Dictionary<Expression<Func<SheetDataType, object>>, string> columnMapping, string worksheetName)
         {
-            return new QueryableExcelSheet<SheetDataType>(fileName, columnMapping, worksheetName);
+            //Getting the name of the properties in the mapping
+            Dictionary<string, string> stringColumnMapping = new Dictionary<string, string>();
+            foreach (KeyValuePair<Expression<Func<SheetDataType, object>>, string> kvp in columnMapping)
+            {
+                LambdaExpression exp = (LambdaExpression)kvp.Key;
+                //exp.Body is of 2 possible types
+                //If the property type is native, then exp.Body == typeof(MemberExpression)
+                //If the property type is not native, then exp.Body == typeof(UnaryExpression) in which 
+                //case we can get the MemberExpression from the Operand property
+                MemberExpression mExp = (exp.Body.NodeType == ExpressionType.MemberAccess) ?
+                    (MemberExpression)exp.Body :
+                    (MemberExpression)((UnaryExpression)exp.Body).Operand;
+                string propertyName = mExp.Member.Name;
+
+                stringColumnMapping[propertyName] = kvp.Value;
+            }
+
+            return new QueryableExcelSheet<SheetDataType>(fileName, stringColumnMapping, worksheetName);
         }
     }
 }

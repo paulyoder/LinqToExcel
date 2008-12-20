@@ -48,7 +48,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} = ?)", GetSQLFieldName("Name"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("Name"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("Paul", GetSQLParameters()[0]);
         }
@@ -62,7 +62,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} <> ?)", GetSQLFieldName("Name"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} <> ?)", GetSQLFieldName("Name"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("Paul", GetSQLParameters()[0]);
         }
@@ -76,7 +76,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} > ?)", GetSQLFieldName("EmployeeCount"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} > ?)", GetSQLFieldName("EmployeeCount"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("25", GetSQLParameters()[0]);
         }
@@ -90,7 +90,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} >= ?)", GetSQLFieldName("EmployeeCount"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} >= ?)", GetSQLFieldName("EmployeeCount"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("25", GetSQLParameters()[0]);
         }
@@ -104,7 +104,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} < ?)", GetSQLFieldName("EmployeeCount"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} < ?)", GetSQLFieldName("EmployeeCount"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("25", GetSQLParameters()[0]);
         }
@@ -118,7 +118,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} <= ?)", GetSQLFieldName("EmployeeCount"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} <= ?)", GetSQLFieldName("EmployeeCount"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("25", GetSQLParameters()[0]);
         }
@@ -132,7 +132,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where (({0} > ?) AND ({1} = ?))", 
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE (({0} > ?) AND ({1} = ?))", 
                                                 GetSQLFieldName("EmployeeCount"),
                                                 GetSQLFieldName("CEO"));
             string[] parameters = GetSQLParameters();
@@ -151,7 +151,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where (({0} > ?) OR ({1} = ?))",
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE (({0} > ?) OR ({1} = ?))",
                                                 GetSQLFieldName("EmployeeCount"),
                                                 GetSQLFieldName("CEO"));
             string[] parameters = GetSQLParameters();
@@ -171,7 +171,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} = ?)", GetSQLFieldName("Name"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("Name"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("Paul", GetSQLParameters()[0]);
         }
@@ -185,7 +185,7 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} = ?)", GetSQLFieldName("StartDate"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("StartDate"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("10/9/2008", GetSQLParameters()[0]);
         }
@@ -202,9 +202,37 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            string expectedSql = string.Format("SELECT * FROM [Sheet1$] Where ({0} = ?)", GetSQLFieldName("StartDate"));
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("StartDate"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("6/25/1876", GetSQLParameters()[0]);
+        }
+
+        [Test]
+        public void constructor_with_property_value_arguments()
+        {
+            var companies = from p in ExcelRepository.GetSheet<Company>("")
+                            where p.StartDate == new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("StartDate"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+            Assert.AreEqual(DateTime.Now.ToShortDateString(), GetSQLParameters()[0]);
+        }
+
+        [Test]
+        public void datetime_now_is_used_in_where_clause()
+        {
+            var companies = from p in ExcelRepository.GetSheet<Company>("")
+                            where p.StartDate == DateTime.Now
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("StartDate"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+            Assert.AreEqual(DateTime.Now.ToShortDateString(), GetSQLParameters()[0]);
         }
     }
 }
