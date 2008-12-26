@@ -1,7 +1,5 @@
 LinqToExcel Todo List
 
-- Allow Methods to be used in WHERE clause
-   - Update code in ExpressionToSQL.VisitMemberAccess()
 - Create Interfaces
 - Return the data in an array
 - Throw a descriptive SqlException when trying to query a column that doesn't exist

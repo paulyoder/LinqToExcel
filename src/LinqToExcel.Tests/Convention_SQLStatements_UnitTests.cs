@@ -234,5 +234,22 @@ namespace LinqToExcel.Tests
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual(DateTime.Now.ToShortDateString(), GetSQLParameters()[0]);
         }
+
+        private string GetName(string name)
+        {
+            return name;
+        }
+
+        [Test]
+        public void method_used_in_where_clause()
+        {
+            var companies = from p in ExcelRepository.GetSheet<Company>("")
+                            where p.Name == GetName("Paul")
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            Assert.AreEqual("Paul", GetSQLParameters()[0]);
+        }
     }
 }

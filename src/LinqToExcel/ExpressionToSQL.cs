@@ -14,7 +14,7 @@ namespace LinqToExcel
     internal class ExpressionToSQL : ExpressionVisitor
     {
         private static ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private StringBuilder sb;
+        private StringBuilder _sql;
         public string SQLStatement { get; private set; }
         public IEnumerable<OleDbParameter> Parameters { get; private set; }
         private List<OleDbParameter> _params;
@@ -36,20 +36,20 @@ namespace LinqToExcel
             _params = new List<OleDbParameter>();
             _map = columnMapping;
             _sheetDataType = sheetDataType;
-            sb = new StringBuilder();
+            _sql = new StringBuilder();
 
             string tableName = (String.IsNullOrEmpty(worksheetName)) ? "Sheet1" : worksheetName;
-            sb.Append(string.Format("SELECT * FROM [{0}$]", tableName));
+            _sql.Append(string.Format("SELECT * FROM [{0}$]", tableName));
             this.Visit(expression);
 
             if (_log.IsDebugEnabled)
             {
-                _log.Debug("SQL: " + sb.ToString());
+                _log.Debug("SQL: " + _sql.ToString());
                 for (int i = 0; i < _params.Count; i++)
                     _log.Debug(string.Format("Param[{0}]: {1}", i, _params[i].Value));
             }
 
-            this.SQLStatement = sb.ToString();
+            this.SQLStatement = _sql.ToString();
             this.Parameters = _params;
         }
 
@@ -57,24 +57,29 @@ namespace LinqToExcel
         {
             if (m.Method.Name == "Where")
             {
-                sb.Append(" WHERE ");
+                _sql.Append(" WHERE ");
                 this.Visit(m.Arguments[1]);
             }
             else if (m.Method.Name != "Select")
-                throw new NotSupportedException(string.Format("{0} method is not supported. Only the 'Where' method call is supported", m.Method.Name));
+            {
+                object methodObject = ((ConstantExpression)m.Object).Value;
+                object returnValue = m.Method.Invoke(methodObject, GetMethodArguments(m.Arguments));
+                _params.Add(new OleDbParameter("?", returnValue));
+                _sql.Append("?");
+            }
             return m;
         }
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
             _params.Add(new OleDbParameter("?", c.Value));
-            sb.Append("?");
+            _sql.Append("?");
             return c;
         }
 
         protected override Expression VisitBinary(BinaryExpression b)
         {
-            sb.Append("(");
+            _sql.Append("(");
             
             //We always want the MemberAccess (ColumnName) to be on the left side of the statement
             Expression left = b.Left;
@@ -90,35 +95,35 @@ namespace LinqToExcel
             switch (b.NodeType)
             {
                 case ExpressionType.AndAlso:
-                    sb.Append(" AND ");
+                    _sql.Append(" AND ");
                     break;
                 case ExpressionType.Equal:
-                    sb.Append(" = ");
+                    _sql.Append(" = ");
                     break;
                 case ExpressionType.GreaterThan:
-                    sb.Append(" > ");
+                    _sql.Append(" > ");
                     break;
                 case ExpressionType.GreaterThanOrEqual:
-                    sb.Append(" >= ");
+                    _sql.Append(" >= ");
                     break;
                 case ExpressionType.LessThan:
-                    sb.Append(" < ");
+                    _sql.Append(" < ");
                     break;
                 case ExpressionType.LessThanOrEqual:
-                    sb.Append(" <= ");
+                    _sql.Append(" <= ");
                     break;
                 case ExpressionType.NotEqual:
-                    sb.Append(" <> ");
+                    _sql.Append(" <> ");
                     break;
                 case ExpressionType.OrElse:
-                    sb.Append(" OR ");
+                    _sql.Append(" OR ");
                     break;
                 default:
                     throw new NotSupportedException(string.Format("{0} statement is not supported", b.NodeType.ToString()));
                     break;
             }
             this.Visit(right);
-            sb.Append(")");
+            _sql.Append(")");
             return b;
         }
 
@@ -129,7 +134,7 @@ namespace LinqToExcel
             {
                 //Set the column name to the property mapping if there is one, else use the property name for the column name
                 string columnName = (_map.ContainsKey(m.Member.Name)) ? _map[m.Member.Name] : m.Member.Name;
-                sb.Append(string.Format("[{0}]", columnName));
+                _sql.Append(string.Format("[{0}]", columnName));
             }
             else if ((m.Member.MemberType == MemberTypes.Property) ||
                 (m.Member.MemberType == MemberTypes.Field))
@@ -137,7 +142,7 @@ namespace LinqToExcel
                 //A field or property on another type has been used as a value in the linq statement
                 object value = Expression.Lambda(m).Compile().DynamicInvoke();
                 _params.Add(new OleDbParameter("?", value));
-                sb.Append("?");
+                _sql.Append("?");
             }
             else
                 throw new NotSupportedException(string.Format("{0} member type is not supported. Only fields and properties are supported", m.Member.MemberType.ToString()));
@@ -146,17 +151,17 @@ namespace LinqToExcel
 
         protected override NewExpression VisitNew(NewExpression nex)
         {
-            object[] args = GetConstructorArguments(nex.Arguments);
+            object[] args = GetMethodArguments(nex.Arguments);
             object newObject = Activator.CreateInstance(nex.Type, args);
             _params.Add(new OleDbParameter("?", newObject));
-            sb.Append("?");
+            _sql.Append("?");
             return nex;
         }
 
-        private object[] GetConstructorArguments(ReadOnlyCollection<Expression> constructorArguments)
+        private object[] GetMethodArguments(ReadOnlyCollection<Expression> methodArguments)
         {
             List<object> args = new List<object>();
-            foreach (Expression exp in constructorArguments)
+            foreach (Expression exp in methodArguments)
             {
                 if (exp.NodeType == ExpressionType.Constant)
                 {
@@ -169,7 +174,7 @@ namespace LinqToExcel
                 }
                 else
                 {
-                    throw new NotSupportedException(string.Format("{0} is not supported as a constructor argument", exp.NodeType));
+                    throw new NotSupportedException(string.Format("{0} is not supported as a method argument", exp.NodeType));
                 }
             }
             return args.ToArray();
