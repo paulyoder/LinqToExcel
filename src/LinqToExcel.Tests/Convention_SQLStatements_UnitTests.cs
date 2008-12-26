@@ -16,9 +16,12 @@ namespace LinqToExcel.Tests
     [TestFixture]
     public class Convention_SQLStatements_UnitTests : SQLLogStatements_Helper
     {
+        IExcelRepository<Company> _repo;
+
         [TestFixtureSetUp]
         public void fs()
         {
+            _repo = new ExcelRepository<Company>();
             InstantiateLogger();
         }
 
@@ -31,7 +34,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void select_all()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>("")
+            var companies = from c in _repo.Worksheet
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -42,7 +45,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_equals()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                          where p.Name == "Paul"
                          select p;
 
@@ -56,7 +59,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_not_equal()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.Name != "Paul"
                             select p;
 
@@ -70,7 +73,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_greater_than()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.EmployeeCount > 25
                             select p;
 
@@ -84,7 +87,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_greater_than_or_equal()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.EmployeeCount >= 25
                             select p;
 
@@ -98,7 +101,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_lesser_than()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.EmployeeCount < 25
                             select p;
 
@@ -112,7 +115,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_lesser_than_or_equal()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.EmployeeCount <= 25
                             select p;
 
@@ -126,7 +129,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_and()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.EmployeeCount > 5 && p.CEO == "Paul"
                             select p;
 
@@ -145,7 +148,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_or()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.EmployeeCount > 5 || p.CEO == "Paul"
                             select p;
 
@@ -165,7 +168,7 @@ namespace LinqToExcel.Tests
         public void local_field_used()
         {
             string desiredName = "Paul";
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.Name == desiredName
                             select p;
 
@@ -179,7 +182,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void constructor_with_constant_value_arguments()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.StartDate == new DateTime(2008, 10, 9)
                             select p;
 
@@ -196,7 +199,7 @@ namespace LinqToExcel.Tests
             int year = 1876;
             int month = 6;
             int day = 25;
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.StartDate == new DateTime(year, month, day)
                             select p;
 
@@ -210,7 +213,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void constructor_with_property_value_arguments()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.StartDate == new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)
                             select p;
 
@@ -224,7 +227,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void datetime_now_is_used_in_where_clause()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.StartDate == DateTime.Now
                             select p;
 
@@ -243,7 +246,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void method_used_in_where_clause()
         {
-            var companies = from p in ExcelRepository.GetSheet<Company>("")
+            var companies = from p in _repo.Worksheet
                             where p.Name == GetName("Paul")
                             select p;
 

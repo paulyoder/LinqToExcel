@@ -15,8 +15,9 @@ namespace LinqToExcel.Tests
     [TestFixture]
     public class ColumnMappings_IntegrationTests : SQLLogStatements_Helper
     {
-        private string _excelFileName;
-        private string _worksheetName;
+        IExcelRepository<Company> _repo;
+        string _excelFileName;
+        string _worksheetName;
 
         [TestFixtureSetUp]
         public void fs()
@@ -28,16 +29,21 @@ namespace LinqToExcel.Tests
             _worksheetName = "ColumnMappings";
         }
 
+        [SetUp]
+        public void s()
+        {
+            _repo = new ExcelRepository<Company>(_excelFileName, _worksheetName);
+        }
+
         [Test]
         public void all_properties_have_column_mappings()
         {
-            var mapping = ExcelRepository.CreateColumnMapping<Company>();
-            mapping.Add(x => x.Name, "Company Title");
-            mapping.Add(x => x.CEO, "Boss");
-            mapping.Add(x => x.EmployeeCount, "Number of People");
-            mapping.Add(x => x.StartDate, "Initiation Date");
+            _repo.AddMapping(x => x.Name, "Company Title");
+            _repo.AddMapping(x => x.CEO, "Boss");
+            _repo.AddMapping(x => x.EmployeeCount, "Number of People");
+            _repo.AddMapping(x => x.StartDate, "Initiation Date");
 
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
+            var companies = from c in _repo.Worksheet
                             where c.Name == "Taylor University"
                             select c;
 
@@ -52,11 +58,10 @@ namespace LinqToExcel.Tests
         [Test]
         public void some_properties_have_column_mappings()
         {
-            var mapping = ExcelRepository.CreateColumnMapping<Company>();
-            mapping.Add(x => x.CEO, "Boss");
-            mapping.Add(x => x.StartDate, "Initiation Date");
+            _repo.AddMapping(x => x.CEO, "Boss");
+            _repo.AddMapping(x => x.StartDate, "Initiation Date");
 
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
+            var companies = from c in _repo.Worksheet
                             where c.Name == "Anderson University"
                             select c;
 
@@ -76,10 +81,9 @@ namespace LinqToExcel.Tests
         [Test]
         public void exception_on_property_with_column_mapping_used_in_where_clause_when_mapped_column_doesnt_exist()
         {
-            var mapping = ExcelRepository.CreateColumnMapping<Company>();
-            mapping.Add(x => x.CEO, "The Big Cheese");
+            _repo.AddMapping(x => x.CEO, "The Big Cheese");
 
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
+            var companies = from c in _repo.Worksheet
                             where c.CEO == "Bugs Bunny"
                             select c;
 
@@ -90,10 +94,9 @@ namespace LinqToExcel.Tests
         public void log_warning_when_property_with_column_mapping_not_in_where_clause_when_mapped_column_doesnt_exist()
         {
             _loggedEvents.Clear();
-            var mapping = ExcelRepository.CreateColumnMapping<Company>();
-            mapping.Add(x => x.CEO, "The Big Cheese");
+            _repo.AddMapping(x => x.CEO, "The Big Cheese");
 
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, mapping, _worksheetName)
+            var companies = from c in _repo.Worksheet
                             select c;
 
             companies.GetEnumerator();

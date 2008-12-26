@@ -25,7 +25,8 @@ namespace LinqToExcel.Tests
         [Test]
         public void data_is_read_from_correct_worksheet()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName, "More Companies")
+            IExcelRepository<Company> repo = new ExcelRepository<Company>(_excelFileName, "More Companies");
+            var companies = from c in repo.Worksheet
                             select c;
 
             Assert.AreEqual(3, companies.ToList().Count);

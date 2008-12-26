@@ -57,6 +57,7 @@
     <Compile Include="ExcelSQL.cs" />
     <Compile Include="ExpressionToSQL.cs" />
     <Compile Include="ExpressionVisitor.cs" />
+    <Compile Include="IExcelRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExcelSheet.cs" />
     <Compile Include="ReflectionExtensions.cs" />

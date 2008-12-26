@@ -15,7 +15,8 @@ namespace LinqToExcel.Tests
     [TestFixture]
     public class Convention_IntegrationTests
     {
-        private string _excelFileName;
+        string _excelFileName;
+        IExcelRepository<Company> _repo;
 
         [TestFixtureSetUp]
         public void fs()
@@ -25,10 +26,16 @@ namespace LinqToExcel.Tests
             _excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
         }
 
+        [SetUp]
+        public void s()
+        {
+            _repo = new ExcelRepository<Company>(_excelFileName);
+        }
+
         [Test]
         public void select_all()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             select c;
 
             Assert.AreEqual(7, companies.ToList().Count);
@@ -37,7 +44,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_string_equals()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.CEO == "Paul Yoder"
                             select c;
 
@@ -48,7 +55,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_string_not_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.CEO != "Bugs Bunny"
                             select c;
 
@@ -58,7 +65,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_equals()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.EmployeeCount == 25
                             select c;
 
@@ -68,7 +75,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_not_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.EmployeeCount != 98
                             select c;
 
@@ -78,7 +85,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_greater_than()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.EmployeeCount > 98
                             select c;
 
@@ -88,7 +95,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_greater_than_or_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.EmployeeCount >= 98
                             select c;
 
@@ -98,7 +105,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_less_than()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.EmployeeCount < 300
                             select c;
 
@@ -108,7 +115,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_int_less_than_or_equal()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.EmployeeCount <= 300
                             select c;
             
@@ -118,7 +125,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_datetime_equals()
         {
-            var companies = from c in ExcelRepository.GetSheet<Company>(_excelFileName)
+            var companies = from c in _repo.Worksheet
                             where c.StartDate == new DateTime(2008, 10, 9)
                             select c;
 
@@ -128,7 +135,8 @@ namespace LinqToExcel.Tests
         [Test]
         public void no_exception_on_property_not_used_in_where_clause_when_column_doesnt_exist()
         {
-            var companies = from c in ExcelRepository.GetSheet<CompanyWithCity>(_excelFileName)
+            IExcelRepository<CompanyWithCity> repo = new ExcelRepository<CompanyWithCity>(_excelFileName);
+            var companies = from c in repo.Worksheet
                             select c;
 
             foreach (CompanyWithCity company in companies)
@@ -143,7 +151,8 @@ namespace LinqToExcel.Tests
         [Test]
         public void exception_on_property_used_in_where_clause_when_column_doesnt_exist()
         {
-            var companies = from c in ExcelRepository.GetSheet<CompanyWithCity>(_excelFileName)
+            IExcelRepository<CompanyWithCity> repo = new ExcelRepository<CompanyWithCity>(_excelFileName);
+            var companies = from c in repo.Worksheet
                             where c.City == "Omaha"
                             select c;
 

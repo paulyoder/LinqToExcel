@@ -27,11 +27,10 @@ namespace LinqToExcel.Prototype
         private void button1_Click(object sender, EventArgs e)
         {
             //This is used for debugging purposes while building the LinqToExcel library
-            var mapping = ExcelRepository.CreateColumnMapping<Person>();
-            mapping.Add(x => x.Age, "oldness");
 
             string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExcelData.xls");
-            var people = from p in ExcelRepository.GetSheet<Person>(fileName, mapping)
+            IExcelRepository<Person> repo = new ExcelRepository<Person>(fileName);
+            var people = from p in repo.Worksheet
                          where p.BirthDate == DateTime.Now
                          select p;
 
