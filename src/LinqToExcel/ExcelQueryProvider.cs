@@ -45,7 +45,7 @@ namespace LinqToExcel
 
         public TResult Execute<TResult>(Expression expression)
         {
-            ExcelSQL repo = new ExcelSQL();
+            ExcelOLEDB repo = new ExcelOLEDB();
             return (TResult)repo.ExecuteQuery(expression, _fileName, _columnMappings, _worksheetName);
         }
     }

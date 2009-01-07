@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 
 namespace LinqToExcel
 {
-    internal class ExpressionToSQL : ExpressionVisitor
+    internal class SQLExpressionVisitor : ExpressionVisitor
     {
         private static ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private StringBuilder _sql;

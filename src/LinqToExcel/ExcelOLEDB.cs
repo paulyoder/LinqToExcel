@@ -12,7 +12,10 @@ using System.Data;
 
 namespace LinqToExcel
 {
-    public class ExcelSQL
+    /// <summary>
+    /// Queries the Excel worksheet using an OLEDB connection
+    /// </summary>
+    public class ExcelOLEDB
     {
         private static ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -33,7 +36,7 @@ namespace LinqToExcel
             PropertyInfo[] props = dataType.GetProperties();
 
             //Build the SQL string
-            ExpressionToSQL sql = new ExpressionToSQL();
+            SQLExpressionVisitor sql = new SQLExpressionVisitor();
             sql.BuildSQLStatement(expression, columnMapping, worksheetName, dataType);
 
             string connString = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties= ""Excel 8.0;HDR=YES;""", fileName);
