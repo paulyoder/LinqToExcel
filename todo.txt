@@ -1,5 +1,8 @@
 LinqToExcel Todo List
 
+- Be able to query .xlsx file types (Excel 2007)
+  - checkout this post for the updated query string
+
 - Throw a descriptive SqlException when trying to query a column that doesn't exist
    - right now a generic OleDbException is being thrown
    - check out the following tests for more information
