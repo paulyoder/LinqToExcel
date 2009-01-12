@@ -64,6 +64,7 @@
     <Compile Include="Convention_IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RowTest.cs" />
+    <Compile Include="Row_SQLStatement_UnitTests.cs" />
     <Compile Include="SQLLogStatements_Helper.cs" />
   </ItemGroup>
   <ItemGroup>

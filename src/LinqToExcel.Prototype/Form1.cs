@@ -28,16 +28,22 @@ namespace LinqToExcel.Prototype
         {
             //This is used for debugging purposes while building the LinqToExcel library
 
-            string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExcelData.xls");
+            string fileName = @"C:\Users\paul.yoder\Desktop\test.xls";
             IExcelRepository<Person> repo = new ExcelRepository<Person>(fileName);
             var people = from p in repo.Worksheet
-                         where p.BirthDate == DateTime.Now
+                         where p.FirstName == "Paul"
                          select p;
 
+            //IExcelRepository rep = new ExcelRepository(fileName);
+            //var people = from p in rep.Worksheet
+            //             where p["Age"].ValueAs<int>() > 25
+            //             select p;
+
+
             StringBuilder sb = new StringBuilder();
-            foreach (Person p in people)
+            foreach (var p in people)
             {
-                sb.AppendFormat("Person: {0} {1} Color: {2}, Age: {3}", p.FirstName, p.LastName, p.FavoriteColor, p.Age);
+                sb.AppendFormat("{0} {1}", p.FirstName, p.LastName);
                 sb.AppendLine();
             }
             textBox1.Text = sb.ToString();

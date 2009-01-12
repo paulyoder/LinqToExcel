@@ -22,7 +22,7 @@ namespace LinqToExcel
         }
 
         /// <summary>
-        /// Returns the cell's value converted as the generic argument type
+        /// Cell's value converted as the generic argument type
         /// </summary>
         /// <typeparam name="T">Object type to convert to</typeparam>
         public T ValueAs<T>()
@@ -30,6 +30,14 @@ namespace LinqToExcel
             return (Value == null || Value is DBNull) ?
                 default(T) :
                 (T)Convert.ChangeType(Value, typeof(T));
+        }
+
+        /// <summary>
+        /// Cell's value as a string
+        /// </summary>
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 }

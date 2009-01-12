@@ -9,7 +9,7 @@ namespace LinqToExcel
     {
         IDictionary<string, int> _columnIndexMapping;
 
-        /// <param name="cells">List of cells contained within the row</param>
+        /// <param name="cells">Cells contained within the row</param>
         /// <param name="columnIndexMapping">Column name to cell index mapping</param>
         public Row(IList<Cell> cells, IDictionary<string, int> columnIndexMapping)
         {

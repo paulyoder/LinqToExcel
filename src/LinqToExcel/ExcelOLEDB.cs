@@ -66,17 +66,34 @@ namespace LinqToExcel
                                                 kvp.Value, kvp.Key, "Sheet1"));
                 }
 
-                while (data.Read())
+                if (dataType == typeof(Row))
                 {
-                    object result = Activator.CreateInstance(dataType);
-                    foreach (PropertyInfo prop in props)
+                    Dictionary<string, int> columnIndexMapping = new Dictionary<string, int>();
+                    for (int i = 0; i < columns.Count; i++)
+                        columnIndexMapping[columns[i]] = i;
+                    
+                    while (data.Read())
                     {
-                        //Set the column name to the property mapping if there is one, else use the property name for the column name
-                        string columnName = (columnMapping.ContainsKey(prop.Name)) ? columnMapping[prop.Name] : prop.Name;
-                        if (columns.Contains(columnName))
-                            result.SetProperty(prop.Name, Convert.ChangeType(data[columnName], prop.PropertyType));
+                        IList<Cell> cells = new List<Cell>();
+                        for (int i = 0; i < columns.Count; i++)
+                            cells.Add(new Cell(data[i]));
+                        results.CallMethod("Add", new Row(cells, columnIndexMapping));
                     }
-                    results.CallMethod("Add", result);
+                }
+                else
+                {
+                    while (data.Read())
+                    {
+                        object result = Activator.CreateInstance(dataType);
+                        foreach (PropertyInfo prop in props)
+                        {
+                            //Set the column name to the property mapping if there is one, else use the property name for the column name
+                            string columnName = (columnMapping.ContainsKey(prop.Name)) ? columnMapping[prop.Name] : prop.Name;
+                            if (columns.Contains(columnName))
+                                result.SetProperty(prop.Name, Convert.ChangeType(data[columnName], prop.PropertyType));
+                        }
+                        results.CallMethod("Add", result);
+                    }
                 }
             }
             return results;

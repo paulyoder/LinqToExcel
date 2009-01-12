@@ -39,5 +39,12 @@ namespace LinqToExcel.Tests
             Cell newCell = new Cell(DBNull.Value);
             Assert.AreEqual(0, newCell.ValueAs<int>());
         }
+
+        [Test]
+        public void to_string_returns_value_as_string()
+        {
+            Cell newCell = new Cell("hello");
+            Assert.AreEqual("hello", newCell.ToString());
+        }
     }
 }

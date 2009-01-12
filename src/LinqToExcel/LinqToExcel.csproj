@@ -55,9 +55,16 @@
     <Compile Include="Cell.cs" />
     <Compile Include="ExcelOLEDB.cs" />
     <Compile Include="ExcelQueryProvider.cs" />
+    <Compile Include="ExcelRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ExcelRepositoryGeneric.cs" />
     <Compile Include="ExpressionVisitor.cs" />
+    <Compile Include="IExcelRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IExcelRepositoryGeneric.cs" />
+    <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryableExcelSheet.cs" />
     <Compile Include="ReflectionExtensions.cs" />

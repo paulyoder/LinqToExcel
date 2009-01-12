@@ -8,6 +8,7 @@ using log4net;
 using System.Data.OleDb;
 using System.Collections;
 using System.Collections.ObjectModel;
+using LinqToExcel.Extensions.Object;
 
 namespace LinqToExcel
 {
@@ -59,6 +60,14 @@ namespace LinqToExcel
             {
                 _sql.Append(" WHERE ");
                 this.Visit(m.Arguments[1]);
+            }
+            else if (IsRowMethodCall(m))
+            {
+                if (m.Object.As<MethodCallExpression>().Arguments[0].As<ConstantExpression>().Type == typeof(int))
+                    throw new ArgumentException("Cannot use column indexes in where clause");
+
+                string columnName = m.Object.As<MethodCallExpression>().Arguments[0].As<ConstantExpression>().Value.ToString();
+                _sql.Append(string.Format("[{0}]", columnName));
             }
             else if (m.Method.Name != "Select")
             {
@@ -178,6 +187,16 @@ namespace LinqToExcel
                 }
             }
             return args.ToArray();
+        }
+
+        /// <summary>
+        /// Determines if the method call is on a LinqToExcel.Row object
+        /// </summary>
+        private bool IsRowMethodCall(MethodCallExpression m)
+        {
+            return ((m.Object is MethodCallExpression) &&
+                (m.Object.As<MethodCallExpression>().Object is ParameterExpression) &&
+                (m.Object.As<MethodCallExpression>().Object.As<ParameterExpression>().Type == typeof(Row)));
         }
     }
 }
