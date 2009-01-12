@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CellTest.cs" />
     <Compile Include="ColumnMappings_IntegrationTests.cs" />
     <Compile Include="ColumnMappings_SQLStatements_UnitTests.cs" />
     <Compile Include="CompanyWithCity.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Company.cs" />
     <Compile Include="Convention_IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RowTest.cs" />
     <Compile Include="SQLLogStatements_Helper.cs" />
   </ItemGroup>
   <ItemGroup>
