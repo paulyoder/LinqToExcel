@@ -9,6 +9,7 @@ using System.Data.OleDb;
 using System.Collections;
 using System.Collections.ObjectModel;
 using LinqToExcel.Extensions.Object;
+using LinqToExcel.Extensions.Expressions;
 
 namespace LinqToExcel
 {
@@ -18,9 +19,11 @@ namespace LinqToExcel
         private StringBuilder _sql;
         public string SQLStatement { get; private set; }
         public IEnumerable<OleDbParameter> Parameters { get; private set; }
+        public Expression NewExp { get; private set; }
         private List<OleDbParameter> _params;
         private Dictionary<string, string> _map;
-        private Type _sheetDataType;
+        public Type SheetType { get; private set; }
+        public Type ReturnType { get; private set; }
 
         /// <summary>
         /// Builds the SQL Statement based upon the expression
@@ -32,11 +35,10 @@ namespace LinqToExcel
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns an SQL statement based upon the expression</returns>
-        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping, string worksheetName, Type sheetDataType)
+        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping, string worksheetName)
         {
             _params = new List<OleDbParameter>();
             _map = columnMapping;
-            _sheetDataType = sheetDataType;
             _sql = new StringBuilder();
 
             string tableName = (String.IsNullOrEmpty(worksheetName)) ? "Sheet1" : worksheetName;
@@ -59,6 +61,8 @@ namespace LinqToExcel
             if (m.Method.Name == "Where")
             {
                 _sql.Append(" WHERE ");
+                SheetType = m.Type.GetGenericArguments()[0];
+                ReturnType = SheetType;
                 this.Visit(m.Arguments[1]);
             }
             else if (IsRowMethodCall(m))
@@ -69,10 +73,18 @@ namespace LinqToExcel
                 string columnName = m.Object.As<MethodCallExpression>().Arguments[0].As<ConstantExpression>().Value.ToString();
                 _sql.Append(string.Format("[{0}]", columnName));
             }
-            else if (m.Method.Name != "Select")
+            else if (m.Method.Name == "Select")
+            {
+                SheetType = m.Method.GetGenericArguments()[0];
+                ReturnType = m.Method.GetGenericArguments()[1];
+                if (m.Arguments[0].NodeType != ExpressionType.Constant)
+                    this.Visit(m.Arguments[0]); //Where clause
+                NewExp = m.Arguments[1].As<UnaryExpression>().Operand;
+            }
+            else
             {
                 object methodObject = ((ConstantExpression)m.Object).Value;
-                object returnValue = m.Method.Invoke(methodObject, GetMethodArguments(m.Arguments));
+                object returnValue = m.Invoke();
                 _params.Add(new OleDbParameter("?", returnValue));
                 _sql.Append("?");
             }
@@ -94,7 +106,7 @@ namespace LinqToExcel
             Expression left = b.Left;
             Expression right = b.Right;
             if ((b.Right.NodeType == ExpressionType.MemberAccess) &&
-                (((MemberExpression)b.Right).Member.DeclaringType == _sheetDataType))
+                (((MemberExpression)b.Right).Member.DeclaringType == SheetType))
             {
                 left = b.Right;
                 right = b.Left;
@@ -139,7 +151,7 @@ namespace LinqToExcel
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
             if ((m.Member.MemberType == MemberTypes.Property) &&
-                (m.Member.DeclaringType == _sheetDataType))
+                (m.Member.DeclaringType == SheetType))
             {
                 //Set the column name to the property mapping if there is one, else use the property name for the column name
                 string columnName = (_map.ContainsKey(m.Member.Name)) ? _map[m.Member.Name] : m.Member.Name;
@@ -160,33 +172,10 @@ namespace LinqToExcel
 
         protected override NewExpression VisitNew(NewExpression nex)
         {
-            object[] args = GetMethodArguments(nex.Arguments);
-            object newObject = Activator.CreateInstance(nex.Type, args);
+            object newObject = Activator.CreateInstance(nex.Type, nex.Arguments.GetArgValues());
             _params.Add(new OleDbParameter("?", newObject));
             _sql.Append("?");
             return nex;
-        }
-
-        private object[] GetMethodArguments(ReadOnlyCollection<Expression> methodArguments)
-        {
-            List<object> args = new List<object>();
-            foreach (Expression exp in methodArguments)
-            {
-                if (exp.NodeType == ExpressionType.Constant)
-                {
-                    args.Add(((ConstantExpression)exp).Value);
-                }
-                else if (exp.NodeType == ExpressionType.MemberAccess)
-                {
-                    object value = Expression.Lambda(exp).Compile().DynamicInvoke();
-                    args.Add(value);
-                }
-                else
-                {
-                    throw new NotSupportedException(string.Format("{0} is not supported as a method argument", exp.NodeType));
-                }
-            }
-            return args.ToArray();
         }
 
         /// <summary>

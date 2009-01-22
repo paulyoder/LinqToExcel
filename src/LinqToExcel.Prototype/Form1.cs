@@ -29,10 +29,11 @@ namespace LinqToExcel.Prototype
             //This is used for debugging purposes while building the LinqToExcel library
 
             string fileName = @"C:\Users\paul.yoder\Desktop\test.xls";
-            IExcelRepository<Person> repo = new ExcelRepository<Person>(fileName);
-            var people = from p in repo.Worksheet
-                         where p.FirstName == "Paul"
-                         select p;
+            IExcelRepository repo = new ExcelRepository(fileName);
+            var people = from row in repo.Worksheet
+                         where row["FirstName"].ToString() == "Paul"
+                         select row;
+            people.GetEnumerator();
 
             //IExcelRepository rep = new ExcelRepository(fileName);
             //var people = from p in rep.Worksheet
@@ -40,13 +41,13 @@ namespace LinqToExcel.Prototype
             //             select p;
 
 
-            StringBuilder sb = new StringBuilder();
-            foreach (var p in people)
-            {
-                sb.AppendFormat("{0} {1}", p.FirstName, p.LastName);
-                sb.AppendLine();
-            }
-            textBox1.Text = sb.ToString();
+            //StringBuilder sb = new StringBuilder();
+            //foreach (var p in people)
+            //{
+            //    sb.AppendFormat("{0} {1}", p.FirstName, p.LastName);
+            //    sb.AppendLine();
+            //}
+            //textBox1.Text = sb.ToString();
         }
     }
 }

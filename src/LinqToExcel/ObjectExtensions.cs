@@ -13,7 +13,7 @@ namespace LinqToExcel.Extensions.Object
         /// <typeparam name="T">Object type to convert to</typeparam>
         public static T As<T>(this object @object)
         {
-            return (T)@object;
+            return (T)Convert.ChangeType(@object, typeof(T));
         }
     }
 }

@@ -9,6 +9,7 @@ using log4net;
 using System.Reflection;
 using LinqToExcel.Extensions.Reflection;
 using System.Data;
+using LinqToExcel.Extensions.Object;
 
 namespace LinqToExcel
 {
@@ -30,19 +31,18 @@ namespace LinqToExcel
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns the results from the query</returns>
-        public object ExecuteQuery(Expression expression, string fileName, Dictionary<string, string> columnMapping, string worksheetName)
+        public object ExecuteQuery(Expression expression, Type dataType, string fileName, Dictionary<string, string> columnMapping, string worksheetName)
         {
-            Type dataType = expression.Type.GetGenericArguments()[0];
-            PropertyInfo[] props = dataType.GetProperties();
-
             //Build the SQL string
             SQLExpressionVisitor sql = new SQLExpressionVisitor();
-            sql.BuildSQLStatement(expression, columnMapping, worksheetName, dataType);
+            sql.BuildSQLStatement(expression, columnMapping, worksheetName);
+
+            PropertyInfo[] props = sql.SheetType.GetProperties();
 
             string connString = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties= ""Excel 8.0;HDR=YES;""", fileName);
             if (_log.IsDebugEnabled) _log.Debug("Connection String: " + connString);
 
-            object results = Activator.CreateInstance(typeof(List<>).MakeGenericType(dataType));
+            object results = Activator.CreateInstance(typeof(List<>).MakeGenericType(sql.SheetType));
             using (OleDbConnection conn = new OleDbConnection(connString))
             using (OleDbCommand command = conn.CreateCommand())
             {                
@@ -66,7 +66,7 @@ namespace LinqToExcel
                                                 kvp.Value, kvp.Key, "Sheet1"));
                 }
 
-                if (dataType == typeof(Row))
+                if (sql.SheetType == typeof(Row))
                 {
                     Dictionary<string, int> columnIndexMapping = new Dictionary<string, int>();
                     for (int i = 0; i < columns.Count; i++)
@@ -84,7 +84,7 @@ namespace LinqToExcel
                 {
                     while (data.Read())
                     {
-                        object result = Activator.CreateInstance(dataType);
+                        object result = Activator.CreateInstance(sql.SheetType);
                         foreach (PropertyInfo prop in props)
                         {
                             //Set the column name to the property mapping if there is one, else use the property name for the column name

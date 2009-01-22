@@ -24,7 +24,7 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the Excel worksheet</param>
         public QueryableExcelSheet(string fileName, Dictionary<string, string> columnMappings, string worksheetName)
         {
-            this.Provider = new ExcelQueryProvider(fileName, columnMappings, worksheetName);
+            this.Provider = new ExcelQueryProvider(fileName, typeof(SheetDataType), columnMappings, worksheetName);
             this.Expression = Expression.Constant(this);
         }
 
