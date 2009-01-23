@@ -13,15 +13,14 @@ namespace LinqToExcel
         string FileName { get; set; }
 
         /// <summary>
-        /// Name of the worksheet
-        /// 
-        /// Default is "Sheet1"
+        /// Worksheet (Sheet1) to perform the Linq query against
         /// </summary>
-        string WorksheetName { get; set; }
+        IQueryable<Row> Worksheet();
 
         /// <summary>
         /// Worksheet to perform the Linq query against
         /// </summary>
-        IQueryable<Row> Worksheet { get; }
+        /// <param name="worksheetName">Name of the worksheet</param>
+        IQueryable<Row> Worksheet(string worksheetName);
     }
 }

@@ -33,7 +33,7 @@ namespace LinqToExcel.Tests
         {
             _repo.AddMapping(x => x.CEO, "Boss");
 
-            var companies = from c in _repo.Worksheet
+            var companies = from c in _repo.Worksheet()
                             where c.CEO == "Paul"
                             select c;
 
@@ -48,7 +48,7 @@ namespace LinqToExcel.Tests
         {
             _repo.AddMapping(x => x.CEO, "Boss");
 
-            var companies = from c in _repo.Worksheet
+            var companies = from c in _repo.Worksheet()
                             where c.Name == "ACME"
                             select c;
 
@@ -66,7 +66,7 @@ namespace LinqToExcel.Tests
         {
             _repo.AddMapping(x => x.StartDate, "Hired Date");
 
-            var companies = from c in _repo.Worksheet
+            var companies = from c in _repo.Worksheet()
                             where c.StartDate == new DateTime(2008, 1, 1)
                             select c;
 
@@ -84,7 +84,7 @@ namespace LinqToExcel.Tests
         {
             _repo.AddMapping(x => x.CEO, "Da big Cheese");
 
-            var companies = from c in _repo.Worksheet
+            var companies = from c in _repo.Worksheet()
                             where c.CEO == "Paul"
                             select c;
 

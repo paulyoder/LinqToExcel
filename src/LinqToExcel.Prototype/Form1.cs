@@ -30,7 +30,7 @@ namespace LinqToExcel.Prototype
 
             string fileName = @"C:\Users\paul.yoder\Desktop\test.xls";
             IExcelRepository repo = new ExcelRepository(fileName);
-            var people = from row in repo.Worksheet
+            var people = from row in repo.Worksheet()
                          where row["FirstName"].ToString() == "Paul"
                          select row;
             people.GetEnumerator();

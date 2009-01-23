@@ -10,7 +10,6 @@ namespace LinqToExcel
     public class ExcelRepository<SheetDataType> : IExcelRepository<SheetDataType>
     {
         public string FileName { get; set; }
-        public string WorksheetName { get; set; }
         private Dictionary<string, string> _mapping = new Dictionary<string, string>();
 
         public ExcelRepository()
@@ -19,15 +18,8 @@ namespace LinqToExcel
 
         /// <param name="fileName">Full path to Excel file</param>
         public ExcelRepository(string fileName)
-            : this(fileName, "Sheet1")
-        { }
-
-        /// <param name="fileName">Full path to Excel file</param>
-        /// <param name="worksheetName">Name of the Worksheet</param>
-        public ExcelRepository(string fileName, string worksheetName)
         {
             FileName = fileName;
-            WorksheetName = worksheetName;
         }
 
         public void AddMapping(Expression<Func<SheetDataType, object>> property, string column)
@@ -46,9 +38,14 @@ namespace LinqToExcel
             _mapping[propertyName] = column;
         }
 
-        public IQueryable<SheetDataType> Worksheet
+        public IQueryable<SheetDataType> Worksheet()
         {
-            get { return new QueryableExcelSheet<SheetDataType>(FileName, _mapping, WorksheetName); }
+            return Worksheet("Sheet1");
+        }
+
+        public IQueryable<SheetDataType> Worksheet(string worksheetName)
+        {
+            return new QueryableExcelSheet<SheetDataType>(FileName, _mapping, worksheetName);
         }
     }
 }

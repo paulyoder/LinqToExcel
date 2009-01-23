@@ -15,13 +15,6 @@ namespace LinqToExcel
         string FileName { get; set; }
 
         /// <summary>
-        /// Name of the worksheet
-        /// 
-        /// Default is "Sheet1"
-        /// </summary>
-        string WorksheetName { get; set; }
-
-        /// <summary>
         /// Add a property to column name mapping
         /// 
         /// Example
@@ -32,8 +25,14 @@ namespace LinqToExcel
         void AddMapping(Expression<Func<SheetDataType, object>> property, string column);
         
         /// <summary>
+        /// Worksheet (Sheet1) to perform the Linq query against
+        /// </summary>
+        IQueryable<SheetDataType> Worksheet();
+
+        /// <summary>
         /// Worksheet to perform the Linq query against
         /// </summary>
-        IQueryable<SheetDataType> Worksheet { get; }
+        /// <param name="worksheetName">Name of the worksheet</param>
+        IQueryable<SheetDataType> Worksheet(string worksheetName);
     }
 }

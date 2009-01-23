@@ -1,9 +1,5 @@
 LinqToExcel Todo List
 
-- Change API
-  - Deleted WorksheetName property
-  - Update Worksheet property to Worksheet(string worksheetName)
-
 - Be able to query .xlsx file types (Excel 2007) and .csv file types
   - checkout this post for the updated query string
     - http://www.scip.be/index.php?Page=ArticlesNET25

@@ -30,7 +30,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void no_where_clause()
         {
-            var companies = from c in _repo.Worksheet
+            var companies = from c in _repo.Worksheet()
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -41,7 +41,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void column_name_used_in_where_clause()
         {
-            var companies = from c in _repo.Worksheet
+            var companies = from c in _repo.Worksheet()
                             where c["City"].ToString() == "Omaha"
                             select c;
 
@@ -56,7 +56,7 @@ namespace LinqToExcel.Tests
         [ExpectedArgumentException("Cannot use column indexes in where clause")]
         public void argument_thrown_when_column_indexes_used_in_where_clause()
         {
-            var companies = from c in _repo.Worksheet
+            var companies = from c in _repo.Worksheet()
                             where c[0].ToString() == "Omaha"
                             select c;
 
