@@ -59,6 +59,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ExcelRepositoryGeneric.cs" />
+    <Compile Include="ExcelVersion.cs" />
     <Compile Include="ExpressionExtensions.cs" />
     <Compile Include="ExpressionVisitor.cs" />
     <Compile Include="IExcelRepository.cs">

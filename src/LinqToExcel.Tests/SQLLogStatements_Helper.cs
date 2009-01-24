@@ -73,5 +73,38 @@ namespace LinqToExcel.Tests
         {
             return string.Format("[{0}]", columnName);
         }
+
+        /// <summary>
+        /// Returns the connection string
+        /// </summary>
+        protected string GetConnectionString()
+        {
+            LoggingEvent[] loggingEvents = _loggedEvents.GetEvents();
+            foreach (LoggingEvent logEvent in loggingEvents)
+            {
+                string message = logEvent.RenderedMessage;
+                if (message.Length > 5 && message.Substring(0, 18) == "Connection String:")
+                    return logEvent.RenderedMessage.Substring(19);
+            }
+            return "";
+        }
+
+        protected string GetDataSource()
+        {
+            string[] conProps = GetConnectionString().Split(";".ToCharArray());
+            foreach (string conProp in conProps)
+            {
+                if (conProp.Substring(0, 11) == "Data Source")
+                    return conProp.Substring(12);
+            }
+            return "";
+        }
+
+        protected string GetExtendedProperties()
+        {
+            string conString = GetConnectionString();
+            int location = conString.IndexOf("Extended Properties=");
+            return conString.Substring(location + 20);
+        }
     }
 }

@@ -15,5 +15,11 @@ namespace LinqToExcel
         public ExcelRepository(string fileName)
             : base(fileName)
         { }
+
+        /// <param name="fileName">Full path to Excel file</param>
+        /// <param name="fileType">Excel document type</param>
+        public ExcelRepository(string fileName, ExcelVersion fileType)
+            : base(fileName, fileType)
+        { }
     }
 }

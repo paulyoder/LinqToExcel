@@ -10,6 +10,7 @@ using System.Reflection;
 using LinqToExcel.Extensions.Reflection;
 using System.Data;
 using LinqToExcel.Extensions.Object;
+using System.IO;
 
 namespace LinqToExcel
 {
@@ -31,15 +32,18 @@ namespace LinqToExcel
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns the results from the query</returns>
-        public object ExecuteQuery(Expression expression, Type dataType, string fileName, Dictionary<string, string> columnMapping, string worksheetName)
+        public object ExecuteQuery(Expression expression, Type dataType, string fileName, ExcelVersion fileType, Dictionary<string, string> columnMapping, string worksheetName)
         {
             //Build the SQL string
             SQLExpressionVisitor sql = new SQLExpressionVisitor();
-            sql.BuildSQLStatement(expression, columnMapping, worksheetName);
+            sql.BuildSQLStatement(expression, columnMapping, worksheetName, fileName, fileType);
 
             PropertyInfo[] props = sql.SheetType.GetProperties();
 
-            string connString = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties= ""Excel 8.0;HDR=YES;""", fileName);
+            string connString = (fileType == ExcelVersion.Csv) ?
+                string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=Yes;FMT=Delimited;""",
+                    Path.GetDirectoryName(fileName)) :
+                string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;""", fileName);
             if (_log.IsDebugEnabled) _log.Debug("Connection String: " + connString);
 
             object results = Activator.CreateInstance(typeof(List<>).MakeGenericType(sql.SheetType));

@@ -13,6 +13,11 @@ namespace LinqToExcel
         string FileName { get; set; }
 
         /// <summary>
+        /// Excel document type
+        /// </summary>
+        ExcelVersion FileType { get; set; }
+
+        /// <summary>
         /// Worksheet (Sheet1) to perform the Linq query against
         /// </summary>
         IQueryable<Row> Worksheet();

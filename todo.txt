@@ -1,6 +1,8 @@
 LinqToExcel Todo List
 
-- Be able to query .xlsx file types (Excel 2007) and .csv file types
+- Refactor and cleanup the code base
+
+- Be able to query .xlsx file types (Excel 2007)
   - checkout this post for the updated query string
     - http://www.scip.be/index.php?Page=ArticlesNET25
   

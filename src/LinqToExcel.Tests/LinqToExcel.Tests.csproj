@@ -62,6 +62,9 @@
     <Compile Include="Convention_SQLStatements_UnitTests.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Convention_IntegrationTests.cs" />
+    <Compile Include="CSV_IntegrationTests.cs" />
+    <Compile Include="CSV_SQLStatements_UnitTests.cs" />
+    <Compile Include="ExcelVersionTests.cs" />
     <Compile Include="ExpressionExtensionsTests.cs" />
     <Compile Include="ObjectExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,6 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ExcelFiles\Companies.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ExcelFiles\Companies.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

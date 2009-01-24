@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using LinqToExcel.Extensions.Object;
 using LinqToExcel.Extensions.Expressions;
+using System.IO;
 
 namespace LinqToExcel
 {
@@ -35,14 +36,20 @@ namespace LinqToExcel
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
         /// <returns>Returns an SQL statement based upon the expression</returns>
-        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping, string worksheetName)
+        internal void BuildSQLStatement(Expression expression, Dictionary<string, string> columnMapping, string worksheetName, string fileName, ExcelVersion fileType)
         {
             _params = new List<OleDbParameter>();
             _map = columnMapping;
             _sql = new StringBuilder();
 
-            string tableName = (String.IsNullOrEmpty(worksheetName)) ? "Sheet1" : worksheetName;
-            _sql.Append(string.Format("SELECT * FROM [{0}$]", tableName));
+            string tableName;
+            if (fileType == ExcelVersion.Csv)
+                tableName = Path.GetFileName(fileName);
+            else
+                tableName = (String.IsNullOrEmpty(worksheetName)) ?
+                    "[Sheet1$]" :
+                    "[" + worksheetName + "$]";
+            _sql.Append(string.Format("SELECT * FROM {0}", tableName));
             this.Visit(expression);
 
             if (_log.IsDebugEnabled)

@@ -22,9 +22,9 @@ namespace LinqToExcel
         /// Properties are the dictionary keys and the dictionary values are the corresponding column names.
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
-        public QueryableExcelSheet(string fileName, Dictionary<string, string> columnMappings, string worksheetName)
+        public QueryableExcelSheet(string fileName, ExcelVersion fileType, Dictionary<string, string> columnMappings, string worksheetName)
         {
-            this.Provider = new ExcelQueryProvider(fileName, typeof(SheetDataType), columnMappings, worksheetName);
+            this.Provider = new ExcelQueryProvider(fileName, fileType, typeof(SheetDataType), columnMappings, worksheetName);
             this.Expression = Expression.Constant(this);
         }
 

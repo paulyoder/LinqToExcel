@@ -10,16 +10,34 @@ namespace LinqToExcel
     public class ExcelRepository<SheetDataType> : IExcelRepository<SheetDataType>
     {
         public string FileName { get; set; }
+        public ExcelVersion FileType { get; set; }
         private Dictionary<string, string> _mapping = new Dictionary<string, string>();
 
         public ExcelRepository()
             : this("")
         { }
 
-        /// <param name="fileName">Full path to Excel file</param>
         public ExcelRepository(string fileName)
         {
             FileName = fileName;
+
+            switch (GetFileExtension(fileName).ToLower())
+            {
+                case "csv":
+                    FileType = ExcelVersion.Csv;
+                    break;
+                default:
+                    FileType = ExcelVersion.PreExcel2007;
+                    break;
+            }
+        }
+
+        /// <param name="fileName">Full path to Excel file</param>
+        /// <param name="fileType">Excel document type</param>
+        public ExcelRepository(string fileName, ExcelVersion fileType)
+        {
+            FileName = fileName;
+            FileType = fileType;
         }
 
         public void AddMapping(Expression<Func<SheetDataType, object>> property, string column)
@@ -45,7 +63,13 @@ namespace LinqToExcel
 
         public IQueryable<SheetDataType> Worksheet(string worksheetName)
         {
-            return new QueryableExcelSheet<SheetDataType>(FileName, _mapping, worksheetName);
+            return new QueryableExcelSheet<SheetDataType>(FileName, FileType, _mapping, worksheetName);
+        }
+
+        private string GetFileExtension(string fileName)
+        {
+            int afterLastPeriod = fileName.LastIndexOf(".") + 1;
+            return fileName.Substring(afterLastPeriod, fileName.Length - afterLastPeriod);
         }
     }
 }

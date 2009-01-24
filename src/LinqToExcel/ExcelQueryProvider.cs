@@ -12,6 +12,7 @@ namespace LinqToExcel
         /// Excel File Name
         /// </summary>
         private string _fileName;
+        private ExcelVersion _fileType;
         private Dictionary<string, string> _columnMappings;
         private string _worksheetName;
         private Type _dataType;
@@ -22,9 +23,10 @@ namespace LinqToExcel
         /// Properties are the dictionary keys and the dictionary values are the corresponding column names.
         /// </param>
         /// <param name="worksheetName">Name of the Excel worksheet</param>
-        public ExcelQueryProvider(string fileName, Type dataType, Dictionary<string, string> columnMappings, string worksheetName)
+        public ExcelQueryProvider(string fileName, ExcelVersion fileType, Type dataType, Dictionary<string, string> columnMappings, string worksheetName)
         {
             _fileName = fileName;
+            _fileType = fileType;
             _dataType = dataType;
             _columnMappings = columnMappings;
             _worksheetName = worksheetName;
@@ -48,7 +50,7 @@ namespace LinqToExcel
         public TResult Execute<TResult>(Expression expression)
         {
             ExcelOLEDB repo = new ExcelOLEDB();
-            return (TResult)repo.ExecuteQuery(expression, _dataType, _fileName, _columnMappings, _worksheetName);
+            return (TResult)repo.ExecuteQuery(expression, _dataType, _fileName, _fileType, _columnMappings, _worksheetName);
         }
     }
 }

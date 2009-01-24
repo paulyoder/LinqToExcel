@@ -15,6 +15,11 @@ namespace LinqToExcel
         string FileName { get; set; }
 
         /// <summary>
+        /// Excel document type
+        /// </summary>
+        ExcelVersion FileType { get; set; }
+
+        /// <summary>
         /// Add a property to column name mapping
         /// 
         /// Example
