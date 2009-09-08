@@ -190,7 +190,7 @@ namespace LinqToExcel.Tests
             catch (OleDbException) { }
             string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("StartDate"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
-            Assert.AreEqual("10/9/2008", GetSQLParameters()[0]);
+            Assert.AreEqual("10/09/2008", GetSQLParameters()[0].ToString());
         }
 
         [Test]
@@ -207,7 +207,7 @@ namespace LinqToExcel.Tests
             catch (OleDbException) { }
             string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("StartDate"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
-            Assert.AreEqual("6/25/1876", GetSQLParameters()[0]);
+            Assert.AreEqual("06/25/1876", GetSQLParameters()[0].ToString());
         }
 
         [Test]
