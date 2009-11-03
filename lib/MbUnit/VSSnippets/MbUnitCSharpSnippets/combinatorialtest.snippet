@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>CombinatorialTest</Title>
+      <Author>MbUnit</Author>
+      <Description>Inserts a combinatorial test with 2 parameters and 2 factories</Description>
+      <HelpUrl>http://www.mertner.com/confluence/display/MbUnit/CombinatorialTestAttribute</HelpUrl>
+      <Shortcut>combinatorial</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>testName</ID>
+          <Default>Test</Default>
+        </Literal>
+        <Literal>
+          <ID>type1</ID>
+        </Literal>
+        <Literal>
+          <ID>type2</ID>
+          <Default>type2</Default>
+        </Literal>
+        <Literal>
+          <ID>arg1Name</ID>
+          <Default>arg1Name</Default>
+        </Literal>
+        <Literal>
+          <ID>arg2Name</ID>
+          <Default>arg2Name</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="CSharp"><![CDATA[        [CombinatorialTest]
+        public void $testName$(
+			[UsingFactories("$type1$Factory")] $type1$ $arg1Name$,
+			[UsingFactories("$type2$Factory")] $type2$ $arg2Name$)
+        {
+
+        }
+
+        [Factory(typeof($type1$))]
+        public IEnumerable $type1$Factory()
+        {
+            $type1$[] values = new $type1$[] { };
+            return values;
+        }
+
+        [Factory(typeof($type2$))]
+        public IEnumerable $type2$Factory()
+        {
+            $type2$[] values = new $type2$[] { };
+            return values;
+        }]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

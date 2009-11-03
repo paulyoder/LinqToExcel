@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>MSBuild task</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for a MSBuild task</Description>
+      <Shortcut>msbuild</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>name</ID>
+          <ToolTip>Fixture name</ToolTip>
+          <Default>My</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="XML"><![CDATA[<?xml version="1.0" encoding="utf-8" ?> 
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <UsingTask AssemblyName="MbUnit.MSBuild.Tasks" TaskName="MbUnit.MSBuild.Tasks.MbUnit"/>
+    <ItemGroup>
+        <TestAssemblies Include="$end$" />
+    </ItemGroup>
+    <Target Name="Tests">        
+        <MbUnit
+            Assemblies ="@(TestAssemblies)"
+            HaltOnFailure="false"
+            ReportTypes="Xml;Text;Html;Dox"
+            ReportFileNameFormat="mbunit-{0}-{1}"            
+            />        
+    </Target>
+</Project>  
+
+	]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

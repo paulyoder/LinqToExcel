@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Test Method with ExpectedException</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for a Test method with and expected exception</Description>
+      <Shortcut>testexpectedexception</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>name</ID>
+          <ToolTip>TestName</ToolTip>
+          <Default>Test</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>Expected Exception Type</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="VB"><![CDATA[		<Test(),ExpectedException(GetType($type$Exception))> _
+        Public Sub $name$()
+
+		End Sub
+]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

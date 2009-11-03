@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>ISubModel wrapper</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for a ISubModel wrapper</Description>
+      <Shortcut>submodel</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>model</ID>
+          <ToolTip>Model type</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>name</ID>
+          <ToolTip>SubModel Name</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp"><![CDATA[		public $model$ $name$Model
+        {
+            get
+            {
+                return ($model$)this.SubModels["$name$"].Model;
+            }
+        }
+	]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

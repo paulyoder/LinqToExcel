@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>TypeFixture</Title>
+      <Author>MbUnit</Author>
+      <Description>Expansion snippet for TypeFixture</Description>
+      <HelpUrl>http://www.mertner.com/confluence/display/MbUnit/TypeFixture</HelpUrl>
+      <Shortcut>typefixture</Shortcut>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>namespace</ID>
+          <ToolTip>Test namespace</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>Tested type</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp"><![CDATA[using System;
+using MbUnit.Framework;
+
+namespace $namespace$
+{
+    /// <summary>
+    /// A <see cref="TypeFixture"/> for the <see cref="$type$"/> class.
+    /// </summary>
+    [TypeFixture(typeof($type$))]
+    //[ProviderFactory(typeof($type$Factory),typeof($type$))]
+    [TestsOn(typeof($type$))]
+    public class $type$Test
+    {
+        #region SetUp and TearDown
+        /// <summary>
+        /// Initializes the fixture
+        /// </summary>
+        [SetUp]
+        public void SetUp($type$ value)
+        {
+        }
+        /// <summary>
+        /// Cleans up the fixture
+        /// </summary>
+        [TearDown]
+        public void TearDown($type$ value)
+        {
+        }
+        #endregion
+    
+        #region Test cases
+        [Test]
+        public void Test($type$ value)
+        {
+            $end$
+        }
+        #endregion    
+    }
+}
+	]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
