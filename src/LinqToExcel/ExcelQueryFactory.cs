@@ -19,7 +19,7 @@ namespace LinqToExcel
 
         public ExcelQueryFactory(string fileName)
         {
-            FileName = FileName;
+            FileName = fileName;
         }
 
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>()

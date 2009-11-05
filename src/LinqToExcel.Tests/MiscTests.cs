@@ -18,5 +18,12 @@ namespace LinqToExcel.Tests
             var repo = new ExcelQueryFactory();
             var first = (from r in repo.Worksheet() select r).First();
         }
+
+        [Test]
+        public void excelqueryfactory_constructor_sets_filename()
+        {
+            var repo = new ExcelQueryFactory(@"C:\spreadsheet.xls");
+            Assert.AreEqual(@"C:\spreadsheet.xls", repo.FileName);
+        }
     }
 }
