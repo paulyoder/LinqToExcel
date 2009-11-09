@@ -85,7 +85,7 @@ namespace LinqToExcel.Query
 
         protected Func<object, T> GetSelectProjector<T>(object firstResult, QueryModel queryModel)
         {
-            Func<object, T> projector = (result) => (T)Convert.ChangeType(result, typeof(T));
+            Func<object, T> projector = (result) => result.Cast<T>();
             if ((firstResult.GetType() != typeof(T)) &&
                 (typeof(T) != typeof(int)) &&
                 (typeof(T) != typeof(long)))
@@ -191,7 +191,7 @@ namespace LinqToExcel.Query
                         _columnMappings[prop.Name] :
                         prop.Name;
                     if (columns.Contains(columnName))
-                        result.SetProperty(prop.Name, Convert.ChangeType(data[columnName], prop.PropertyType));
+                        result.SetProperty(prop.Name, data[columnName].Cast(prop.PropertyType));
                 }
                 results.Add(result);
             } 

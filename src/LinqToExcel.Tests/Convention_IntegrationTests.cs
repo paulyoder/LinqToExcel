@@ -332,5 +332,17 @@ namespace LinqToExcel.Tests
 
             Assert.AreEqual("Ontario Systems", reverse.First().Name);
         }
+
+
+        [Test]
+        public void convert_nullable_properties()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<CompanyNullable>(null, _excelFileName, null)
+                            select c;
+
+            //Using ToList() because using Count() first would change the sql 
+            //string to "SELECT COUNT(*)" which we're not testing here
+            Assert.AreEqual(7, companies.ToList().Count);
+        }
     }
 }

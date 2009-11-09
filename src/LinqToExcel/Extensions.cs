@@ -31,7 +31,18 @@ namespace LinqToExcel.Extensions
 
         public static T Cast<T>(this object @object)
         {
-            return (T)Convert.ChangeType(@object, typeof(T));
+            return (T)@object.Cast(typeof(T));
+        }
+
+        public static object Cast(this object @object, Type castType)
+        {
+            //checking for nullable types
+            if (castType.IsGenericType &&
+                castType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                castType = Nullable.GetUnderlyingType(castType);
+            }
+            return Convert.ChangeType(@object, castType);
         }
 
         public static IEnumerable<TResult> Cast<TResult>(this IEnumerable<object> list, Func<object, TResult> caster)
