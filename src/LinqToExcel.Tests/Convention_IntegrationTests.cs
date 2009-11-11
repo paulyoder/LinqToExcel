@@ -344,5 +344,16 @@ namespace LinqToExcel.Tests
             //string to "SELECT COUNT(*)" which we're not testing here
             Assert.AreEqual(7, companies.ToList().Count);
         }
+
+        [Test]
+        public void dbnull_fields_return_null_and_dont_throw_exception()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<CompanyNullable>("Null Dates", _excelFileName, null)
+                            select c;
+
+            //Using ToList() because using Count() first would change the sql 
+            //string to "SELECT COUNT(*)" which we're not testing here
+            Assert.IsNull(companies.ToList()[3].StartDate);
+        }
     }
 }
