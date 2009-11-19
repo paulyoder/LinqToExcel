@@ -33,5 +33,18 @@ namespace LinqToExcel.Tests
             Assert.AreEqual(25, firstCompany["EmployeeCount"].Cast<int>());
             Assert.AreEqual(new DateTime(1918, 11, 11).Date, firstCompany["StartDate"].Cast<DateTime>().Date);
         }
+
+        [Test]
+        public void columnNames_returns_list_of_column_names()
+        {
+            var firstCompany = (from c in ExcelQueryFactory.Worksheet(null, _excelFileName, null)
+                                select c).First();
+
+            Assert.AreEqual(4, firstCompany.ColumnNames.Count());
+            Assert.IsTrue(firstCompany.ColumnNames.Contains("Name"));
+            Assert.IsTrue(firstCompany.ColumnNames.Contains("CEO"));
+            Assert.IsTrue(firstCompany.ColumnNames.Contains("EmployeeCount"));
+            Assert.IsTrue(firstCompany.ColumnNames.Contains("StartDate"));
+        }
     }
 }

@@ -32,5 +32,13 @@ namespace LinqToExcel
                 return base[_columnIndexMapping[columnName]]; 
             }
         }
+
+        /// <summary>
+        /// List of column names in the row object
+        /// </summary>
+        public IEnumerable<string> ColumnNames
+        {
+            get { return _columnIndexMapping.Keys; }
+        }
     }
 }
