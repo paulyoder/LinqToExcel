@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using Remotion.Data.Linq;
 using Remotion.Data.Linq.Clauses;
-using System.Data.OleDb;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 using System.Linq.Expressions;
-using Remotion.Logging;
-using System.Reflection;
 using Remotion.Collections;
 
 namespace LinqToExcel.Query
@@ -26,11 +21,6 @@ namespace LinqToExcel.Query
             if (table.ToLower().EndsWith(".csv"))
                 SqlStatement.Table = SqlStatement.Table.Replace("$]", "]");
             _columnMappings = columnMappings;
-        }
-
-        public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
-        {
-            base.VisitSelectClause(selectClause, queryModel);
         }
 
         public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
@@ -60,6 +50,7 @@ namespace LinqToExcel.Query
             where.Visit(whereClause.Predicate);
             SqlStatement.Where = where.WhereClause;
             SqlStatement.Parameters = where.Params;
+            SqlStatement.ColumnNamesUsed.AddRange(where.ColumnNamesUsed);
 
             base.VisitWhereClause(whereClause, queryModel, index);
         }
@@ -115,11 +106,24 @@ namespace LinqToExcel.Query
             var orderClause = bodyClauses.FirstOrDefault() as OrderByClause;
             if (orderClause != null)
             {
-                var mExp = orderClause.Orderings.First().Expression as MemberExpression;
-                var columnName = (_columnMappings.ContainsKey(mExp.Member.Name)) ?
-                    _columnMappings[mExp.Member.Name] :
-                    mExp.Member.Name;
+                var columnName = "";
+                var exp = orderClause.Orderings.First().Expression;
+                if (exp is MemberExpression)
+                {
+                    var mExp = exp as MemberExpression;
+                    columnName = (_columnMappings.ContainsKey(mExp.Member.Name)) ?
+                        _columnMappings[mExp.Member.Name] :
+                        mExp.Member.Name;
+                }
+                else if (exp is MethodCallExpression)
+                {
+					//row["ColumnName"] is being used in order by statement
+                    columnName = ((MethodCallExpression) exp).Arguments.First()
+                        .ToString().Replace("\"", "");
+                }
+                
                 SqlStatement.OrderBy = columnName;
+                SqlStatement.ColumnNamesUsed.Add(columnName);
                 var orderDirection = orderClause.Orderings.First().OrderingDirection;
                 SqlStatement.OrderByAsc = (orderDirection == OrderingDirection.Asc) ? true : false;
             }
@@ -128,9 +132,11 @@ namespace LinqToExcel.Query
 
         protected void UpdateAggregate(QueryModel queryModel, string aggregateName)
         {
+            var columnName = GetResultColumnName(queryModel);
             SqlStatement.Aggregate = string.Format("{0}({1})",
                 aggregateName,
-                GetResultColumnName(queryModel));
+                columnName);
+            SqlStatement.ColumnNamesUsed.Add(columnName);
         }
 
         private string GetResultColumnName(QueryModel queryModel)

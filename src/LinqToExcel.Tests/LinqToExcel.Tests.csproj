@@ -72,6 +72,7 @@
     <Compile Include="ConnectionString_UnitTests.cs" />
     <Compile Include="Excel2007_IntegrationTests.cs" />
     <Compile Include="IMEX_Tests.cs" />
+    <Compile Include="InvalidColumnNamesUsed.cs" />
     <Compile Include="MiscTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RowTest.cs" />

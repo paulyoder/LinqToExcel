@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MbUnit.Framework;
 using System.IO;
-using System.Data.SqlClient;
 using log4net.Core;
 using System.Data.OleDb;
 
@@ -72,23 +69,6 @@ namespace LinqToExcel.Tests
             Assert.AreEqual("Your Mom", rival.CEO, "CEO");
             Assert.AreEqual(300, rival.EmployeeCount, "EmployeeCount");
             Assert.AreEqual(new DateTime(1988, 7, 26), rival.StartDate, "StartDate");
-        }
-
-        //Todo
-        //It is desired to have the SqlException and message thrown instead of a general OleDbException when the
-        //column name is incorrect, but I don't know how to do that yet
-        //[ExpectedException(typeof(SqlException), "'The Big Cheese' column does not exist in 'Sheet1' worksheet")]
-        [ExpectedException(typeof(OleDbException))]
-        [Test]
-        public void exception_on_property_with_column_mapping_used_in_where_clause_when_mapped_column_doesnt_exist()
-        {
-            _repo.AddMapping<Company>(x => x.CEO, "The Big Cheese");
-
-            var companies = from c in _repo.Worksheet<Company>(_worksheetName)
-                            where c.CEO == "Bugs Bunny"
-                            select c;
-
-            companies.GetEnumerator();
         }
 
         [Test]

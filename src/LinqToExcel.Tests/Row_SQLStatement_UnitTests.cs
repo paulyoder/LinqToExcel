@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MbUnit.Framework;
 using System.Data.OleDb;
 
@@ -47,6 +45,18 @@ namespace LinqToExcel.Tests
             var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("City"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
             Assert.AreEqual("Omaha", GetSQLParameters()[0]);
+        }
+
+        [Test]
+        public void column_name_used_in_orderby_clause()
+        {
+            var companies = (from c in ExcelQueryFactory.Worksheet("", "", null)
+                             select c).OrderBy(x => x["City"]);
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] ORDER BY {0} ASC", GetSQLFieldName("City"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
         }
 
         [Test]

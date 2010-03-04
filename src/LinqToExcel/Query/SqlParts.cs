@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Data.OleDb;
 
@@ -14,12 +13,14 @@ namespace LinqToExcel.Query
         public IEnumerable<OleDbParameter> Parameters { get; set; }
         public string OrderBy { get; set; }
         public bool OrderByAsc { get; set; }
+        public List<string> ColumnNamesUsed { get; set; }
 
         public SqlParts()
         {
             Aggregate = "*";
             Parameters = new List<OleDbParameter>();
             OrderByAsc = true;
+            ColumnNamesUsed = new List<string>();
         }
 
         public static implicit operator string(SqlParts sql)

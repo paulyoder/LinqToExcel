@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using MbUnit.Framework;
 using System.IO;
-using System.Data.OleDb;
+using System.Data;
 
 namespace LinqToExcel.Tests
 {
@@ -35,7 +32,7 @@ namespace LinqToExcel.Tests
                          select p;
 
             try { people.GetEnumerator(); }
-            catch (OleDbException) { }
+            catch (DataException) { }
 
             var dataSource = GetDataSource();
             Assert.AreEqual(Path.GetDirectoryName(_fileName), dataSource);
@@ -48,7 +45,7 @@ namespace LinqToExcel.Tests
                          select p;
 
             try { people.GetEnumerator(); }
-            catch (OleDbException) { }
+            catch (DataException) { }
 
             var extendedProperties = GetExtendedProperties();
             Assert.AreEqual("\"text;HDR=Yes;FMT=Delimited;IMEX=1\"", extendedProperties);
@@ -61,7 +58,7 @@ namespace LinqToExcel.Tests
                          select p;
 
             try { people.GetEnumerator(); }
-            catch (OleDbException) { }
+            catch (DataException) { }
 
             var tableName = GetTableName(GetSQLStatement());
             Assert.AreEqual(Path.GetFileName(_fileName), tableName);

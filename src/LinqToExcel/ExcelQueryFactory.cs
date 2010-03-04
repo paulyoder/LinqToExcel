@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Linq.Expressions;
-using System.Threading;
 using LinqToExcel.Query;
 
 namespace LinqToExcel
@@ -24,48 +21,88 @@ namespace LinqToExcel
 
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>()
         {
-            return Worksheet<TSheetData>("Sheet1", FileName, _mapping);
+            return Worksheet<TSheetData>("Sheet1", null, FileName, _mapping);
         }
 
         public ExcelQueryable<Row> Worksheet()
         {
-            return Worksheet<Row>("Sheet1", FileName, _mapping);
+            return Worksheet<Row>("Sheet1", null, FileName, _mapping);
         }
 
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName)
         {
-            return Worksheet<TSheetData>(worksheetName, FileName, _mapping);
+            return Worksheet<TSheetData>(worksheetName, null, FileName, _mapping);
+        }
+
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex)
+        {
+            return Worksheet<TSheetData>(null, worksheetIndex, FileName, _mapping);
         }
 
         public ExcelQueryable<Row> Worksheet(string worksheetName)
         {
-            return Worksheet<Row>(worksheetName, FileName, _mapping);
+            return Worksheet<Row>(worksheetName, null, FileName, _mapping);
+        }
+
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<Row> Worksheet(int worksheetIndex)
+        {
+            return Worksheet<Row>(null, worksheetIndex, FileName, _mapping);
         }
 
         public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName)
         {
-            return Worksheet<TSheetData>(worksheetName, fileName, new Dictionary<string, string>());
+            return Worksheet<TSheetData>(worksheetName, null, fileName, new Dictionary<string, string>());
+        }
+
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName)
+        {
+            return Worksheet<TSheetData>(null, worksheetIndex, fileName, new Dictionary<string, string>());
         }
 
         public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName)
         {
-            return Worksheet<Row>(worksheetName, fileName, new Dictionary<string, string>());
+            return Worksheet<Row>(worksheetName, null, fileName, new Dictionary<string, string>());
+        }
+
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName)
+        {
+            return Worksheet<Row>(null, worksheetIndex, fileName, new Dictionary<string, string>());
         }
 
         public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName, Dictionary<string, string> mapping)
         {
-            return Worksheet<Row>(worksheetName, fileName, mapping);
+            return Worksheet<Row>(worksheetName, null, fileName, mapping);
+        }
+
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName, Dictionary<string, string> mapping)
+        {
+            return Worksheet<Row>(null, worksheetIndex, fileName, mapping);
         }
 
         public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName, Dictionary<string, string> mapping)
         {
-            if (fileName == null)
-                throw new ArgumentNullException("fileName cannot be null");
-            if (string.IsNullOrEmpty(worksheetName))
-                worksheetName = "Sheet1";
-            mapping = mapping ?? new Dictionary<string, string>();
+            return Worksheet<TSheetData>(worksheetName, null, fileName, mapping);
+        }
 
-            return new ExcelQueryable<TSheetData>(worksheetName, fileName, mapping);
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName, Dictionary<string, string> mapping)
+        {
+            return Worksheet<TSheetData>(null, worksheetIndex, fileName, mapping);
+        }
+
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        private static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, int? worksheetIndex, string fileName, Dictionary<string, string> mapping)
+        {
+            if (fileName == null)
+                throw new ArgumentNullException("FileName", "FileName property cannot be null.");
+            
+            mapping = mapping ?? new Dictionary<string, string>();
+            return new ExcelQueryable<TSheetData>(worksheetName, worksheetIndex, fileName, mapping);
         }
 
         public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column)

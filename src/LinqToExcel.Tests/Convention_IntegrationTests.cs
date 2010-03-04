@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MbUnit.Framework;
 using System.IO;
-using System.Reflection;
-using System.Data.SqlClient;
 using System.Data.OleDb;
 
 namespace LinqToExcel.Tests
@@ -134,21 +130,6 @@ namespace LinqToExcel.Tests
 
             foreach (var company in companies)
                 Assert.IsTrue(String.IsNullOrEmpty(company.City));
-        }
-
-        //Todo
-        //It is desired to have the SqlException and message thrown instead of a general OleDbException when the
-        //column name is incorrect, but I don't know how to do that yet
-        //[ExpectedException(typeof(SqlException), "The 'City' column does not exist in the 'Sheet1' worksheet")]
-        [ExpectedException(typeof(OleDbException))]
-        [Test]
-        public void exception_on_property_used_in_where_clause_when_column_doesnt_exist()
-        {
-            var companies = from c in ExcelQueryFactory.Worksheet<CompanyWithCity>(null, _excelFileName, null)
-                            where c.City == "Omaha"
-                            select c;
-
-            companies.GetEnumerator();
         }
 
         [Test]

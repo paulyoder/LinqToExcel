@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using Remotion.Data.Linq;
-using LinqToExcel.Query;
 using System.IO;
 using System.Data.OleDb;
 using System.Data;
-using Remotion.Logging;
 using System.Reflection;
 using Remotion.Data.Linq.Clauses.ResultOperators;
-using Remotion.Data.Linq.Clauses;
 using System.Collections;
-using Remotion.Data.Linq.Clauses.StreamedData;
 using LinqToExcel.Extensions;
 using log4net;
 
@@ -25,12 +19,14 @@ namespace LinqToExcel.Query
         private readonly string _fileName;
         private readonly Dictionary<string, string> _columnMappings;
         private string _worksheetName;
+        private string _connectionString;
 
-        public ExcelQueryExecutor(string worksheetName, string fileName,  Dictionary<string, string> columnMappings)
+        public ExcelQueryExecutor(string worksheetName, int? worksheetIndex, string fileName,  Dictionary<string, string> columnMappings)
         {
             _fileName = fileName;
             _columnMappings = columnMappings;
-            _worksheetName = worksheetName;
+            _connectionString = GetConnectionString();
+            _worksheetName = GetWorksheetName(worksheetName, worksheetIndex);
         }
 
         /// <summary>
@@ -64,11 +60,10 @@ namespace LinqToExcel.Query
         /// </summary>
         public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
         {
-            var connString = GetConnectionString();
             var sql = GetSqlStatement(queryModel);
-            LogSqlStatement(connString, sql);
+            LogSqlStatement(sql);
 
-            var objectResults = GetDataResults(connString, sql, queryModel);
+            var objectResults = GetDataResults(sql, queryModel);
             var projector = GetSelectProjector<T>(objectResults.FirstOrDefault(), queryModel);
             var returnResults = objectResults.Cast<T>(projector);
 
@@ -103,21 +98,68 @@ namespace LinqToExcel.Query
             return sqlVisitor.SqlStatement;
         }
 
+        private string GetWorksheetName(string worksheetName, int? worksheetIndex)
+        {
+            if (_fileName.ToLower().EndsWith("csv"))
+                worksheetName = Path.GetFileName(_fileName);
+            else if (worksheetIndex.HasValue)
+            {
+                var worksheetNames = GetWorksheetNames();
+                if (worksheetIndex.Value < worksheetNames.Count())
+                    worksheetName = worksheetNames.ElementAt(worksheetIndex.Value);
+                else
+                    throw new DataException("Worksheet Index Out of Range");
+            }
+            else if (String.IsNullOrEmpty(worksheetName))
+                worksheetName = "Sheet1";
+            return worksheetName;
+        }
+
+        private IEnumerable<string> GetWorksheetNames()
+        {
+            var worksheetNames = new List<string>();
+            using (var conn = new OleDbConnection(_connectionString))
+            {
+                conn.Open();
+                var excelTables = conn.GetOleDbSchemaTable(
+                    OleDbSchemaGuid.Tables,
+                    new Object[] { null, null, null, "TABLE" });
+
+                foreach (DataRow row in excelTables.Rows)
+                    worksheetNames.Add(row["TABLE_NAME"].ToString()
+                                                        .Replace("$", "")
+                                                        .Replace("'", ""));
+
+                excelTables.Dispose();
+            }
+            return worksheetNames;
+        }
+
         /// <summary>
         /// Executes the sql query and returns the data results
         /// </summary>
         /// <typeparam name="T">Data type in the main from clause (queryModel.MainFromClause.ItemType)</typeparam>
         /// <param name="queryModel">Linq query model</param>
-        protected IEnumerable<object> GetDataResults(string connectionString, SqlParts sql, QueryModel queryModel)
+        protected IEnumerable<object> GetDataResults(SqlParts sql, QueryModel queryModel)
         {
             IEnumerable<object> results;
-            using (var conn = new OleDbConnection(connectionString))
+            OleDbDataReader data = null;
+            using (var conn = new OleDbConnection(_connectionString))
             using (var command = conn.CreateCommand())
             {
                 conn.Open();
                 command.CommandText = sql.ToString();
                 command.Parameters.AddRange(sql.Parameters.ToArray());
-                var data = command.ExecuteReader();
+                try { data = command.ExecuteReader(); }
+                catch (OleDbException e)
+                {
+                    if (e.Message.Contains(_worksheetName))
+                        throw new DataException(
+                            string.Format("'{0}' is not a valid worksheet name. Valid worksheet names are: '{1}'",
+                                          _worksheetName, string.Join("', '", GetWorksheetNames().ToArray())));
+                    else if (!CheckIfInvalidColumnNameUsed(sql))
+                        throw e;
+                }
 
                 var columns = GetColumnNames(data);
                 if (columns.Count() == 1 && columns.First() == "Expr1000")
@@ -128,6 +170,24 @@ namespace LinqToExcel.Query
                     results = GetTypeResults(data, columns, queryModel);
             }
             return results;
+        }
+
+        private bool CheckIfInvalidColumnNameUsed(SqlParts sql)
+        {
+            var usedColumns = sql.ColumnNamesUsed;
+            var tableColumns = GetColumnNames();
+            foreach (var column in usedColumns)
+            {
+                if (!tableColumns.Contains(column))
+                {
+                    throw new DataException(string.Format(
+                        "'{0}' is not a valid column name. " +
+                        "Valid column names are: '{1}'",
+                        column,
+                        string.Join("', '", tableColumns.ToArray())));
+                }
+            }
+            return false;
         }
 
         private string GetConnectionString()
@@ -147,7 +207,6 @@ namespace LinqToExcel.Query
             }
             else if (_fileName.ToLower().EndsWith("csv"))
             {
-                _worksheetName = Path.GetFileName(_fileName);
                 connString = string.Format(
                         @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=Yes;FMT=Delimited;IMEX=1""",
                         Path.GetDirectoryName(_fileName));
@@ -204,15 +263,29 @@ namespace LinqToExcel.Query
             return new List<object> { data[0] };
         }
 
-        private void LogSqlStatement(string connectionString, SqlParts sqlParts)
+        private void LogSqlStatement(SqlParts sqlParts)
         {
             if (_log.IsDebugEnabled)
             {
-                _log.DebugFormat("Connection String: {0}", connectionString);
+                _log.DebugFormat("Connection String: {0}", _connectionString);
                 _log.DebugFormat("SQL: {0}", sqlParts.ToString());
                 for (var i = 0; i < sqlParts.Parameters.Count(); i++)
                     _log.DebugFormat("Param[{0}]: {1}", i, sqlParts.Parameters.ElementAt(i).Value);
             }
+        }
+
+        private IEnumerable<string> GetColumnNames()
+        {
+            var columns = new List<string>();
+            using (var conn = new OleDbConnection(_connectionString))
+            using (var command = conn.CreateCommand())
+            {
+                conn.Open();
+                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", _worksheetName);
+                var data = command.ExecuteReader();
+                columns.AddRange(GetColumnNames(data));
+            }
+            return columns;
         }
 
         private IEnumerable<string> GetColumnNames(IDataReader data)

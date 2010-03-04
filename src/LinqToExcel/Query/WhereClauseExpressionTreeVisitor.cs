@@ -5,7 +5,6 @@ using System.Text;
 using Remotion.Data.Linq.Parsing;
 using System.Data.OleDb;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace LinqToExcel.Query
 {
@@ -13,15 +12,14 @@ namespace LinqToExcel.Query
     {
         private readonly StringBuilder _whereClause = new StringBuilder();
         private readonly List<OleDbParameter> _params = new List<OleDbParameter>();
-        private readonly Dictionary<ExpressionType, string> _expTypeMapping = new Dictionary<ExpressionType, string>();
         private readonly Dictionary<string, string> _columnMapping;
+        private readonly List<string> _columnNamesUsed = new List<string>();
         private readonly Type _sheetType;
 
         public WhereClauseExpressionTreeVisitor(Type sheetType, Dictionary<string, string> columnMapping)
         {
             _sheetType = sheetType;
             _columnMapping = columnMapping;
-            //PopulateExpTypeMapping();
         }
 
         public string WhereClause
@@ -34,9 +32,9 @@ namespace LinqToExcel.Query
             get { return _params; }
         }
 
-        private void PopulateExpTypeMapping()
+        public IEnumerable<string> ColumnNamesUsed
         {
-            throw new NotImplementedException();
+            get { return _columnNamesUsed.Select(x => x.Replace("[", "").Replace("]", "")); }
         }
 
         public void Visit(Expression expression)
@@ -106,6 +104,7 @@ namespace LinqToExcel.Query
                 _columnMapping[mExp.Member.Name] : 
                 mExp.Member.Name;
             _whereClause.AppendFormat("[{0}]", columnName);
+            _columnNamesUsed.Add(columnName);
             return mExp;
         }
 
@@ -121,7 +120,8 @@ namespace LinqToExcel.Query
         /// </summary>
         protected override Expression VisitUnaryExpression(UnaryExpression uExp)
         {
-            _whereClause.Append(GetColumnName(uExp.Operand));
+            var columnName = GetColumnName(uExp.Operand);
+            _whereClause.Append(columnName);
             return uExp;
         }
 
@@ -135,13 +135,17 @@ namespace LinqToExcel.Query
                 _whereClause.Append("(");
                 VisitExpression(mExp.Object);
                 _whereClause.Append(" LIKE ?)");
-                
-                var columnName = mExp.Arguments.First().ToString().Replace("\"", "");
-                var parameter = string.Format("%{0}%", columnName);
+
+                var value = mExp.Arguments.First().ToString().Replace("\"", "");
+                var parameter = string.Format("%{0}%", value);
                 _params.Add(new OleDbParameter("?", parameter));
             }
             else
-                _whereClause.Append(GetColumnName(mExp.Object));
+            {
+                var columnName = GetColumnName(mExp.Object);
+                _whereClause.Append(columnName);
+                _columnNamesUsed.Add(columnName);
+            }
             return mExp;
         }
 

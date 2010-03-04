@@ -1,9 +1,7 @@
 LinqToExcel Todo List
 
+- Query specific cell ranges (http://code.google.com/p/linqtoexcel/issues/detail?id=8)
+
 - Test linq statements with multiple result operators
-  
-- Throw a descriptive SqlException when trying to query a column that doesn't exist
-   - right now a generic OleDbException is being thrown
-   - check out the following tests for more information
-       - ColumnMappings_IntegrationTests.exception_on_property_with_column_mapping_used_in_where_clause_when_mapped_column_doesnt_exist()
-       - Convention_IntegrationTests.exception_on_property_used_in_where_clause_when_column_doesnt_exist()
+
+- Create Dynamic Lambda expressions to process data results

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using LinqToExcel.Query;
+
 namespace LinqToExcel
 {
     public interface IExcelQueryFactory
