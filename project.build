@@ -21,7 +21,7 @@
 	
 	<target name="compile" description="compiles the project">
 		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
-			commandline="&quot;${file.project}&quot; /p:Configuration=Release;OutputPath=&quot;${dir.bin}\\&quot;" />
+			commandline="&quot;${file.project}&quot; /p:Configuration=Release;DocumentationFile=LinqToExcel.xml;OutputPath=&quot;${dir.bin}\\&quot;" />
 	</target>
 	
 	<target name="zip" description="zips the contents of the bin folder to the zip.dir">
