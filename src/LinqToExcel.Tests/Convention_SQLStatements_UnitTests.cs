@@ -186,6 +186,34 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void where_startswith()
+        {
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where p.Name.StartsWith("Paul")
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} LIKE ?)", GetSQLFieldName("Name"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+            Assert.AreEqual("Paul%", GetSQLParameters()[0]);
+        }
+
+        [Test]
+        public void where_endswith()
+        {
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where p.Name.EndsWith("Paul")
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} LIKE ?)", GetSQLFieldName("Name"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+            Assert.AreEqual("%Paul", GetSQLParameters()[0]);
+        }
+
+        [Test]
         public void first()
         {
             var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)

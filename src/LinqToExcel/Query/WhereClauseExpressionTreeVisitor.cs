@@ -140,6 +140,26 @@ namespace LinqToExcel.Query
                 var parameter = string.Format("%{0}%", value);
                 _params.Add(new OleDbParameter("?", parameter));
             }
+            else if (mExp.Method.Name == "StartsWith")
+            {
+                _whereClause.Append("(");
+                VisitExpression(mExp.Object);
+                _whereClause.Append(" LIKE ?)");
+
+                var value = mExp.Arguments.First().ToString().Replace("\"", "");
+                var parameter = string.Format("{0}%", value);
+                _params.Add(new OleDbParameter("?", parameter));
+            }
+            else if (mExp.Method.Name == "EndsWith")
+            {
+                _whereClause.Append("(");
+                VisitExpression(mExp.Object);
+                _whereClause.Append(" LIKE ?)");
+
+                var value = mExp.Arguments.First().ToString().Replace("\"", "");
+                var parameter = string.Format("%{0}", value);
+                _params.Add(new OleDbParameter("?", parameter));
+            }
             else
             {
                 var columnName = GetColumnName(mExp.Object);
