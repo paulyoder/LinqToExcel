@@ -10,23 +10,42 @@ using Remotion.Data.Linq.Clauses.ResultOperators;
 using System.Collections;
 using LinqToExcel.Extensions;
 using log4net;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace LinqToExcel.Query
 {
     public class ExcelQueryExecutor : IQueryExecutor
     {
         private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly string _fileName;
-        private readonly Dictionary<string, string> _columnMappings;
-        private string _worksheetName;
-        private string _connectionString;
+        private readonly ExcelQueryArgs _args;
+        private readonly string _connectionString;
 
-        public ExcelQueryExecutor(string worksheetName, int? worksheetIndex, string fileName,  Dictionary<string, string> columnMappings)
+        public ExcelQueryExecutor(ExcelQueryArgs args)
         {
-            _fileName = fileName;
-            _columnMappings = columnMappings;
+            ValidateArgs(args);
+            _args = args;
             _connectionString = GetConnectionString();
-            _worksheetName = GetWorksheetName(worksheetName, worksheetIndex);
+            GetWorksheetName();
+        }
+
+        private void ValidateArgs(ExcelQueryArgs args)
+        {
+            if (_log.IsDebugEnabled)
+                _log.DebugFormat("ExcelQueryArgs = {0}", args.ToString());
+
+            if (args.FileName == null)
+                throw new ArgumentNullException("FileName", "FileName property cannot be null.");
+
+            if (!String.IsNullOrEmpty(args.StartRange) &&
+                !Regex.Match(args.StartRange, "^[a-zA-Z]{1,3}[0-9]{1,7}$").Success)
+                throw new ArgumentException(string.Format(
+                    "StartRange argument '{0}' is invalid format for cell name", args.StartRange));
+
+            if (!String.IsNullOrEmpty(args.EndRange) &&
+                !Regex.Match(args.EndRange, "^[a-zA-Z]{1,3}[0-9]{1,7}$").Success)
+                throw new ArgumentException(string.Format(
+                    "EndRange argument '{0}' is invalid format for cell name", args.EndRange));
         }
 
         /// <summary>
@@ -93,26 +112,25 @@ namespace LinqToExcel.Query
 
         protected SqlParts GetSqlStatement(QueryModel queryModel)
         {
-            var sqlVisitor = new SqlGeneratorQueryModelVisitor(_worksheetName, _columnMappings);
+            var sqlVisitor = new SqlGeneratorQueryModelVisitor(_args);
             sqlVisitor.VisitQueryModel(queryModel);
             return sqlVisitor.SqlStatement;
         }
 
-        private string GetWorksheetName(string worksheetName, int? worksheetIndex)
+        private void GetWorksheetName()
         {
-            if (_fileName.ToLower().EndsWith("csv"))
-                worksheetName = Path.GetFileName(_fileName);
-            else if (worksheetIndex.HasValue)
+            if (_args.FileName.ToLower().EndsWith("csv"))
+                _args.WorksheetName = Path.GetFileName(_args.FileName);
+            else if (_args.WorksheetIndex.HasValue)
             {
                 var worksheetNames = GetWorksheetNames();
-                if (worksheetIndex.Value < worksheetNames.Count())
-                    worksheetName = worksheetNames.ElementAt(worksheetIndex.Value);
+                if (_args.WorksheetIndex.Value < worksheetNames.Count())
+                    _args.WorksheetName = worksheetNames.ElementAt(_args.WorksheetIndex.Value);
                 else
                     throw new DataException("Worksheet Index Out of Range");
             }
-            else if (String.IsNullOrEmpty(worksheetName))
-                worksheetName = "Sheet1";
-            return worksheetName;
+            else if (String.IsNullOrEmpty(_args.WorksheetName))
+                _args.WorksheetName = "Sheet1";
         }
 
         private IEnumerable<string> GetWorksheetNames()
@@ -153,10 +171,10 @@ namespace LinqToExcel.Query
                 try { data = command.ExecuteReader(); }
                 catch (OleDbException e)
                 {
-                    if (e.Message.Contains(_worksheetName))
+                    if (e.Message.Contains(_args.WorksheetName))
                         throw new DataException(
                             string.Format("'{0}' is not a valid worksheet name. Valid worksheet names are: '{1}'",
-                                          _worksheetName, string.Join("', '", GetWorksheetNames().ToArray())));
+                                          _args.WorksheetName, string.Join("', '", GetWorksheetNames().ToArray())));
                     else if (!CheckIfInvalidColumnNameUsed(sql))
                         throw e;
                 }
@@ -194,27 +212,30 @@ namespace LinqToExcel.Query
         {
             var connString = "";
 
-            if (_fileName.ToLower().EndsWith("xlsx") ||
-                _fileName.ToLower().EndsWith("xlsm"))
+            if (_args.FileName.ToLower().EndsWith("xlsx") ||
+                _args.FileName.ToLower().EndsWith("xlsm"))
                 connString = string.Format(
                     @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""",
-                    _fileName);
-            else if (_fileName.ToLower().EndsWith("xlsb"))
+                    _args.FileName);
+            else if (_args.FileName.ToLower().EndsWith("xlsb"))
             {
                 connString = string.Format(
                     @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                    _fileName);
+                    _args.FileName);
             }
-            else if (_fileName.ToLower().EndsWith("csv"))
+            else if (_args.FileName.ToLower().EndsWith("csv"))
             {
                 connString = string.Format(
                         @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=Yes;FMT=Delimited;IMEX=1""",
-                        Path.GetDirectoryName(_fileName));
+                        Path.GetDirectoryName(_args.FileName));
             }
             else
                 connString = string.Format(
                     @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
-                    _fileName);
+                    _args.FileName);
+
+            if (_log.IsDebugEnabled)
+                _log.DebugFormat("Connection String: {0}", connString);
 
             return connString;
         }
@@ -246,8 +267,8 @@ namespace LinqToExcel.Query
                 var result = Activator.CreateInstance(fromType);
                 foreach (var prop in props)
                 {
-                    var columnName = (_columnMappings.ContainsKey(prop.Name)) ?
-                        _columnMappings[prop.Name] :
+                    var columnName = (_args.ColumnMappings.ContainsKey(prop.Name)) ?
+                        _args.ColumnMappings[prop.Name] :
                         prop.Name;
                     if (columns.Contains(columnName))
                         result.SetProperty(prop.Name, data[columnName].Cast(prop.PropertyType));
@@ -267,10 +288,24 @@ namespace LinqToExcel.Query
         {
             if (_log.IsDebugEnabled)
             {
-                _log.DebugFormat("Connection String: {0}", _connectionString);
-                _log.DebugFormat("SQL: {0}", sqlParts.ToString());
+                var logMessage = new StringBuilder();
+                logMessage.AppendFormat("{0};", sqlParts.ToString());
                 for (var i = 0; i < sqlParts.Parameters.Count(); i++)
-                    _log.DebugFormat("Param[{0}]: {1}", i, sqlParts.Parameters.ElementAt(i).Value);
+                {
+                    var value = sqlParts.Parameters.ElementAt(i).Value.ToString();
+                    var valueIsNumber = Regex.Match(value, @"^\d+$").Success;
+                    logMessage.AppendFormat(" p{0} = ", i);
+                    if (!valueIsNumber)
+                        logMessage.Append("'");
+                    logMessage.Append(value);
+                    if (!valueIsNumber)
+                        logMessage.Append("'");
+                    logMessage.Append(";");
+                }
+                    
+                
+                var sqlLog = LogManager.GetLogger("LinqToExcel.SQL");
+                sqlLog.Debug(logMessage.ToString());
             }
         }
 
@@ -281,7 +316,7 @@ namespace LinqToExcel.Query
             using (var command = conn.CreateCommand())
             {
                 conn.Open();
-                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", _worksheetName);
+                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", _args.WorksheetName);
                 var data = command.ExecuteReader();
                 columns.AddRange(GetColumnNames(data));
             }
@@ -296,11 +331,11 @@ namespace LinqToExcel.Query
                 columns.Add(row["ColumnName"].ToString());
 
             //Log a warning for any property to column mappings that do not exist in the excel worksheet
-            foreach (var kvp in _columnMappings)
+            foreach (var kvp in _args.ColumnMappings)
             {
                 if (!columns.Contains(kvp.Value))
                     _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
-                        kvp.Value, kvp.Key, _worksheetName);
+                        kvp.Value, kvp.Key, _args.WorksheetName);
             }
 
             return columns;

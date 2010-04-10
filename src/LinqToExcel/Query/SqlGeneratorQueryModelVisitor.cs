@@ -12,15 +12,20 @@ namespace LinqToExcel.Query
     public class SqlGeneratorQueryModelVisitor : QueryModelVisitorBase
     {
         public SqlParts SqlStatement { get; protected set; }
-        private Dictionary<string, string> _columnMappings;
+        private readonly ExcelQueryArgs _args;
 
-        public SqlGeneratorQueryModelVisitor(string table, Dictionary<string, string> columnMappings)
+        public SqlGeneratorQueryModelVisitor(ExcelQueryArgs args)
         {
+            _args = args;
             SqlStatement = new SqlParts();
-            SqlStatement.Table = string.Format("[{0}$]", table);
-            if (table.ToLower().EndsWith(".csv"))
+            SqlStatement.Table = (String.IsNullOrEmpty(_args.StartRange)) ?
+                string.Format("[{0}$]", 
+                    _args.WorksheetName) :
+                string.Format("[{0}${1}:{2}]",
+                    _args.WorksheetName, _args.StartRange, _args.EndRange);
+
+            if (_args.WorksheetName.ToLower().EndsWith(".csv"))
                 SqlStatement.Table = SqlStatement.Table.Replace("$]", "]");
-            _columnMappings = columnMappings;
         }
 
         public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
@@ -46,7 +51,7 @@ namespace LinqToExcel.Query
 
         public override void VisitWhereClause(WhereClause whereClause, QueryModel queryModel, int index)
         {
-            var where = new WhereClauseExpressionTreeVisitor(queryModel.MainFromClause.ItemType, _columnMappings);
+            var where = new WhereClauseExpressionTreeVisitor(queryModel.MainFromClause.ItemType, _args.ColumnMappings);
             where.Visit(whereClause.Predicate);
             SqlStatement.Where = where.WhereClause;
             SqlStatement.Parameters = where.Params;
@@ -111,8 +116,8 @@ namespace LinqToExcel.Query
                 if (exp is MemberExpression)
                 {
                     var mExp = exp as MemberExpression;
-                    columnName = (_columnMappings.ContainsKey(mExp.Member.Name)) ?
-                        _columnMappings[mExp.Member.Name] :
+                    columnName = (_args.ColumnMappings.ContainsKey(mExp.Member.Name)) ?
+                        _args.ColumnMappings[mExp.Member.Name] :
                         mExp.Member.Name;
                 }
                 else if (exp is MethodCallExpression)
@@ -142,8 +147,8 @@ namespace LinqToExcel.Query
         private string GetResultColumnName(QueryModel queryModel)
         {
             var mExp = queryModel.SelectClause.Selector as MemberExpression;
-            return (_columnMappings.ContainsKey(mExp.Member.Name)) ?
-                _columnMappings[mExp.Member.Name] :
+            return (_args.ColumnMappings.ContainsKey(mExp.Member.Name)) ?
+                _args.ColumnMappings[mExp.Member.Name] :
                 mExp.Member.Name;
         }
     }

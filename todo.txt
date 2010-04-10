@@ -1,6 +1,6 @@
 LinqToExcel Todo List
 
-- Query specific cell ranges (http://code.google.com/p/linqtoexcel/issues/detail?id=8)
+- Allow no headers
 
 - Test linq statements with multiple result operators
 

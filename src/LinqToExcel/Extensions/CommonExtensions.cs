@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace LinqToExcel.Extensions
 {
-    public static class Extensions
+    public static class CommonExtensions
     {
         /// <summary>
         /// Sets the value of a property

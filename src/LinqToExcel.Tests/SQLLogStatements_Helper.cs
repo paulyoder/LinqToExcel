@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using log4net.Appender;
 using log4net.Core;
+using System.Linq;
 
 namespace LinqToExcel.Tests
 {
@@ -32,12 +33,11 @@ namespace LinqToExcel.Tests
         /// </remarks>
         protected string GetSQLStatement()
         {
-            LoggingEvent[] loggingEvents = _loggedEvents.GetEvents();
+            var loggingEvents = _loggedEvents.GetEvents();
             foreach (LoggingEvent logEvent in loggingEvents)
             {
-                string message = logEvent.RenderedMessage;
-                if (message.Length > 5 && message.Substring(0, 4) == "SQL:")
-                    return logEvent.RenderedMessage.Substring(5);
+                if (logEvent.LoggerName == "LinqToExcel.SQL")
+                    return logEvent.RenderedMessage.Split(";".ToCharArray())[0];
             }
             return "";
         }
@@ -51,13 +51,23 @@ namespace LinqToExcel.Tests
         /// </remarks>
         protected string[] GetSQLParameters()
         {
-            LoggingEvent[] loggingEvents = _loggedEvents.GetEvents();
-            List<string> parameters = new List<string>();
+            var loggingEvents = _loggedEvents.GetEvents();
+            var parameters = new List<string>();
             foreach (LoggingEvent logEvent in loggingEvents)
             {
-                string message = logEvent.RenderedMessage;
-                if (message.Length > 5 && message.Substring(0, 6) == "Param[")
-                    parameters.Add(logEvent.RenderedMessage.Split(" ".ToCharArray())[1]);
+                if (logEvent.LoggerName == "LinqToExcel.SQL")
+                {
+                    var splitMessage = logEvent.RenderedMessage.Split(";".ToCharArray());
+                    for (var i = 1; i < splitMessage.Length - 1; i++)
+                    {
+                        parameters.Add(
+                            splitMessage[i]
+                                .Split("=".ToCharArray())
+                                .Last()
+                                .Replace("'", "")
+                                .Substring(1));
+                    }
+                }
             }
             return parameters.ToArray();
         }
@@ -76,7 +86,7 @@ namespace LinqToExcel.Tests
         /// </summary>
         protected string GetConnectionString()
         {
-            LoggingEvent[] loggingEvents = _loggedEvents.GetEvents();
+            var loggingEvents = _loggedEvents.GetEvents();
             foreach (LoggingEvent logEvent in loggingEvents)
             {
                 string message = logEvent.RenderedMessage;
@@ -88,7 +98,7 @@ namespace LinqToExcel.Tests
 
         protected string GetDataSource()
         {
-            string[] conProps = GetConnectionString().Split(";".ToCharArray());
+            var conProps = GetConnectionString().Split(";".ToCharArray());
             foreach (string conProp in conProps)
             {
                 if (conProp.Substring(0, 11) == "Data Source")
@@ -99,8 +109,8 @@ namespace LinqToExcel.Tests
 
         protected string GetExtendedProperties()
         {
-            string conString = GetConnectionString();
-            int location = conString.IndexOf("Extended Properties=");
+            var conString = GetConnectionString();
+            var location = conString.IndexOf("Extended Properties=");
             return conString.Substring(location + 20);
         }
     }

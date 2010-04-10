@@ -62,19 +62,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cell.cs" />
+    <Compile Include="Domain\Cell.cs" />
     <Compile Include="IExcelQueryFactory.cs" />
     <Compile Include="Query\ExcelQueryable.cs" />
+    <Compile Include="Query\ExcelQueryArgs.cs" />
     <Compile Include="Query\ExcelQueryExecutor.cs" />
     <Compile Include="ExcelQueryFactory.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Extensions\CommonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\ProjectorBuildingExpressionTreeVisitor.cs" />
     <Compile Include="Query\ResultObjectMapping.cs" />
     <Compile Include="Query\WhereClauseExpressionTreeVisitor.cs" />
     <Compile Include="Query\SqlGeneratorQueryModelVisitor.cs" />
     <Compile Include="Query\SqlParts.cs" />
-    <Compile Include="Row.cs" />
+    <Compile Include="Domain\Row.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="License.txt">

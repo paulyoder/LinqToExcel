@@ -70,7 +70,7 @@ namespace LinqToExcel.Tests
             catch (OleDbException) { }
             var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} < ?)", GetSQLFieldName("Modified"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
-            Assert.AreEqual("11/02/2009", GetSQLParameters()[0]);
+            Assert.AreEqual("11/02/2009 12:00:00 AM", GetSQLParameters()[0]);
         }
 
         [Test]
