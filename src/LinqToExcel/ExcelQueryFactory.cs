@@ -224,6 +224,98 @@ namespace LinqToExcel
                 });
         }
 
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        public ExcelQueryable<RowNoHeader> WorksheetNoHeader()
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings)
+                {
+                    NoHeader = true
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        public ExcelQueryable<RowNoHeader> WorksheetNoHeader(string worksheetName)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings)
+                {
+                    NoHeader = true,
+                    WorksheetName = worksheetName
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<RowNoHeader> WorksheetNoHeader(int worksheetIndex)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings)
+                {
+                    NoHeader = true,
+                    WorksheetIndex = worksheetIndex
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
+        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings)
+                {
+                    NoHeader = true,
+                    StartRange = startRange,
+                    EndRange = endRange
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, string worksheetName)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings)
+                {
+                    NoHeader = true,
+                    StartRange = startRange,
+                    EndRange = endRange,
+                    WorksheetName = worksheetName
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, int worksheetIndex)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings)
+                {
+                    NoHeader = true,
+                    StartRange = startRange,
+                    EndRange = endRange,
+                    WorksheetIndex = worksheetIndex
+                });
+        }
+
         #endregion
 
         #region Static Methods

@@ -104,5 +104,45 @@ namespace LinqToExcel
         /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         ExcelQueryable<Row> WorksheetRange(string startRange, string endRange, int worksheetIndex);
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        ExcelQueryable<RowNoHeader> WorksheetNoHeader();
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        ExcelQueryable<RowNoHeader> WorksheetNoHeader(string worksheetName);
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        ExcelQueryable<RowNoHeader> WorksheetNoHeader(int worksheetIndex);
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
+        ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange);
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, string worksheetName);
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, int worksheetIndex);
     }
 }

@@ -71,6 +71,8 @@
     <Compile Include="CSV_SQLStatements_UnitTests.cs" />
     <Compile Include="ConnectionString_UnitTests.cs" />
     <Compile Include="Excel2007_IntegrationTests.cs" />
+    <Compile Include="NoHeader_IntergrationTests.cs" />
+    <Compile Include="NoHeader_SQLStatements_UnitTests.cs" />
     <Compile Include="Range_IntegrationTests.cs" />
     <Compile Include="Range_SQLStatements_UnitTests.cs" />
     <Compile Include="IMEX_Tests.cs" />
@@ -104,6 +106,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ExcelFiles\Companies.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ExcelFiles\NoHeader.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ExcelFiles\NoHeader.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

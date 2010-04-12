@@ -44,7 +44,7 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        [ExpectedArgumentException("Column name does not exist: First Name")]
+        [ExpectedArgumentException("'First Name' column name does not exist. Valid column names are 'Name', 'Favorite Sport', 'Age'")]
         public void invalid_column_name_index_throws_argument_exception()
         {
             var newRow = new Row(_cells, _columnMappings);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LinqToExcel.Extensions;
 
 namespace LinqToExcel
 {
@@ -26,7 +27,8 @@ namespace LinqToExcel
             get 
             {
                 if (!_columnIndexMapping.ContainsKey(columnName))
-                    throw new ArgumentException(string.Format("Column name does not exist: {0}", columnName));
+                    throw new ArgumentException(string.Format("'{0}' column name does not exist. Valid column names are '{1}'", 
+                        columnName, string.Join("', '", _columnIndexMapping.Keys.ToArray())));
                 return base[_columnIndexMapping[columnName]]; 
             }
         }

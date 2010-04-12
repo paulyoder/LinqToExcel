@@ -48,7 +48,7 @@ namespace LinqToExcel.Tests
             catch (DataException) { }
 
             var extendedProperties = GetExtendedProperties();
-            Assert.AreEqual("\"text;HDR=Yes;FMT=Delimited;IMEX=1\"", extendedProperties);
+            Assert.AreEqual("\"text;HDR=YES;FMT=Delimited;IMEX=1\"", extendedProperties);
         }
 
         [Test]

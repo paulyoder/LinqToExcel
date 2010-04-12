@@ -46,6 +46,11 @@ namespace LinqToExcel.Query
                 !Regex.Match(args.EndRange, "^[a-zA-Z]{1,3}[0-9]{1,7}$").Success)
                 throw new ArgumentException(string.Format(
                     "EndRange argument '{0}' is invalid format for cell name", args.EndRange));
+
+            if (args.NoHeader &&
+                !String.IsNullOrEmpty(args.StartRange) &&
+                args.FileName.ToLower().Contains(".csv"))
+                throw new ArgumentException("Cannot use WorksheetRangeNoHeader on csv files");
         }
 
         /// <summary>
@@ -175,7 +180,7 @@ namespace LinqToExcel.Query
                         throw new DataException(
                             string.Format("'{0}' is not a valid worksheet name. Valid worksheet names are: '{1}'",
                                           _args.WorksheetName, string.Join("', '", GetWorksheetNames().ToArray())));
-                    else if (!CheckIfInvalidColumnNameUsed(sql))
+                    if (!CheckIfInvalidColumnNameUsed(sql))
                         throw e;
                 }
 
@@ -184,6 +189,8 @@ namespace LinqToExcel.Query
                     results = GetScalarResults(data);
                 else if (queryModel.MainFromClause.ItemType == typeof(Row))
                     results = GetRowResults(data, columns);
+                else if (queryModel.MainFromClause.ItemType == typeof(RowNoHeader))
+                    results = GetRowNoHeaderResults(data);
                 else
                     results = GetTypeResults(data, columns, queryModel);
             }
@@ -226,13 +233,16 @@ namespace LinqToExcel.Query
             else if (_args.FileName.ToLower().EndsWith("csv"))
             {
                 connString = string.Format(
-                        @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=Yes;FMT=Delimited;IMEX=1""",
-                        Path.GetDirectoryName(_args.FileName));
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
+                    Path.GetDirectoryName(_args.FileName));
             }
             else
                 connString = string.Format(
                     @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
                     _args.FileName);
+
+            if (_args.NoHeader)
+                connString = connString.Replace("HDR=YES", "HDR=NO");
 
             if (_log.IsDebugEnabled)
                 _log.DebugFormat("Connection String: {0}", connString);
@@ -253,6 +263,19 @@ namespace LinqToExcel.Query
                 for (var i = 0; i < columns.Count(); i++)
                     cells.Add(new Cell(data[i]));
                 results.CallMethod("Add", new Row(cells, columnIndexMapping));
+            }
+            return results.AsEnumerable();
+        }
+
+        private IEnumerable<object> GetRowNoHeaderResults(OleDbDataReader data)
+        {
+            var results = new List<object>();
+            while (data.Read())
+            {
+                IList<Cell> cells = new List<Cell>();
+                for (var i = 0; i < data.FieldCount; i++)
+                    cells.Add(new Cell(data[i]));
+                results.CallMethod("Add", new RowNoHeader(cells));
             }
             return results.AsEnumerable();
         }
@@ -292,17 +315,14 @@ namespace LinqToExcel.Query
                 logMessage.AppendFormat("{0};", sqlParts.ToString());
                 for (var i = 0; i < sqlParts.Parameters.Count(); i++)
                 {
-                    var value = sqlParts.Parameters.ElementAt(i).Value.ToString();
-                    var valueIsNumber = Regex.Match(value, @"^\d+$").Success;
-                    logMessage.AppendFormat(" p{0} = ", i);
-                    if (!valueIsNumber)
-                        logMessage.Append("'");
-                    logMessage.Append(value);
-                    if (!valueIsNumber)
-                        logMessage.Append("'");
-                    logMessage.Append(";");
+                    var paramValue = sqlParts.Parameters.ElementAt(i).Value.ToString();
+                    var paramMessage = string.Format(" p{0} = '{1}';",
+                        i, sqlParts.Parameters.ElementAt(i).Value.ToString());
+
+                    if (paramValue.IsNumber())
+                        paramMessage = paramMessage.Replace("'", "");
+                    logMessage.Append(paramMessage);
                 }
-                    
                 
                 var sqlLog = LogManager.GetLogger("LinqToExcel.SQL");
                 sqlLog.Debug(logMessage.ToString());

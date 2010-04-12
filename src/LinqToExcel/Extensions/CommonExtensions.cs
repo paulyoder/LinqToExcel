@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace LinqToExcel.Extensions
 {
@@ -60,6 +62,19 @@ namespace LinqToExcel.Extensions
             var func = new Func<object, TResult>((item) => 
                 (TResult)Convert.ChangeType(item, typeof(TResult)));
             return list.Cast<TResult>(func);
+        }
+
+        public static string[] ToArray(this ICollection<string> collection)
+        {
+            var list = new List<string>();
+            foreach (var item in collection)
+                list.Add(item);
+            return list.ToArray();
+        }
+
+        public static bool IsNumber(this string value)
+        {
+            return Regex.Match(value, @"^\d+$").Success;
         }
     }
 }

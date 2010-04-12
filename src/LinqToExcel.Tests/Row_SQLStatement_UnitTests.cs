@@ -70,12 +70,12 @@ namespace LinqToExcel.Tests
             catch (OleDbException) { }
             var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} < ?)", GetSQLFieldName("Modified"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
-            Assert.AreEqual("11/02/2009 12:00:00 AM", GetSQLParameters()[0]);
+            Assert.AreEqual("11/02/2009 12:00:00 AM", GetSQLParameters()[0].ToString());
         }
 
         [Test]
-        [ExpectedArgumentException("Cannot use column indexes in where clause")]
-        public void argument_thrown_when_column_indexes_used_in_where_clause()
+        [ExpectedArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader")]
+        public void argument_exception_thrown_when_column_indexes_used_in_worksheet_where_clause()
         {
             var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
                             where c[0] == "Omaha"

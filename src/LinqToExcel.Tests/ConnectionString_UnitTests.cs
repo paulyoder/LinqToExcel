@@ -58,7 +58,7 @@ namespace LinqToExcel.Tests
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=Yes;FMT=Delimited;IMEX=1""",
+                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
                 @"C:\Desktop");
             Assert.AreEqual(expected, GetConnectionString());
         }
@@ -102,6 +102,21 @@ namespace LinqToExcel.Tests
             var expected = string.Format(
                 @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
                 "spreadsheet.xlsb");
+            Assert.AreEqual(expected, GetConnectionString());
+        }
+
+        [Test]
+        public void no_header()
+        {
+            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var companies = from c in excel.WorksheetNoHeader()
+                            select c;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expected = string.Format(
+                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=NO;IMEX=1""",
+                "spreadsheet.xls");
             Assert.AreEqual(expected, GetConnectionString());
         }
     }

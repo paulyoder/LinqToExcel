@@ -177,7 +177,12 @@ namespace LinqToExcel.Query
         {
             var arg = ((MethodCallExpression)exp).Arguments.First();
             if (arg.Type == typeof(int))
-                throw new ArgumentException("Cannot use column indexes in where clause");
+            {
+                if (_sheetType == typeof(RowNoHeader))
+                    return string.Format("F{0}", Int32.Parse(arg.ToString()) + 1);
+                else
+                    throw new ArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader");
+            }
 
             var columnName = arg.ToString().ToCharArray();
             columnName[0] = "[".ToCharArray().First();

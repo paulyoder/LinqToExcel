@@ -1,7 +1,5 @@
 LinqToExcel Todo List
 
-- Allow no headers
-
 - Test linq statements with multiple result operators
 
 - Create Dynamic Lambda expressions to process data results

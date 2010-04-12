@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\Cell.cs" />
+    <Compile Include="Domain\RowNoHeader.cs" />
     <Compile Include="IExcelQueryFactory.cs" />
     <Compile Include="Query\ExcelQueryable.cs" />
     <Compile Include="Query\ExcelQueryArgs.cs" />

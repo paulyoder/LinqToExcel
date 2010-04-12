@@ -13,11 +13,13 @@ namespace LinqToExcel.Query
         public Dictionary<string, string> ColumnMappings { get; set; }
         public string StartRange { get; set; }
         public string EndRange { get; set; }
+        public bool NoHeader { get; set; }
 
         public ExcelQueryArgs(string fileName, Dictionary<string, string> columnMappings)
         {
             FileName = fileName;
             ColumnMappings = columnMappings ?? new Dictionary<string, string>();
+            NoHeader = false;
         }
 
         public override string ToString()
@@ -26,8 +28,8 @@ namespace LinqToExcel.Query
             foreach (var kvp in ColumnMappings)
                 columnMappingsString.AppendFormat("[{0} = '{1}'] ", kvp.Key, kvp.Value);
             
-            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange {4}; ColumnMappings: {5}",
-                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, columnMappingsString);
+            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange: {4}; NoHeader: {5}; ColumnMappings: {6}",
+                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, NoHeader, columnMappingsString);
         }
     }
 }
