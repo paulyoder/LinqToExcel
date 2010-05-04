@@ -8,5 +8,6 @@ namespace LinqToExcel.Tests
         public string CEO { get; set; }
         public int EmployeeCount { get; set; }
         public DateTime StartDate { get; set; }
+        public bool IsActive { get; set; }
     }
 }

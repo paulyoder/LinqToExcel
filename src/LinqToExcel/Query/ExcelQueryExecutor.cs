@@ -294,11 +294,19 @@ namespace LinqToExcel.Query
                         _args.ColumnMappings[prop.Name] :
                         prop.Name;
                     if (columns.Contains(columnName))
-                        result.SetProperty(prop.Name, data[columnName].Cast(prop.PropertyType));
+                        result.SetProperty(prop.Name, GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType));
                 }
                 results.Add(result);
             } 
             return results.AsEnumerable();
+        }
+
+        private object GetColumnValue(IDataRecord data, string columnName, string propertyName)
+        {
+            //Perform the property transformation if there is one
+            return (_args.Transformations.ContainsKey(propertyName)) ?
+                _args.Transformations[propertyName](data[columnName].ToString()) :
+                data[columnName];
         }
 
         private IEnumerable<object> GetScalarResults(IDataReader data)

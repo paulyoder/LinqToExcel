@@ -90,5 +90,27 @@ namespace LinqToExcel.Tests
             }
             Assert.AreEqual(1, warningsLogged);
         }
+
+        [Test]
+        public void column_mappings_with_transformation()
+        {
+            _repo.AddMapping<Company>(x => x.IsActive, "Active", x => x == "Y");
+            var companies = from c in _repo.Worksheet<Company>(_worksheetName)
+                            select c;
+
+            foreach (var company in companies)
+                Assert.AreEqual(company.StartDate > new DateTime(1980, 1, 1), company.IsActive);
+        }
+
+        [Test]
+        public void transformation()
+        {
+            //Add transformation to change the Name value to 'Looney Tunes' if it is originally 'ACME'
+            _repo.AddTransformation<Company>(p => p.Name, value => (value == "ACME") ? "Looney Tunes" : value);
+            var firstCompany = (from c in _repo.Worksheet<Company>(_worksheetName)
+                                select c).First();
+
+            Assert.AreEqual("Looney Tunes", firstCompany.Name);
+        }
     }
 }

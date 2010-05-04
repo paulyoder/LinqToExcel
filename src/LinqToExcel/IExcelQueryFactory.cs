@@ -20,6 +20,27 @@ namespace LinqToExcel
         void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column);
 
         /// <summary>
+        /// Add a column to property mapping with a transformation operation
+        /// </summary>
+        /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
+        /// <param name="property">Class property to map to</param>
+        /// <param name="column">Worksheet column name to map from</param>
+        /// <param name="transformation">Lambda expression that transforms a cell value in the spreadsheet to the desired property value</param>
+        void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column, Func<string, object> transformation);
+
+        /// <summary>
+        /// Transforms a cell value in the spreadsheet to the desired property value
+        /// </summary>
+        /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
+        /// <param name="property">Class property value to transform</param>
+        /// <param name="transformation">Lambda expression that transforms a cell value in the spreadsheet to the desired property value</param>
+        /// <example>
+        /// AddTransformation{Person}(p => p.IsActive, x => x == "Y");
+        /// AddTransformation{Person}(p => p.IsYoung, x => DateTime.Parse(x) > new DateTime(2000, 1, 1));
+        /// </example>
+        void AddTransformation<TSheetData>(Expression<Func<TSheetData, object>> property, Func<string, object> transformation);
+
+        /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
