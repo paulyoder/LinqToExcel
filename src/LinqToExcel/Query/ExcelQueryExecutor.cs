@@ -68,13 +68,10 @@ namespace LinqToExcel.Query
         {
             var results = ExecuteCollection<T>(queryModel);
 
-            if (results.Count() > 0)
+            foreach (var resultOperator in queryModel.ResultOperators)
             {
-                foreach (var resultOperator in queryModel.ResultOperators)
-                {
-                    if (resultOperator is LastResultOperator)
-                        return results.Last();
-                }
+                if (resultOperator is LastResultOperator)
+                    return results.LastOrDefault();
             }
 
             return (returnDefaultWhenEmpty) ?
