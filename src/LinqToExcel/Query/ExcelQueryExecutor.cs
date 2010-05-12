@@ -68,10 +68,13 @@ namespace LinqToExcel.Query
         {
             var results = ExecuteCollection<T>(queryModel);
 
-            foreach (var resultOperator in queryModel.ResultOperators)
+            if (results.Count() > 0)
             {
-                if (resultOperator is LastResultOperator)
-                    return results.Last();
+                foreach (var resultOperator in queryModel.ResultOperators)
+                {
+                    if (resultOperator is LastResultOperator)
+                        return results.Last();
+                }
             }
 
             return (returnDefaultWhenEmpty) ?
@@ -105,7 +108,8 @@ namespace LinqToExcel.Query
         protected Func<object, T> GetSelectProjector<T>(object firstResult, QueryModel queryModel)
         {
             Func<object, T> projector = (result) => result.Cast<T>();
-            if ((firstResult.GetType() != typeof(T)) &&
+            if ((firstResult != null) &&
+                (firstResult.GetType() != typeof(T)) &&
                 (typeof(T) != typeof(int)) &&
                 (typeof(T) != typeof(long)))
             {

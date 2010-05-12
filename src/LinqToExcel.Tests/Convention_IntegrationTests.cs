@@ -205,6 +205,16 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void FirstOrDefault_returns_null_when_no_rows_returned()
+        {
+            var noCompany = (from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
+                                where c.CEO == "Nobody"
+                                select c).FirstOrDefault();
+
+            Assert.IsNull(noCompany);
+        }
+
+        [Test]
         public void count()
         {
             var companyCount = (from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
@@ -285,6 +295,16 @@ namespace LinqToExcel.Tests
                                select c;
 
             Assert.AreEqual(455, minEmployees.Last().EmployeeCount);
+        }
+
+        [Test]
+        public void LastOrDefault_returns_null_when_no_rows_returned()
+        {
+            var noCompany = (from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
+                             where c.CEO == "Nobody"
+                             select c).LastOrDefault();
+
+            Assert.IsNull(noCompany);
         }
 
         [Test]
