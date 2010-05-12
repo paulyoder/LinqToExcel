@@ -51,6 +51,10 @@ namespace LinqToExcel.Query
         {
             _whereClause.Append("(");
 
+            // Patch for vb.net expression that are always considered a MethodCallExpression even if they are not.
+            // see http://www.re-motion.org/blogs/mix/archive/2009/10/16/vb.net-specific-text-comparison-in-linq-queries.aspx
+            bExp = ConvertVbStringCompare(bExp);
+
             //We always want the MemberAccess (ColumnName) to be on the left side of the statement
             var bLeft = bExp.Left;
             var bRight = bExp.Right;
@@ -94,6 +98,36 @@ namespace LinqToExcel.Query
             VisitExpression(bRight);
             _whereClause.Append(")");
             return bExp;
+        }
+
+        protected BinaryExpression ConvertVbStringCompare(BinaryExpression exp)
+        {
+            if (exp.Left.NodeType == ExpressionType.Call)
+            {
+                var compareStringCall = (MethodCallExpression)exp.Left;
+                if (compareStringCall.Method.DeclaringType.FullName == "Microsoft.VisualBasic.CompilerServices.Operators" && compareStringCall.Method.Name == "CompareString")
+                {
+                    var arg1 = compareStringCall.Arguments[0];
+                    var arg2 = compareStringCall.Arguments[1];
+
+                    switch (exp.NodeType)
+                    {
+                        case ExpressionType.LessThan:
+                            return Expression.LessThan(arg1, arg2);
+                        case ExpressionType.LessThanOrEqual:
+                            return Expression.GreaterThan(arg1, arg2);
+                        case ExpressionType.GreaterThan:
+                            return Expression.GreaterThan(arg1, arg2);
+                        case ExpressionType.GreaterThanOrEqual:
+                            return Expression.GreaterThanOrEqual(arg1, arg2);
+                        case ExpressionType.NotEqual:
+                            return Expression.NotEqual(arg1, arg2);
+                        default:
+                            return Expression.Equal(arg1, arg2);
+                    }
+                }
+            }
+            return exp;
         }
 
         protected override Expression VisitMemberExpression(MemberExpression mExp)
