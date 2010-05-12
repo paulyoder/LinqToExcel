@@ -108,7 +108,10 @@ namespace LinqToExcel.Query
 
         protected override void VisitBodyClauses(ObservableCollection<IBodyClause> bodyClauses, QueryModel queryModel)
         {
-            var orderClause = bodyClauses.FirstOrDefault() as OrderByClause;
+            var orderClause = bodyClauses
+                .FirstOrDefault(x => x.GetType() == typeof(OrderByClause)) 
+                as OrderByClause;
+
             if (orderClause != null)
             {
                 var columnName = "";

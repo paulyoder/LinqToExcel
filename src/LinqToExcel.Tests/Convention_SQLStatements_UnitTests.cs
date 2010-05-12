@@ -359,5 +359,19 @@ namespace LinqToExcel.Tests
             catch (OleDbException) { }
             Assert.AreEqual("SELECT * FROM [Sheet1$]", GetSQLStatement());
         }
+
+        [Test]
+        public void where_and_orderby()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where c.EmployeeCount > 500
+                            orderby c.StartDate ascending
+                            select c;
+
+            try { companies.ToList(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} > ?) ORDER BY {1} ASC", GetSQLFieldName("EmployeeCount"), GetSQLFieldName("StartDate"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
     }
 }
