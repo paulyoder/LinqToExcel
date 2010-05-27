@@ -40,11 +40,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Remotion, Version=1.13.23.1, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+    <Reference Include="Remotion, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Remotion\Remotion.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion.Data.Linq, Version=1.13.18.2, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+    <Reference Include="Remotion.Data.Linq, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Remotion\Remotion.Data.Linq.dll</HintPath>
     </Reference>
