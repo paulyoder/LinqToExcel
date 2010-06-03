@@ -115,7 +115,7 @@ namespace LinqToExcel.Query
                         case ExpressionType.LessThan:
                             return Expression.LessThan(arg1, arg2);
                         case ExpressionType.LessThanOrEqual:
-                            return Expression.GreaterThan(arg1, arg2);
+                            return Expression.LessThanOrEqual(arg1, arg2);
                         case ExpressionType.GreaterThan:
                             return Expression.GreaterThan(arg1, arg2);
                         case ExpressionType.GreaterThanOrEqual:
