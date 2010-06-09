@@ -10,7 +10,7 @@
 	<property name="file.publish" value="${dir.base}\publish.zip" />
 	<property name="tool.MbUnit" value="${dir.base}\lib\MbUnit\MbUnit.Cons.exe" />
 	
-	<target name="build" depends="clean, compile" />
+	<target name="build" depends="clean, compile, deleteLog4netXml" />
 	<target name="publish" depends="test, build, zip" />
 	
 	<target name="clean" description="deletes folders used in the build">
@@ -56,5 +56,9 @@
 			commandline="&quot;${dir.test}\bin\LinqToExcel.Tests.dll&quot; /report-folder:&quot;${dir.test}\reports\\&quot; /report-type:Html" /> 
 		<!-- clean up the created directories if the unittests passed -->
 		<call target="clean" />
+	</target>
+	
+	<target name="deleteLog4netXml" description="Deletes the log4net.xml file that isn't need and takes up a lot of space">
+		<delete file="${dir.bin}/log4net.xml" />
 	</target>
 </project>
