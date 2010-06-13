@@ -12,16 +12,17 @@ using LinqToExcel.Extensions;
 using log4net;
 using System.Text.RegularExpressions;
 using System.Text;
+using LinqToExcel.Domain;
 
 namespace LinqToExcel.Query
 {
-    public class ExcelQueryExecutor : IQueryExecutor
+    internal class ExcelQueryExecutor : IQueryExecutor
     {
         private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly ExcelQueryArgs _args;
         private readonly string _connectionString;
 
-        public ExcelQueryExecutor(ExcelQueryArgs args)
+        internal ExcelQueryExecutor(ExcelQueryArgs args)
         {
             ValidateArgs(args);
             _args = args;
@@ -167,7 +168,7 @@ namespace LinqToExcel.Query
                         throw e;
                 }
 
-                var columns = ExcelUtilities.GetColumnNames(_args.WorksheetName, data);
+                var columns = ExcelUtilities.GetColumnNames(data);
                 LogColumnMappingWarnings(columns);
                 if (columns.Count() == 1 && columns.First() == "Expr1000")
                     results = GetScalarResults(data);
@@ -250,6 +251,9 @@ namespace LinqToExcel.Query
             var results = new List<object>();
             var fromType = queryModel.MainFromClause.ItemType;
             var props = fromType.GetProperties();
+            if (_args.StrictMapping)
+                ConfirmStrictMapping(columns, props);
+
             while (data.Read())
             {
                 var result = Activator.CreateInstance(fromType);
@@ -264,6 +268,17 @@ namespace LinqToExcel.Query
                 results.Add(result);
             } 
             return results.AsEnumerable();
+        }
+
+        private void ConfirmStrictMapping(IEnumerable<string> columns, PropertyInfo[] properties)
+        {
+            var propertyNames = properties.Select(x => x.Name);
+            foreach (var column in columns)
+                if (!propertyNames.Contains(column))
+                    throw new StrictMappingException("'{0}' column is not mapped to a property", column);
+            foreach (var propertyName in propertyNames)
+                if (!columns.Contains(propertyName))
+                    throw new StrictMappingException("'{0}' property is not mapped to a column", propertyName);
         }
 
         private object GetColumnValue(IDataRecord data, string columnName, string propertyName)

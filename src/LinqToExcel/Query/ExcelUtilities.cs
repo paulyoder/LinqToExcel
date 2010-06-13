@@ -77,12 +77,12 @@ namespace LinqToExcel.Query
                 conn.Open();
                 command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", WorksheetName);
                 var data = command.ExecuteReader();
-                columns.AddRange(GetColumnNames(WorksheetName, data));
+                columns.AddRange(GetColumnNames(data));
             }
             return columns;
         }
 
-        internal static IEnumerable<string> GetColumnNames(string WorksheetName, IDataReader data)
+        internal static IEnumerable<string> GetColumnNames(IDataReader data)
         {
             var columns = new List<string>();
             var sheetSchema = data.GetSchemaTable();

@@ -13,6 +13,11 @@ namespace LinqToExcel
         string FileName { get; set; }
 
         /// <summary>
+        /// Confirms all the worksheet columns are mapped to a property, and if not, throws a StrictMappingException
+        /// </summary>
+        bool StrictMapping { get; set; }
+
+        /// <summary>
         /// Add a column to property mapping
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>

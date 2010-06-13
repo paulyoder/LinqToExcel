@@ -13,7 +13,7 @@ namespace LinqToExcel.Query
         }
 
         // This constructor is called by users, create a new IQueryExecutor.
-        public ExcelQueryable(ExcelQueryArgs args)
+        internal ExcelQueryable(ExcelQueryArgs args)
             : base(CreateExecutor(args))
         { }
 

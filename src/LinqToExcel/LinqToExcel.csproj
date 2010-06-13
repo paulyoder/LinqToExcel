@@ -64,9 +64,11 @@
   <ItemGroup>
     <Compile Include="Domain\Cell.cs" />
     <Compile Include="Domain\RowNoHeader.cs" />
+    <Compile Include="Domain\StrictMappingException.cs" />
     <Compile Include="IExcelQueryFactory.cs" />
     <Compile Include="Query\ExcelQueryable.cs" />
     <Compile Include="Query\ExcelQueryArgs.cs" />
+    <Compile Include="Query\ExcelQueryConstructorArgs.cs" />
     <Compile Include="Query\ExcelQueryExecutor.cs" />
     <Compile Include="ExcelQueryFactory.cs" />
     <Compile Include="Extensions\CommonExtensions.cs" />

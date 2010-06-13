@@ -9,12 +9,12 @@ using Remotion.Data.Linq.Collections;
 
 namespace LinqToExcel.Query
 {
-    public class SqlGeneratorQueryModelVisitor : QueryModelVisitorBase
+    internal class SqlGeneratorQueryModelVisitor : QueryModelVisitorBase
     {
         public SqlParts SqlStatement { get; protected set; }
         private readonly ExcelQueryArgs _args;
 
-        public SqlGeneratorQueryModelVisitor(ExcelQueryArgs args)
+        internal SqlGeneratorQueryModelVisitor(ExcelQueryArgs args)
         {
             _args = args;
             SqlStatement = new SqlParts();
