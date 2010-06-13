@@ -20,38 +20,40 @@ namespace LinqToExcel
         { }
 
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public ExcelQueryFactory(string fileName)
+        public ExcelQueryFactory(string FileName)
         {
-            FileName = fileName;
+            this.FileName = FileName;
         }
+
+        #region Other Methods
 
         /// <summary>
         /// Add a column to property mapping
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="property">Class property to map to</param>
-        /// <param name="column">Worksheet column name to map from</param>
-        public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column)
+        /// <param name="Property">Class property to map to</param>
+        /// <param name="Column">Worksheet column name to map from</param>
+        public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> Property, string Column)
         {
-            _columnMappings[GetPropertyName(property)] = column;
+            _columnMappings[GetPropertyName(Property)] = Column;
         }
 
         /// <summary>
         /// Add a column to property mapping with a transformation operation
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="property">Class property to map to</param>
-        /// <param name="column">Worksheet column name to map from</param>
-        /// <param name="transformation">Lambda expression that transforms the original string value to the desired property value</param>
-        public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column, Func<string, object> transformation)
+        /// <param name="Property">Class property to map to</param>
+        /// <param name="Column">Worksheet column name to map from</param>
+        /// <param name="Transformation">Lambda expression that transforms the original string value to the desired property value</param>
+        public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> Property, string Column, Func<string, object> Transformation)
         {
-            AddMapping(property, column);
-            AddTransformation(property, transformation);
+            AddMapping(Property, Column);
+            AddTransformation(Property, Transformation);
         }
 
-        private string GetPropertyName<TSheetData>(Expression<Func<TSheetData, object>> property)
+        private string GetPropertyName<TSheetData>(Expression<Func<TSheetData, object>> Property)
         {
-            var exp = (LambdaExpression)property;
+            var exp = (LambdaExpression)Property;
 
             //exp.Body has 2 possible types
             //If the property type is native, then exp.Body == typeof(MemberExpression)
@@ -67,16 +69,41 @@ namespace LinqToExcel
         /// Transforms a cell value in the spreadsheet to the desired property value
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="property">Class property value to transform</param>
-        /// <param name="transformation">Lambda expression that transforms the original string value to the desired property value</param>
+        /// <param name="Property">Class property value to transform</param>
+        /// <param name="Transformation">Lambda expression that transforms the original string value to the desired property value</param>
         /// <example>
         /// AddTransformation{Person}(p => p.IsActive, x => x == "Y");
         /// AddTransformation{Person}(p => p.IsYoung, x => DateTime.Parse(x) > new DateTime(2000, 1, 1));
         /// </example>
-        public void AddTransformation<TSheetData>(Expression<Func<TSheetData, object>> property, Func<string, object> transformation)
+        public void AddTransformation<TSheetData>(Expression<Func<TSheetData, object>> Property, Func<string, object> Transformation)
         {
-            _transformations.Add(GetPropertyName(property), transformation);
+            _transformations.Add(GetPropertyName(Property), Transformation);
         }
+
+        /// <summary>
+        /// Returns a list of worksheet names that the spreadsheet contains
+        /// </summary>
+        public IEnumerable<string> GetWorksheetNames()
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetWorksheetNames(FileName);
+        }
+
+        /// <summary>
+        /// Returns a list of columns names that a worksheet contains
+        /// </summary>
+        /// <param name="WorksheetName">Worksheet name to get the list of column names from</param>
+        public IEnumerable<string> GetColumnNames(string WorksheetName)
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetColumnNames(WorksheetName, FileName);
+        }
+
+        #endregion
 
         #region Worksheet Query Methods
 
@@ -103,13 +130,13 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        public ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName)
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        public ExcelQueryable<TSheetData> Worksheet<TSheetData>(string WorksheetName)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = WorksheetName
                 });
         }
 
@@ -117,39 +144,39 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        public ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex)
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<TSheetData> Worksheet<TSheetData>(int WorksheetIndex)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = WorksheetIndex
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        public ExcelQueryable<Row> Worksheet(string worksheetName)
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        public ExcelQueryable<Row> Worksheet(string WorksheetName)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = WorksheetName
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        public ExcelQueryable<Row> Worksheet(int worksheetIndex)
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<Row> Worksheet(int WorksheetIndex)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = WorksheetIndex
                 });
         }
 
@@ -158,64 +185,64 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="startRange"></param>
-        /// <param name="endRange"></param>
-        public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string startRange, string endRange)
+        /// <param name="StartRange"></param>
+        /// <param name="EndRange"></param>
+        public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string StartRange, string EndRange)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    StartRange = startRange,
-                    EndRange = endRange
+                    StartRange = StartRange,
+                    EndRange = EndRange
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
-        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
-        public ExcelQueryable<Row> WorksheetRange(string startRange, string endRange)
+        /// <param name="StartRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="EndRange">Bottom right cell name of the range (eg 'D4')</param>
+        public ExcelQueryable<Row> WorksheetRange(string StartRange, string EndRange)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    StartRange = startRange,
-                    EndRange = endRange
+                    StartRange = StartRange,
+                    EndRange = EndRange
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
-        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        public ExcelQueryable<Row> WorksheetRange(string startRange, string endRange, string worksheetName)
+        /// <param name="StartRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="EndRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        public ExcelQueryable<Row> WorksheetRange(string StartRange, string EndRange, string WorksheetName)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetName = worksheetName,
-                    StartRange = startRange,
-                    EndRange = endRange
+                    WorksheetName = WorksheetName,
+                    StartRange = StartRange,
+                    EndRange = EndRange
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
-        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        public ExcelQueryable<Row> WorksheetRange(string startRange, string endRange, int worksheetIndex)
+        /// <param name="StartRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="EndRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<Row> WorksheetRange(string StartRange, string EndRange, int WorksheetIndex)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetIndex = worksheetIndex,
-                    StartRange = startRange,
-                    EndRange = endRange
+                    WorksheetIndex = WorksheetIndex,
+                    StartRange = StartRange,
+                    EndRange = EndRange
                 });
         }
 
@@ -223,17 +250,17 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
-        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string startRange, string endRange, string worksheetName)
+        /// <param name="StartRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="EndRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string StartRange, string EndRange, string WorksheetName)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetName = worksheetName,
-                    StartRange = startRange,
-                    EndRange = endRange
+                    WorksheetName = WorksheetName,
+                    StartRange = StartRange,
+                    EndRange = EndRange
                 });
         }
 
@@ -241,17 +268,17 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
-        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string startRange, string endRange, int worksheetIndex)
+        /// <param name="StartRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="EndRange">Bottom right cell name of the range (eg 'D4')</param>
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string StartRange, string EndRange, int WorksheetIndex)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
-                    WorksheetIndex = worksheetIndex,
-                    StartRange = startRange,
-                    EndRange = endRange
+                    WorksheetIndex = WorksheetIndex,
+                    StartRange = StartRange,
+                    EndRange = EndRange
                 });
         }
 
@@ -270,62 +297,62 @@ namespace LinqToExcel
         /// <summary>
         /// Enables Linq queries against an Excel worksheet that does not have a header row
         /// </summary>
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        public ExcelQueryable<RowNoHeader> WorksheetNoHeader(string WorksheetName)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings, _transformations)
+                {
+                    NoHeader = true,
+                    WorksheetName = WorksheetName
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        public ExcelQueryable<RowNoHeader> WorksheetNoHeader(int WorksheetIndex)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings, _transformations)
+                {
+                    NoHeader = true,
+                    WorksheetIndex = WorksheetIndex
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="StartRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="EndRange">Bottom right cell name of the range (eg 'D4')</param>
+        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string StartRange, string EndRange)
+        {
+            return new ExcelQueryable<RowNoHeader>(
+                new ExcelQueryArgs(FileName, _columnMappings, _transformations)
+                {
+                    NoHeader = true,
+                    StartRange = StartRange,
+                    EndRange = EndRange
+                });
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
+        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
         /// <param name="worksheetName">Name of the worksheet</param>
-        public ExcelQueryable<RowNoHeader> WorksheetNoHeader(string worksheetName)
+        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string StartRange, string EndRange, string WorksheetName)
         {
             return new ExcelQueryable<RowNoHeader>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
                     NoHeader = true,
-                    WorksheetName = worksheetName
-                });
-        }
-
-        /// <summary>
-        /// Enables Linq queries against an Excel worksheet that does not have a header row
-        /// </summary>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        public ExcelQueryable<RowNoHeader> WorksheetNoHeader(int worksheetIndex)
-        {
-            return new ExcelQueryable<RowNoHeader>(
-                new ExcelQueryArgs(FileName, _columnMappings, _transformations)
-                {
-                    NoHeader = true,
-                    WorksheetIndex = worksheetIndex
-                });
-        }
-
-        /// <summary>
-        /// Enables Linq queries against an Excel worksheet that does not have a header row
-        /// </summary>
-        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
-        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
-        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange)
-        {
-            return new ExcelQueryable<RowNoHeader>(
-                new ExcelQueryArgs(FileName, _columnMappings, _transformations)
-                {
-                    NoHeader = true,
-                    StartRange = startRange,
-                    EndRange = endRange
-                });
-        }
-
-        /// <summary>
-        /// Enables Linq queries against an Excel worksheet that does not have a header row
-        /// </summary>
-        /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
-        /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, string worksheetName)
-        {
-            return new ExcelQueryable<RowNoHeader>(
-                new ExcelQueryArgs(FileName, _columnMappings, _transformations)
-                {
-                    NoHeader = true,
-                    StartRange = startRange,
-                    EndRange = endRange,
-                    WorksheetName = worksheetName
+                    StartRange = StartRange,
+                    EndRange = EndRange,
+                    WorksheetName = WorksheetName
                 });
         }
 
@@ -335,15 +362,15 @@ namespace LinqToExcel
         /// <param name="startRange">Upper left cell name of the range (eg 'B2')</param>
         /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, int worksheetIndex)
+        public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string StartRange, string EndRange, int WorksheetIndex)
         {
             return new ExcelQueryable<RowNoHeader>(
                 new ExcelQueryArgs(FileName, _columnMappings, _transformations)
                 {
                     NoHeader = true,
-                    StartRange = startRange,
-                    EndRange = endRange,
-                    WorksheetIndex = worksheetIndex
+                    StartRange = StartRange,
+                    EndRange = EndRange,
+                    WorksheetIndex = WorksheetIndex
                 });
         }
 
@@ -355,14 +382,14 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName)
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string WorksheetName, string FileName)
         {
             return new ExcelQueryable<TSheetData>(
-                new ExcelQueryArgs(fileName, null, null)
+                new ExcelQueryArgs(FileName, null, null)
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = WorksheetName
                 });
         }
 
@@ -370,72 +397,72 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName)
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int WorksheetIndex, string FileName)
         {
             return new ExcelQueryable<TSheetData>(
-                new ExcelQueryArgs(fileName, null, null)
+                new ExcelQueryArgs(FileName, null, null)
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = WorksheetIndex
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName)
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        public static ExcelQueryable<Row> Worksheet(string WorksheetName, string FileName)
         {
             return new ExcelQueryable<Row>(
-                new ExcelQueryArgs(fileName, null, null)
+                new ExcelQueryArgs(FileName, null, null)
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = WorksheetName
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName)
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        public static ExcelQueryable<Row> Worksheet(int WorksheetIndex, string FileName)
         {
             return new ExcelQueryable<Row>(
-                new ExcelQueryArgs(fileName, null, null)
+                new ExcelQueryArgs(FileName, null, null)
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = WorksheetIndex
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName, Dictionary<string, string> columnMappings)
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        /// <param name="ColumnMappings">Column to property mappings</param>
+        public static ExcelQueryable<Row> Worksheet(string WorksheetName, string FileName, Dictionary<string, string> ColumnMappings)
         {
             return new ExcelQueryable<Row>(
-                new ExcelQueryArgs(fileName, columnMappings, null)
+                new ExcelQueryArgs(FileName, ColumnMappings, null)
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = WorksheetName
                 });
         }
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName, Dictionary<string, string> columnMappings)
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        /// <param name="ColumnMappings">Column to property mappings</param>
+        public static ExcelQueryable<Row> Worksheet(int WorksheetIndex, string FileName, Dictionary<string, string> ColumnMappings)
         {
             return new ExcelQueryable<Row>(
-                new ExcelQueryArgs(fileName, columnMappings, null)
+                new ExcelQueryArgs(FileName, ColumnMappings, null)
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = WorksheetIndex
                 });
         }
 
@@ -443,15 +470,15 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="worksheetName">Name of the worksheet</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName, Dictionary<string, string> columnMappings)
+        /// <param name="WorksheetName">Name of the worksheet</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        /// <param name="ColumnMappings">Column to property mappings</param>
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string WorksheetName, string FileName, Dictionary<string, string> ColumnMappings)
         {
             return new ExcelQueryable<TSheetData>(
-                new ExcelQueryArgs(fileName, columnMappings, null)
+                new ExcelQueryArgs(FileName, ColumnMappings, null)
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = WorksheetName
                 });
         }
 
@@ -459,15 +486,15 @@ namespace LinqToExcel
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
-        /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName, Dictionary<string, string> columnMappings)
+        /// <param name="WorksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        /// <param name="FileName">Full path to the Excel spreadsheet</param>
+        /// <param name="ColumnMappings">Column to property mappings</param>
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int WorksheetIndex, string FileName, Dictionary<string, string> ColumnMappings)
         {
             return new ExcelQueryable<TSheetData>(
-                new ExcelQueryArgs(fileName, columnMappings, null)
+                new ExcelQueryArgs(FileName, ColumnMappings, null)
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = WorksheetIndex
                 });
         }
 

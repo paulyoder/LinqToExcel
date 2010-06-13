@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{08F80D96-5387-4406-B88B-DCC0CB661702}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -71,6 +71,7 @@
     <Compile Include="ExcelQueryFactory.cs" />
     <Compile Include="Extensions\CommonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\ExcelUtilities.cs" />
     <Compile Include="Query\ProjectorBuildingExpressionTreeVisitor.cs" />
     <Compile Include="Query\ResultObjectMapping.cs" />
     <Compile Include="Query\WhereClauseExpressionTreeVisitor.cs" />

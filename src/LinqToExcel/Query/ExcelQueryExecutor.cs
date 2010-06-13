@@ -25,7 +25,9 @@ namespace LinqToExcel.Query
         {
             ValidateArgs(args);
             _args = args;
-            _connectionString = GetConnectionString();
+            _connectionString = ExcelUtilities.GetConnectionString(args.FileName, args.NoHeader);
+            if (_log.IsDebugEnabled)
+                _log.DebugFormat("Connection String: {0}", _connectionString);
             GetWorksheetName();
         }
 
@@ -129,7 +131,7 @@ namespace LinqToExcel.Query
                 _args.WorksheetName = Path.GetFileName(_args.FileName);
             else if (_args.WorksheetIndex.HasValue)
             {
-                var worksheetNames = GetWorksheetNames();
+                var worksheetNames = ExcelUtilities.GetWorksheetNames(_args.FileName);
                 if (_args.WorksheetIndex.Value < worksheetNames.Count())
                     _args.WorksheetName = worksheetNames.ElementAt(_args.WorksheetIndex.Value);
                 else
@@ -137,26 +139,6 @@ namespace LinqToExcel.Query
             }
             else if (String.IsNullOrEmpty(_args.WorksheetName))
                 _args.WorksheetName = "Sheet1";
-        }
-
-        private IEnumerable<string> GetWorksheetNames()
-        {
-            var worksheetNames = new List<string>();
-            using (var conn = new OleDbConnection(_connectionString))
-            {
-                conn.Open();
-                var excelTables = conn.GetOleDbSchemaTable(
-                    OleDbSchemaGuid.Tables,
-                    new Object[] { null, null, null, "TABLE" });
-
-                foreach (DataRow row in excelTables.Rows)
-                    worksheetNames.Add(row["TABLE_NAME"].ToString()
-                                                        .Replace("$", "")
-                                                        .Replace("'", ""));
-
-                excelTables.Dispose();
-            }
-            return worksheetNames;
         }
 
         /// <summary>
@@ -180,12 +162,13 @@ namespace LinqToExcel.Query
                     if (e.Message.Contains(_args.WorksheetName))
                         throw new DataException(
                             string.Format("'{0}' is not a valid worksheet name. Valid worksheet names are: '{1}'",
-                                          _args.WorksheetName, string.Join("', '", GetWorksheetNames().ToArray())));
+                                          _args.WorksheetName, string.Join("', '", ExcelUtilities.GetWorksheetNames(_args.FileName).ToArray())));
                     if (!CheckIfInvalidColumnNameUsed(sql))
                         throw e;
                 }
 
-                var columns = GetColumnNames(data);
+                var columns = ExcelUtilities.GetColumnNames(_args.WorksheetName, data);
+                LogColumnMappingWarnings(columns);
                 if (columns.Count() == 1 && columns.First() == "Expr1000")
                     results = GetScalarResults(data);
                 else if (queryModel.MainFromClause.ItemType == typeof(Row))
@@ -198,10 +181,26 @@ namespace LinqToExcel.Query
             return results;
         }
 
+        /// <summary>
+        /// Logs a warning for any property to column mappings that do not exist in the excel worksheet
+        /// </summary>
+        /// <param name="Columns">List of columns in the worksheet</param>
+        private void LogColumnMappingWarnings(IEnumerable<string> Columns)
+        {
+            foreach (var kvp in _args.ColumnMappings)
+            {
+                if (!Columns.Contains(kvp.Value))
+                {
+                    _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
+                        kvp.Value, kvp.Key, _args.WorksheetName);
+                }
+            }
+        }
+
         private bool CheckIfInvalidColumnNameUsed(SqlParts sql)
         {
             var usedColumns = sql.ColumnNamesUsed;
-            var tableColumns = GetColumnNames();
+            var tableColumns = ExcelUtilities.GetColumnNames(_args.WorksheetName, _args.FileName);
             foreach (var column in usedColumns)
             {
                 if (!tableColumns.Contains(column))
@@ -214,41 +213,6 @@ namespace LinqToExcel.Query
                 }
             }
             return false;
-        }
-
-        private string GetConnectionString()
-        {
-            var connString = "";
-
-            if (_args.FileName.ToLower().EndsWith("xlsx") ||
-                _args.FileName.ToLower().EndsWith("xlsm"))
-                connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""",
-                    _args.FileName);
-            else if (_args.FileName.ToLower().EndsWith("xlsb"))
-            {
-                connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                    _args.FileName);
-            }
-            else if (_args.FileName.ToLower().EndsWith("csv"))
-            {
-                connString = string.Format(
-                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
-                    Path.GetDirectoryName(_args.FileName));
-            }
-            else
-                connString = string.Format(
-                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
-                    _args.FileName);
-
-            if (_args.NoHeader)
-                connString = connString.Replace("HDR=YES", "HDR=NO");
-
-            if (_log.IsDebugEnabled)
-                _log.DebugFormat("Connection String: {0}", connString);
-
-            return connString;
         }
 
         private IEnumerable<object> GetRowResults(IDataReader data, IEnumerable<string> columns)
@@ -336,38 +300,6 @@ namespace LinqToExcel.Query
                 var sqlLog = LogManager.GetLogger("LinqToExcel.SQL");
                 sqlLog.Debug(logMessage.ToString());
             }
-        }
-
-        private IEnumerable<string> GetColumnNames()
-        {
-            var columns = new List<string>();
-            using (var conn = new OleDbConnection(_connectionString))
-            using (var command = conn.CreateCommand())
-            {
-                conn.Open();
-                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", _args.WorksheetName);
-                var data = command.ExecuteReader();
-                columns.AddRange(GetColumnNames(data));
-            }
-            return columns;
-        }
-
-        private IEnumerable<string> GetColumnNames(IDataReader data)
-        {
-            var columns = new List<string>();
-            var sheetSchema = data.GetSchemaTable();
-            foreach (DataRow row in sheetSchema.Rows)
-                columns.Add(row["ColumnName"].ToString());
-
-            //Log a warning for any property to column mappings that do not exist in the excel worksheet
-            foreach (var kvp in _args.ColumnMappings)
-            {
-                if (!columns.Contains(kvp.Value))
-                    _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
-                        kvp.Value, kvp.Key, _args.WorksheetName);
-            }
-
-            return columns;
         }
     }
 }
