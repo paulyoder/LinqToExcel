@@ -274,11 +274,27 @@ namespace LinqToExcel.Query
         {
             var propertyNames = properties.Select(x => x.Name);
             foreach (var column in columns)
-                if (!propertyNames.Contains(column))
+            {
+                if (!propertyNames.Contains(column) &&
+                    ColumnIsNotMapped(column))
                     throw new StrictMappingException("'{0}' column is not mapped to a property", column);
+            }
             foreach (var propertyName in propertyNames)
-                if (!columns.Contains(propertyName))
+            {
+                if (!columns.Contains(propertyName) &&
+                    PropertyIsNotMapped(propertyName))
                     throw new StrictMappingException("'{0}' property is not mapped to a column", propertyName);
+            }
+        }
+
+        private bool PropertyIsNotMapped(string propertyName)
+        {
+            return !_args.ColumnMappings.Keys.Contains(propertyName);
+        }
+
+        private bool ColumnIsNotMapped(string columnName)
+        {
+            return !_args.ColumnMappings.Values.Contains(columnName);
         }
 
         private object GetColumnValue(IDataRecord data, string columnName, string propertyName)

@@ -93,5 +93,19 @@ namespace LinqToExcel.Tests
             var companies = (from x in excel.Worksheet<Company>("Null Dates")
                              select x).ToList();
         }
+
+        [Test]
+        public void StrictMapping_with_column_mappings_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = true;
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<Company>("More Companies")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
     }
 }
