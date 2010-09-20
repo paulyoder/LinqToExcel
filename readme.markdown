@@ -2,6 +2,8 @@
 
 Linq to Excel is a .Net library that allows you to query Excel spreadsheets using the LINQ syntax.
 
+Checkout the [introduction video.](http://www.youtube.com/watch?v=t3BEUP0OTFM)
+
 ## Adding LinqToExcel to your project
 #### Add References
 [Download](http://code.google.com/p/linqtoexcel/downloads/list) the latest files and add the following references to your project
