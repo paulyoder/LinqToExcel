@@ -19,7 +19,7 @@ The default query expects the first row to be the header row containing column n
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var indianaCompanies = from c in excel.Worksheet<Company>()
-	                       c.State == "IN"
+	                       where c.State == "IN"
 	                       select c;
 
 ## Query a specific worksheet by name
@@ -37,7 +37,7 @@ Column names from the worksheet can be mapped to specific property names on the 
 	excel.AddMapping<Company>(x => x.State, "Providence"); //maps the "State" property to the "Providence" column
 
 	var indianaCompanies = from c in excel.Worksheet<Company>()
-	                       c.State == "IN" && c.Employees > 500
+	                       where c.State == "IN" && c.Employees > 500
 	                       select c;
 
 ## Using the LinqToExcel.Row class
@@ -45,14 +45,14 @@ Query results can be returned as LinqToExcel.Row objects which allows you to acc
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var indianaCompanies = from c in excel.Worksheet()
-	                       c["State"] == "IN" || c.Zip == 46550
+	                       where c["State"] == "IN" || c.Zip == 46550
 	                       select c;
 
 The LinqToExcel.Row class allows you to easily cast a cell's value by using its **Cast<>()** method
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var largeCompanies = from c in excel.Worksheet()
-	                     c["EmployeeCount"].Cast<int>() > 500
+	                     where c["EmployeeCount"].Cast<int>() > 500
 	                     select c;
 
 ## Query a worksheet without a header row
@@ -60,7 +60,7 @@ Worksheets that do not contain a header row can also be queried by using the **W
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var indianaCompanies = from c in excel.WorksheetNoHeader()
-	                       c[2] == "IN" //value in 3rd column
+	                       where c[2] == "IN" //value in 3rd column
 	                       select c;
 
 ## Query a specific range within a worksheet
@@ -70,14 +70,14 @@ If the first row of the range contains a header row, then use the **WorksheetRan
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var indianaCompanies = from c in excel.WorksheetRange<Company>("B3", "G10") //Selects data within the B3 to G10 cell range
-	                       c.State == "IN"
+	                       where c.State == "IN"
 	                       select c;
 
 If the first row of the range is not a header row, then use the **WorksheetRangeNoHeader()** method
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var indianaCompanies = from c in excel.WorksheetRangeNoHeader("B3", "G10") //Selects data within the B3 to G10 cell range
-	                       c[2] == "IN" //value in 3rd column (D column in this case)
+	                       where c[2] == "IN" //value in 3rd column (D column in this case)
 	                       select c;
 
 ## Query a specific worksheet by index
@@ -97,7 +97,7 @@ Transformations can be applied to cell values before they are set on the class p
 	excel.AddTransformation<Company>(x => x.IsBankrupt, cellValue => cellValue == "Y");
 
 	var bankruptCompanies = from c in excel.Worksheet<Company>()
-	                        c.IsBankrupt == true
+	                        where c.IsBankrupt == true
 	                        select c;
 
 ## Query CSV files
@@ -105,7 +105,7 @@ Data from CSV files can be queried the same way spreadsheets are queried.
 
 	var csv = new ExcelQueryFactory("csvFileName");
 	var indianaCompanies = from c in csv.Worksheet<Company>()
-	                       c.State == "IN"
+	                       where c.State == "IN"
 	                       select c;
 
 ## Query Worksheet Names
