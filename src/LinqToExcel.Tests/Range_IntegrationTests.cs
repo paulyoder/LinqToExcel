@@ -14,7 +14,6 @@ namespace LinqToExcel.Tests
     {
         ExcelQueryFactory _factory;
         string _excelFileName;
-        string _worksheetName;
 
         [TestFixtureSetUp]
         public void fs()
@@ -22,7 +21,6 @@ namespace LinqToExcel.Tests
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var excelFilesDirectory = Path.Combine(testDirectory, "ExcelFiles");
             _excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
-            _worksheetName = "Range1";
         }
 
         [SetUp]

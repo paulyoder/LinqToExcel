@@ -13,12 +13,14 @@ namespace LinqToExcel.Tests
     public class ExcelQueryFactoryTests
     {
         private string _excelFileName;
+        private string _excelFileWithBuiltinWorksheets;
 
         [SetUp]
         public void s()
         {
             var excelFilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExcelFiles");
             _excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
+            _excelFileWithBuiltinWorksheets = Path.Combine(excelFilesDirectory, "Companies.xlsx");
         }
 
         [Test]
@@ -60,6 +62,16 @@ namespace LinqToExcel.Tests
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
                 "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1", 
+                string.Join(", ", worksheetNames.ToArray()));
+        }
+
+        [Test]
+        public void GetWorksheetNames_does_not_include_builtin_worksheets()
+        {
+            var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets);
+            var worksheetNames = excel.GetWorksheetNames();
+            Assert.AreEqual(
+                "AutoFiltered, ColumnMappings, MoreCompanies, Sheet1",
                 string.Join(", ", worksheetNames.ToArray()));
         }
 

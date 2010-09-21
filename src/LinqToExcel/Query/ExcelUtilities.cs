@@ -58,14 +58,20 @@ namespace LinqToExcel.Query
                     OleDbSchemaGuid.Tables,
                     new Object[] { null, null, null, "TABLE" });
 
-                foreach (DataRow row in excelTables.Rows)
-                    worksheetNames.Add(row["TABLE_NAME"].ToString()
-                                                        .Replace("$", "")
-                                                        .Replace("'", ""));
+                worksheetNames.AddRange(
+                    from DataRow row in excelTables.Rows
+                    let tableName = row["TABLE_NAME"].ToString().Replace("$", "").Replace("'", "")
+                    where IsNotBuiltinTable(tableName)
+                    select tableName);
 
                 excelTables.Dispose();
             }
             return worksheetNames;
+        }
+
+        internal static bool IsNotBuiltinTable(string tableName)
+        {
+            return !tableName.Contains("FilterDatabase") && !tableName.Contains("Print_Area");
         }
 
         internal static IEnumerable<string> GetColumnNames(string WorksheetName, string FileName)
