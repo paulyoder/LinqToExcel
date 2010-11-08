@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Linq.Expressions;
 
 namespace LinqToExcel.Extensions
 {
@@ -75,6 +76,12 @@ namespace LinqToExcel.Extensions
         public static bool IsNumber(this string value)
         {
             return Regex.Match(value, @"^\d+$").Success;
+        }
+
+        public static bool IsNullValue(this Expression exp)
+        {
+            return ((exp is ConstantExpression) && 
+                (exp.Cast<ConstantExpression>().Value == null));
         }
     }
 }

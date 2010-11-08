@@ -103,5 +103,31 @@ namespace LinqToExcel.Tests
             catch (OleDbException) { }
             Assert.AreEqual("SELECT * FROM [worksheetName$B2:D4]", GetSQLStatement());
         }
+
+        [Test]
+        public void use_row_where_is_null()
+        {
+            var companies = from c in _factory.WorksheetRange("B2", "D4", "worksheetName")
+                            where c["City"] == null
+                            select c;
+            //System.Diagnostics.Debugger.Launch();
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [worksheetName$B2:D4] WHERE ({0} IS NULL)", GetSQLFieldName("City"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
+
+        [Test]
+        public void use_sheetData_where_is_null()
+        {
+            var companies = from c in _factory.WorksheetRange<Company>("B2", "D4")
+                            where c.Name == null
+                            select c;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$B2:D4] WHERE ({0} IS NULL)", GetSQLFieldName("Name"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
     }
 }

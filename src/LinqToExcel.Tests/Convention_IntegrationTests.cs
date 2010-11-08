@@ -123,6 +123,26 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void where_null()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>("NullCells", _excelFileName + "x", null)
+                            where c.EmployeeCount == null
+                            select c;
+
+            Assert.AreEqual(2, companies.ToList().Count);
+        }
+
+        [Test]
+        public void where_not_null()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>("NullCells", _excelFileName + "x", null)
+                            where c.EmployeeCount != null
+                            select c;
+
+            Assert.AreEqual(1, companies.ToList().Count);
+        }
+
+        [Test]
         public void no_exception_on_property_not_used_in_where_clause_when_column_doesnt_exist()
         {
             var companies = from c in ExcelQueryFactory.Worksheet<CompanyWithCity>(null, _excelFileName, null)

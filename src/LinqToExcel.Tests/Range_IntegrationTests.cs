@@ -48,5 +48,39 @@ namespace LinqToExcel.Tests
             Assert.AreEqual(7, companies.Count(), "Count");
             Assert.AreEqual("Ontario Systems", companies.Last()["Name"].ToString(), "Last Company Name");
         }
+
+
+        [Test]
+        public void use_sheetData_where_null()
+        {
+            var factory = new ExcelQueryFactory(_excelFileName + "x");
+            var companies = from c in factory.WorksheetRange<Company>("A1", "D4", "NullCells")
+                            where c.EmployeeCount == null
+                            select c;
+
+            Assert.AreEqual(2, companies.Count(), "Count");
+        }
+
+        [Test]
+        public void use_row_where_null()
+        {
+            var factory = new ExcelQueryFactory(_excelFileName + "x");
+            var companies = from c in factory.WorksheetRange("A1", "D4", "NullCells")
+                            where c["EmployeeCount"] == null
+                            select c;
+
+            Assert.AreEqual(2, companies.Count(), "Count");
+        }
+
+        [Test]
+        public void use_row_no_header_where_null()
+        {
+            var factory = new ExcelQueryFactory(_excelFileName + "x");
+            var companies = from c in factory.WorksheetRangeNoHeader("A1", "D4", "NullCells")
+                            where c[2] == null
+                            select c;
+
+            Assert.AreEqual(2, companies.Count(), "Count");
+        }
     }
 }

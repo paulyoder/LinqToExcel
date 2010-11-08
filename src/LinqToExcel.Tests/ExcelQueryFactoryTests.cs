@@ -71,7 +71,7 @@ namespace LinqToExcel.Tests
             var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets);
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
-                "AutoFiltered, ColumnMappings, MoreCompanies, Sheet1",
+                "AutoFiltered, ColumnMappings, MoreCompanies, NullCells, Sheet1",
                 string.Join(", ", worksheetNames.ToArray()));
         }
 

@@ -117,6 +117,34 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void where_null()
+        {
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where p.EmployeeCount == null
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} IS NULL)", GetSQLFieldName("EmployeeCount"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+            Assert.AreEqual(0, GetSQLParameters().Count());
+        }
+
+        [Test]
+        public void where_not_null()
+        {
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where p.EmployeeCount != null
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} IS NOT NULL)", GetSQLFieldName("EmployeeCount"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+            Assert.AreEqual(0, GetSQLParameters().Count());
+        }
+
+        [Test]
         public void where_and()
         {
             var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)

@@ -73,6 +73,32 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void where_is_null()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
+                            where c["City"] == null
+                            select c;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} IS NULL)", GetSQLFieldName("City"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
+
+        [Test]
+        public void where_is_not_null()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
+                            where c["City"] != null
+                            select c;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} IS NOT NULL)", GetSQLFieldName("City"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
+
+        [Test]
         [ExpectedArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader")]
         public void argument_exception_thrown_when_column_indexes_used_in_worksheet_where_clause()
         {

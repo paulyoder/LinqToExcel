@@ -56,6 +56,21 @@ namespace LinqToExcel.Tests
             Assert.AreEqual(expectedSql, GetSQLStatement());
         }
 
+        [Test]
+        public void where_is_null()
+        {
+            _repo.AddMapping<Company>(x => x.CEO, "Boss");
+
+            var companies = from c in _repo.Worksheet<Company>()
+                            where c.CEO == null
+                            select c;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} IS NULL)", GetSQLFieldName("Boss"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
+
         /// <summary>
         /// Expression body is UnaryExpression for non native types
         /// </summary>

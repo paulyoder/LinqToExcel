@@ -5,6 +5,8 @@ using System.Text;
 using Remotion.Data.Linq.Parsing;
 using System.Data.OleDb;
 using System.Linq.Expressions;
+using LinqToExcel.Extensions;
+using Remotion.Data.Linq.Clauses.Expressions;
 
 namespace LinqToExcel.Query
 {
@@ -72,7 +74,10 @@ namespace LinqToExcel.Query
                     _whereClause.Append(" AND ");
                     break;
                 case ExpressionType.Equal:
-                    _whereClause.Append(" = ");
+                    if (bRight.IsNullValue())
+                        _whereClause.Append(" IS NULL");
+                    else
+                        _whereClause.Append(" = ");
                     break;
                 case ExpressionType.GreaterThan:
                     _whereClause.Append(" > ");
@@ -87,7 +92,10 @@ namespace LinqToExcel.Query
                     _whereClause.Append(" <= ");
                     break;
                 case ExpressionType.NotEqual:
-                    _whereClause.Append(" <> ");
+                    if (bRight.IsNullValue())
+                        _whereClause.Append(" IS NOT NULL");
+                    else
+                        _whereClause.Append(" <> ");
                     break;
                 case ExpressionType.OrElse:
                     _whereClause.Append(" OR ");
@@ -95,7 +103,8 @@ namespace LinqToExcel.Query
                 default:
                     throw new NotSupportedException(string.Format("{0} statement is not supported", bExp.NodeType.ToString()));
             }
-            VisitExpression(bRight);
+            if (!bRight.IsNullValue())
+                VisitExpression(bRight);
             _whereClause.Append(")");
             return bExp;
         }
@@ -194,6 +203,12 @@ namespace LinqToExcel.Query
                 var parameter = string.Format("%{0}", value);
                 _params.Add(new OleDbParameter("?", parameter));
             }
+            else if (mExp.Method.Name == "get_Item")
+            {
+                var columnName = GetColumnName(mExp);
+                _whereClause.Append(columnName);
+                _columnNamesUsed.Add(columnName);
+            }
             else
             {
                 var columnName = GetColumnName(mExp.Object);
@@ -209,19 +224,26 @@ namespace LinqToExcel.Query
         /// <param name="exp">Method Call Expression</param>
         private string GetColumnName(Expression exp)
         {
-            var arg = ((MethodCallExpression)exp).Arguments.First();
-            if (arg.Type == typeof(int))
+            if (exp is MethodCallExpression)
             {
-                if (_sheetType == typeof(RowNoHeader))
-                    return string.Format("F{0}", Int32.Parse(arg.ToString()) + 1);
-                else
-                    throw new ArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader");
-            }
+                var arg = ((MethodCallExpression)exp).Arguments.First();
+                if (arg.Type == typeof(int))
+                {
+                    if (_sheetType == typeof(RowNoHeader))
+                        return string.Format("F{0}", Int32.Parse(arg.ToString()) + 1);
+                    else
+                        throw new ArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader");
+                }
 
-            var columnName = arg.ToString().ToCharArray();
-            columnName[0] = "[".ToCharArray().First();
-            columnName[columnName.Length - 1] = "]".ToCharArray().First();
-            return new string(columnName);
+                var columnName = arg.ToString().ToCharArray();
+                columnName[0] = "[".ToCharArray().First();
+                columnName[columnName.Length - 1] = "]".ToCharArray().First();
+                return new string(columnName);
+            }
+            else
+            {
+                return "[" + ((MemberExpression)exp).Member.Name + "]";
+            }
         }
     }
 }

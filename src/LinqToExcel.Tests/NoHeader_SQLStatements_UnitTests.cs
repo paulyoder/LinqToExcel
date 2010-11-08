@@ -50,7 +50,20 @@ namespace LinqToExcel.Tests
 
             var expectedSQL = "SELECT * FROM [Sheet1$] WHERE (F2 = ?)";
             Assert.AreEqual(expectedSQL, GetSQLStatement());
-            Assert.AreEqual("Bugs Bunny", GetSQLParameters()[0]);
+        }
+
+        [Test]
+        public void where_is_null()
+        {
+            var warnerCompany = from c in _factory.WorksheetNoHeader()
+                                where c[1] == null
+                                select c;
+
+            try { warnerCompany.GetEnumerator(); }
+            catch (OleDbException) { }
+
+            var expectedSQL = "SELECT * FROM [Sheet1$] WHERE (F2 IS NULL)";
+            Assert.AreEqual(expectedSQL, GetSQLStatement());
         }
     }
 }
