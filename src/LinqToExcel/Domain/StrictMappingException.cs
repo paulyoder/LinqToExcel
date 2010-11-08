@@ -7,8 +7,8 @@ namespace LinqToExcel.Domain
 {
     public class StrictMappingException : Exception
     {
-        public StrictMappingException(string Message)
-            : base(Message)
+        public StrictMappingException(string message)
+            : base(message)
         { }
 
         public StrictMappingException(string formatMessage, params object[] args)

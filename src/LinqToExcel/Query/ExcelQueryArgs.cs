@@ -17,12 +17,12 @@ namespace LinqToExcel.Query
         internal bool NoHeader { get; set; }
         internal bool StrictMapping { get; set; }
 
-        internal ExcelQueryArgs(ExcelQueryConstructorArgs Args)
+        internal ExcelQueryArgs(ExcelQueryConstructorArgs args)
         {
-            FileName = Args.FileName;
-            ColumnMappings = Args.ColumnMappings ?? new Dictionary<string, string>();
-            Transformations = Args.Transformations ?? new Dictionary<string, Func<string, object>>();
-            StrictMapping = Args.StrictMapping;
+            FileName = args.FileName;
+            ColumnMappings = args.ColumnMappings ?? new Dictionary<string, string>();
+            Transformations = args.Transformations ?? new Dictionary<string, Func<string, object>>();
+            StrictMapping = args.StrictMapping;
         }
 
         public override string ToString()

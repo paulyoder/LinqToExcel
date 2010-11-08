@@ -10,39 +10,39 @@ namespace LinqToExcel.Query
 {
     internal static class ExcelUtilities
     {
-        internal static string GetConnectionString(string FileName)
+        internal static string GetConnectionString(string fileName)
         {
-            return GetConnectionString(FileName, false);
+            return GetConnectionString(fileName, false);
         }
 
-        internal static string GetConnectionString(string FileName, bool NoHeader)
+        internal static string GetConnectionString(string fileName, bool noHeader)
         {
             var connString = "";
-            var fileNameLower = FileName.ToLower();
+            var fileNameLower = fileName.ToLower();
 
             if (fileNameLower.EndsWith("xlsx") ||
                 fileNameLower.EndsWith("xlsm"))
                 connString = string.Format(
                     @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""",
-                    FileName);
+                    fileName);
             else if (fileNameLower.EndsWith("xlsb"))
             {
                 connString = string.Format(
                     @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                    FileName);
+                    fileName);
             }
             else if (fileNameLower.EndsWith("csv"))
             {
                 connString = string.Format(
                     @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
-                    Path.GetDirectoryName(FileName));
+                    Path.GetDirectoryName(fileName));
             }
             else
                 connString = string.Format(
                     @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
-                    FileName);
+                    fileName);
 
-            if (NoHeader)
+            if (noHeader)
                 connString = connString.Replace("HDR=YES", "HDR=NO");
 
             return connString;
@@ -74,14 +74,14 @@ namespace LinqToExcel.Query
             return !tableName.Contains("FilterDatabase") && !tableName.Contains("Print_Area");
         }
 
-        internal static IEnumerable<string> GetColumnNames(string WorksheetName, string FileName)
+        internal static IEnumerable<string> GetColumnNames(string worksheetName, string fileName)
         {
             var columns = new List<string>();
-            using (var conn = new OleDbConnection(GetConnectionString(FileName)))
+            using (var conn = new OleDbConnection(GetConnectionString(fileName)))
             using (var command = conn.CreateCommand())
             {
                 conn.Open();
-                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", WorksheetName);
+                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", worksheetName);
                 var data = command.ExecuteReader();
                 columns.AddRange(GetColumnNames(data));
             }

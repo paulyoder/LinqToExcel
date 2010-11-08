@@ -186,11 +186,11 @@ namespace LinqToExcel.Query
         /// Logs a warning for any property to column mappings that do not exist in the excel worksheet
         /// </summary>
         /// <param name="Columns">List of columns in the worksheet</param>
-        private void LogColumnMappingWarnings(IEnumerable<string> Columns)
+        private void LogColumnMappingWarnings(IEnumerable<string> columns)
         {
             foreach (var kvp in _args.ColumnMappings)
             {
-                if (!Columns.Contains(kvp.Value))
+                if (!columns.Contains(kvp.Value))
                 {
                     _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
                         kvp.Value, kvp.Key, _args.WorksheetName);
