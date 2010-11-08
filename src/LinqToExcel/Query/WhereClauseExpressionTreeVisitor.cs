@@ -203,15 +203,9 @@ namespace LinqToExcel.Query
                 var parameter = string.Format("%{0}", value);
                 _params.Add(new OleDbParameter("?", parameter));
             }
-            else if (mExp.Method.Name == "get_Item")
-            {
-                var columnName = GetColumnName(mExp);
-                _whereClause.Append(columnName);
-                _columnNamesUsed.Add(columnName);
-            }
             else
             {
-                var columnName = GetColumnName(mExp.Object);
+                var columnName = GetColumnName(mExp);
                 _whereClause.Append(columnName);
                 _columnNamesUsed.Add(columnName);
             }
@@ -219,31 +213,49 @@ namespace LinqToExcel.Query
         }
 
         /// <summary>
+        /// Retrieves the column name from a member expression or method call expression
+        /// </summary>
+        /// <param name="exp">Expression</param>
+        private string GetColumnName(Expression exp)
+        {
+            if (exp is MemberExpression)
+                return GetColumnName((MemberExpression)exp);
+            else
+                return GetColumnName((MethodCallExpression)exp);
+        }
+
+        /// <summary>
+        /// Retrieves the column name from a member expression
+        /// </summary>
+        /// <param name="mExp">Member Expression</param>
+        private string GetColumnName(MemberExpression mExp)
+        {
+            return "[" + mExp.Member.Name + "]";
+        }
+
+        /// <summary>
         /// Retrieves the column name from a method call expression
         /// </summary>
         /// <param name="exp">Method Call Expression</param>
-        private string GetColumnName(Expression exp)
+        private string GetColumnName(MethodCallExpression mExp)
         {
-            if (exp is MethodCallExpression)
-            {
-                var arg = ((MethodCallExpression)exp).Arguments.First();
-                if (arg.Type == typeof(int))
-                {
-                    if (_sheetType == typeof(RowNoHeader))
-                        return string.Format("F{0}", Int32.Parse(arg.ToString()) + 1);
-                    else
-                        throw new ArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader");
-                }
+            MethodCallExpression method = mExp;
+            if (mExp.Object is MethodCallExpression)
+                method = (MethodCallExpression)mExp.Object;
 
-                var columnName = arg.ToString().ToCharArray();
-                columnName[0] = "[".ToCharArray().First();
-                columnName[columnName.Length - 1] = "]".ToCharArray().First();
-                return new string(columnName);
-            }
-            else
+            var arg = method.Arguments.First();
+            if (arg.Type == typeof(int))
             {
-                return "[" + ((MemberExpression)exp).Member.Name + "]";
+                if (_sheetType == typeof(RowNoHeader))
+                    return string.Format("F{0}", Int32.Parse(arg.ToString()) + 1);
+                else
+                    throw new ArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader");
             }
+
+            var columnName = arg.ToString().ToCharArray();
+            columnName[0] = "[".ToCharArray().First();
+            columnName[columnName.Length - 1] = "]".ToCharArray().First();
+            return new string(columnName);
         }
     }
 }
