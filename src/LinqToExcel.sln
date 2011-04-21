@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToExcel", "LinqToExcel\LinqToExcel.csproj", "{08F80D96-5387-4406-B88B-DCC0CB661702}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToExcel.Tests", "LinqToExcel.Tests\LinqToExcel.Tests.csproj", "{195B956A-8029-44FD-9518-C04F5280611F}"
