@@ -8,7 +8,6 @@
 	<property name="dir.package" value="${dir.base}\package" />
 	<property name="file.project" value="${dir.base}\src\LinqToExcel\LinqToExcel.csproj" />
 	<property name="file.project.test" value="${dir.base}\src\LinqToExcel.Tests\LinqToExcel.Tests.csproj" />
-	<property name="file.publish" value="${dir.base}\publish.zip" />
 	<property name="tool.MbUnit" value="${dir.base}\lib\MbUnit\MbUnit.Cons.exe" />
 	<property name="tool.nuget" value="${dir.base}\tools\NuGet\nuget.exe" />
 	
@@ -23,7 +22,6 @@
 				<include name="*.*" />
 			</fileset>
 		</delete>
-		<delete file="${file.publish}" if="${file::exists(file.publish)}" />
 	</target>
 	
 	<target name="compile" description="compiles the project">
@@ -32,7 +30,11 @@
 	</target>
 	
 	<target name="zip" description="zips the contents of the bin folder to the zip.dir">
-		<zip zipfile="${file.publish}">
+		<xmlpeek
+			file="${dir.package}\LinqToExcel.nuspec"
+			xpath="package/metadata/version"
+			property="publish.version" />
+		<zip zipfile="${dir.base}\LinqToExcel_${publish.version}.zip">
 			<fileset basedir="${dir.bin}">
 				<include name="**/*" />
 			</fileset>
