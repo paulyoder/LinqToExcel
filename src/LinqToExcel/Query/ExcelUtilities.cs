@@ -5,6 +5,7 @@ using System.Text;
 using System.Data.OleDb;
 using System.Data;
 using System.IO;
+using LinqToExcel.Extensions;
 
 namespace LinqToExcel.Query
 {
@@ -60,7 +61,10 @@ namespace LinqToExcel.Query
 
                 worksheetNames.AddRange(
                     from DataRow row in excelTables.Rows
-                    let tableName = row["TABLE_NAME"].ToString().Replace("$", "").Replace("'", "")
+                    let tableName = row["TABLE_NAME"].ToString()
+                        .Replace("$", "")
+                        .RegexReplace("(^'|'$)", "")
+                        .Replace("''", "'")
                     where IsNotBuiltinTable(tableName)
                     select tableName);
 

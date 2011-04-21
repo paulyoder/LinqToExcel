@@ -83,5 +83,10 @@ namespace LinqToExcel.Extensions
             return ((exp is ConstantExpression) && 
                 (exp.Cast<ConstantExpression>().Value == null));
         }
+
+        public static string RegexReplace(this string source, string regex, string replacement)
+        {
+            return Regex.Replace(source, regex, replacement);
+        }
     }
 }

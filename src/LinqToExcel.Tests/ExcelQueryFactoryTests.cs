@@ -71,8 +71,16 @@ namespace LinqToExcel.Tests
             var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets);
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
-                "AutoFiltered, ColumnMappings, MoreCompanies, NullCells, Sheet1",
+                "AutoFiltered, ColumnMappings, MoreCompanies, NullCells, Paul's Worksheet, Sheet1",
                 string.Join(", ", worksheetNames.ToArray()));
+        }
+
+        [Test]
+        public void GetWorksheetNames_does_not_delete_apostrophes_in_middle_of_worksheet_name()
+        {
+            var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets);
+            var worksheetNames = excel.GetWorksheetNames();
+            Assert.IsTrue(worksheetNames.Any(x => x == "Paul's Worksheet"));
         }
 
         [Test]
