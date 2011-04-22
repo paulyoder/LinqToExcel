@@ -5,8 +5,11 @@ Linq to Excel is a .Net library that allows you to query Excel spreadsheets usin
 Checkout the [introduction video.](http://www.youtube.com/watch?v=t3BEUP0OTFM)
 
 ## Adding LinqToExcel to your project
-#### Add References
-[Download](http://code.google.com/p/linqtoexcel/downloads/list) the latest files and add the following references to your project
+#### NuGet
+You can use NuGet to quickly add LinqToExcel to your project. Just search for 'linqtoexcel' and install the package.
+
+#### Manually Add References
+If you don't want to use the NuGet package you can [Download](http://code.google.com/p/linqtoexcel/downloads/list) the latest files and add the following references to your project
 * LinqToExcel.dll
 * Remotion.Data.Linq.dll
 
