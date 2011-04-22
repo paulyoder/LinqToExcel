@@ -6,12 +6,12 @@ Checkout the [introduction video.](http://www.youtube.com/watch?v=t3BEUP0OTFM)
 
 ## Adding LinqToExcel to your project
 #### NuGet
-You can use NuGet to quickly add LinqToExcel to your project. Just search for 'linqtoexcel' and install the package.
+You can use NuGet to quickly add LinqToExcel to your project. Just search for **linqtoexcel** and install the package.
 
 #### Manually Add References
 If you don't want to use the NuGet package you can [Download](http://code.google.com/p/linqtoexcel/downloads/list) the latest files and add the following references to your project
-* LinqToExcel.dll
-* Remotion.Data.Linq.dll
+ * LinqToExcel.dll
+ * Remotion.Data.Linq.dll
 
 #### Target x86 Platform
 Linq to Excel requires any projects referencing it to be built against the x86 platform target. See [this link](http://blog.yodersolutions.com/2008/11/microsoftjetoledb-and-x64-machines/) for detailed information on setting the platform target to x86. Note this only applies to compiling the project on x64 computers.
