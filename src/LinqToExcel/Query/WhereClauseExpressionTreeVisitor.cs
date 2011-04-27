@@ -17,11 +17,17 @@ namespace LinqToExcel.Query
         private readonly Dictionary<string, string> _columnMapping;
         private readonly List<string> _columnNamesUsed = new List<string>();
         private readonly Type _sheetType;
+        private readonly List<string> _validStringMethods;
 
         public WhereClauseExpressionTreeVisitor(Type sheetType, Dictionary<string, string> columnMapping)
         {
             _sheetType = sheetType;
             _columnMapping = columnMapping;
+            _validStringMethods = new List<string>() {
+                "Equals",
+                "Contains",
+                "StartsWith",
+                "EndsWith" };
         }
 
         public string WhereClause
@@ -173,46 +179,8 @@ namespace LinqToExcel.Query
         /// </summary>
         protected override Expression VisitMethodCallExpression(MethodCallExpression mExp)
         {
-            if (mExp.Method.Name == "Contains")
-            {
-                _whereClause.Append("(");
-                VisitExpression(mExp.Object);
-                _whereClause.Append(" LIKE ?)");
-
-                var value = mExp.Arguments.First().ToString().Replace("\"", "");
-                var parameter = string.Format("%{0}%", value);
-                _params.Add(new OleDbParameter("?", parameter));
-            }
-            else if (mExp.Method.Name == "StartsWith")
-            {
-                _whereClause.Append("(");
-                VisitExpression(mExp.Object);
-                _whereClause.Append(" LIKE ?)");
-
-                var value = mExp.Arguments.First().ToString().Replace("\"", "");
-                var parameter = string.Format("{0}%", value);
-                _params.Add(new OleDbParameter("?", parameter));
-            }
-            else if (mExp.Method.Name == "EndsWith")
-            {
-                _whereClause.Append("(");
-                VisitExpression(mExp.Object);
-                _whereClause.Append(" LIKE ?)");
-
-                var value = mExp.Arguments.First().ToString().Replace("\"", "");
-                var parameter = string.Format("%{0}", value);
-                _params.Add(new OleDbParameter("?", parameter));
-            }
-            else if (mExp.Method.Name == "Equals")
-            {
-                _whereClause.Append("(");
-                VisitExpression(mExp.Object);
-                _whereClause.Append(" = ?)");
-
-                var value = mExp.Arguments.First().ToString().Replace("\"", "");
-                var parameter = string.Format("{0}", value);
-                _params.Add(new OleDbParameter("?", parameter));
-            }
+            if (_validStringMethods.Contains(mExp.Method.Name))
+                ProcessStringMethod(mExp);
             else
             {
                 var columnName = GetColumnName(mExp);
@@ -220,6 +188,36 @@ namespace LinqToExcel.Query
                 _columnNamesUsed.Add(columnName);
             }
             return mExp;
+        }
+
+        private void ProcessStringMethod(MethodCallExpression mExp)
+        {
+            switch (mExp.Method.Name)
+            {
+                case "Contains":
+                    AddStringMethodToWhereClause(mExp, "LIKE", "%{0}%");
+                    break;
+                case "StartsWith":
+                    AddStringMethodToWhereClause(mExp, "LIKE", "{0}%");
+                    break;
+                case "EndsWith":
+                    AddStringMethodToWhereClause(mExp, "LIKE", "%{0}");
+                    break;
+                case "Equals":
+                    AddStringMethodToWhereClause(mExp, "=", "{0}");
+                    break;
+            }
+        }
+
+        private void AddStringMethodToWhereClause(MethodCallExpression mExp, string operatorString, string argumentFormat)
+        {
+            _whereClause.Append("(");
+            VisitExpression(mExp.Object);
+            _whereClause.AppendFormat(" {0} ?)", operatorString);
+
+            var value = mExp.Arguments.First().ToString().Replace("\"", "");
+            var parameter = string.Format(argumentFormat, value);
+            _params.Add(new OleDbParameter("?", parameter));
         }
 
         /// <summary>
