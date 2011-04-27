@@ -47,6 +47,19 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void where_equals_method()
+        {
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where p.Name.Equals("Paul")
+                            select p;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("Name"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+            Assert.AreEqual("Paul", GetSQLParameters()[0]);
+        }
+        [Test]
         public void where_not_equal()
         {
             var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
