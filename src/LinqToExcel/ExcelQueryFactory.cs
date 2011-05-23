@@ -40,7 +40,17 @@ namespace LinqToExcel
         /// <param name="column">Worksheet column name to map from</param>
         public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column)
         {
-            _columnMappings[GetPropertyName(property)] = column;
+            AddMapping(GetPropertyName(property), column);
+        }
+
+        /// <summary>
+        /// Add a column to property mapping
+        /// </summary>
+        /// <param name="propertyName">Class property to map to</param>
+        /// <param name="column">Worksheet column name to map from</param>
+        public void AddMapping(string propertyName, string column)
+        {
+            _columnMappings[propertyName] = column;
         }
 
         /// <summary>

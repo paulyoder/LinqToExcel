@@ -26,6 +26,13 @@ namespace LinqToExcel
         void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column);
 
         /// <summary>
+        /// Add a column to property mapping
+        /// </summary>
+        /// <param name="propertyName">Class property to map to</param>
+        /// <param name="column">Worksheet column name to map from</param>
+        void AddMapping(string propertyName, string column);
+
+        /// <summary>
         /// Add a column to property mapping with a transformation operation
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>

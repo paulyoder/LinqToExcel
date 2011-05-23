@@ -124,5 +124,23 @@ namespace LinqToExcel.Tests
                GetSQLFieldName("Legal Name"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
         }
+
+        [Test]
+        public void mapped_property_is_passed_in_as_a_string()
+        {
+            _repo.AddMapping("CEO", "Da big Cheese");
+            _repo.AddMapping("Name", "Legal Name");
+
+            var companies = from c in _repo.Worksheet<Company>()
+                            where c.CEO == "Paul" && c.Name == "ACME"
+                            select c;
+
+            try { companies.GetEnumerator(); }
+            catch (OleDbException) { }
+            string expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE (({0} = ?) AND ({1} = ?))",
+               GetSQLFieldName("Da big Cheese"),
+               GetSQLFieldName("Legal Name"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
     }
 }

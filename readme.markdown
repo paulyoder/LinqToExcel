@@ -36,10 +36,11 @@ Data from the worksheet named "Sheet1" is queried by default. To query a workshe
 	                   select c;
 
 ## Property to column mapping
-Column names from the worksheet can be mapped to specific property names on the class by using the **AddMapping<>()** method.
+Column names from the worksheet can be mapped to specific property names on the class by using the **AddMapping()** method. The property name can be passed in as a string or a compile time safe expression.
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	excel.AddMapping<Company>(x => x.State, "Providence"); //maps the "State" property to the "Providence" column
+	excel.AddMapping("Employees", "Employee Count");       //maps the "Employees" property to the "Employee Count" column
 
 	var indianaCompanies = from c in excel.Worksheet<Company>()
 	                       where c.State == "IN" && c.Employees > 500
