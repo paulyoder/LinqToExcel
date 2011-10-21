@@ -45,7 +45,6 @@
 		<copy todir="${dir.package}\lib">
 			<fileset basedir="${dir.bin}">
 				<include name="*.dll" />
-				<exclude name="log4net.dll" />
 				<include name="LinqToExcel.xml" />
 			</fileset>
 		</copy>

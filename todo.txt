@@ -1,5 +1,0 @@
-LinqToExcel Todo List
-
-- Test linq statements with multiple result operators
-
-- Create Dynamic Lambda expressions to process data results
