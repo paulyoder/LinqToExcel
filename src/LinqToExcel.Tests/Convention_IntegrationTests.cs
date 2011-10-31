@@ -289,6 +289,24 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void distinct_all_different()
+        {
+            var distinctCompanies = (from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
+                                     select c).Distinct();
+
+            Assert.AreEqual(7, distinctCompanies.ToList().Count);
+        }
+
+        [Test]
+        public void distinct_some_equal()
+        {
+            var distinctCompanies = (from c in new ExcelQueryFactory(_excelFileName).WorksheetRange<Company>("E1", "E4", "More Companies")
+                                     select c).Distinct();
+
+            Assert.AreEqual(2, distinctCompanies.ToList().Count);
+        }
+
+        [Test]
         public void oderby()
         {
             var minEmployees = from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
