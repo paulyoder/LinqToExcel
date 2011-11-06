@@ -414,5 +414,17 @@ namespace LinqToExcel.Tests
             var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} > ?) ORDER BY {1} ASC", GetSQLFieldName("EmployeeCount"), GetSQLFieldName("StartDate"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
         }
+
+        [Test]
+        public void distinct()
+        {
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            select c).Distinct();
+
+            try { companies.ToList(); }
+            catch (OleDbException) { }
+            var expectedSql = "SELECT DISTINCT * FROM [Sheet1$]";
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
     }
 }

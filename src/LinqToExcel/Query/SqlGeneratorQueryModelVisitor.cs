@@ -82,14 +82,14 @@ namespace LinqToExcel.Query
                 UpdateAggregate(queryModel, "MIN");
             else if (resultOperator is SumResultOperator)
                 UpdateAggregate(queryModel, "SUM");
+            else if (resultOperator is DistinctResultOperator)
+                SqlStatement.Aggregate = "DISTINCT *";
 
             //Not supported result operators
             else if (resultOperator is ContainsResultOperator)
                 throw new NotSupportedException("LinqToExcel does not provide support for the Contains() method");
             else if (resultOperator is DefaultIfEmptyResultOperator)
                 throw new NotSupportedException("LinqToExcel does not provide support for the DefaultIfEmpty() method");
-            else if (resultOperator is DistinctResultOperator)
-                throw new NotSupportedException("LinqToExcel does not provide support for the Distinct() method");
             else if (resultOperator is ExceptResultOperator)
                 throw new NotSupportedException("LinqToExcel does not provide support for the Except() method");
             else if (resultOperator is GroupResultOperator)

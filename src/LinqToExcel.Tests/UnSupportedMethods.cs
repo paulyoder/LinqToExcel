@@ -28,14 +28,6 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Distinct() method")]
-        public void distinct()
-        {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
-                             select c).Distinct().ToList();
-        }
-
-        [Test]
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Except() method")]
         public void except()
         {
