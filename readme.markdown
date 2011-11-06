@@ -16,9 +16,6 @@ If you don't want to use the NuGet package you can [Download](http://code.google
 #### Target x86 Platform
 Linq to Excel requires any projects referencing it to be built against the x86 platform target. See [this link](http://blog.yodersolutions.com/2008/11/microsoftjetoledb-and-x64-machines/) for detailed information on setting the platform target to x86. Note this only applies to compiling the project on x64 computers.
 
-#### .Net 4
-When using Linq to Excel in a .Net 4 app, make sure to change the target framework from the default client profile to the full .Net 4 framework. (Properties -> Application -> Target framework) The client profile cannot compile .Net 3.5 dlls.
-
 ## Query a worksheet with a header row
 The default query expects the first row to be the header row containing column names that match the property names on the generic class being used. It also expects the data to be in the worksheet named "Sheet1".
 

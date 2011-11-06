@@ -2,3 +2,7 @@ bin/
 obj/
 *.suo
 LinqToExcel.xml
+*ReSharper*
+*.zip
+*.nupkg
+package/lib/

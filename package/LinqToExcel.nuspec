@@ -2,15 +2,12 @@
 <package> 
   <metadata> 
     <id>LinqToExcel</id> 
-    <version>1.5.2</version> 
+    <version>1.5.4</version> 
     <authors>Paul Yoder</authors>
-    <description>Easily retrieve data from spreadsheets using LINQ</description> 
+    <description>Easily retrieve data from spreadsheets and csv files by using LINQ</description> 
     <language>en-US</language>
     <licenseUrl>https://github.com/paulyoder/LinqToExcel/blob/master/License.txt</licenseUrl>
     <projectUrl>http://code.google.com/p/linqtoexcel/</projectUrl>
-		<tags>Linq Excel spreadsheet</tags>
-		<dependencies>
-			<dependency id="log4net" version="1.2.10" />
-		</dependencies>
+		<tags>Linq Excel spreadsheet csv</tags>
   </metadata> 
 </package>
