@@ -142,5 +142,18 @@ namespace LinqToExcel.Tests
                GetSQLFieldName("Legal Name"));
             Assert.AreEqual(expectedSql, GetSQLStatement());
         }
+
+        [Test]
+        public void distinct()
+        {
+            _repo.AddMapping("Name", "FullName");
+            var companies = (from c in _repo.Worksheet<Company>()
+                             select c.Name).Distinct();
+
+            try { companies.ToList(); }
+            catch (OleDbException) { }
+            var expectedSql = "SELECT DISTINCT(FullName) FROM [Sheet1$]";
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
     }
 }

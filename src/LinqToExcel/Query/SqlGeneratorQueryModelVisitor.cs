@@ -19,7 +19,7 @@ namespace LinqToExcel.Query
             _args = args;
             SqlStatement = new SqlParts();
             SqlStatement.Table = (String.IsNullOrEmpty(_args.StartRange)) ?
-                string.Format("[{0}$]", 
+                string.Format("[{0}$]",
                     _args.WorksheetName) :
                 string.Format("[{0}${1}:{2}]",
                     _args.WorksheetName, _args.StartRange, _args.EndRange);
@@ -83,7 +83,7 @@ namespace LinqToExcel.Query
             else if (resultOperator is SumResultOperator)
                 UpdateAggregate(queryModel, "SUM");
             else if (resultOperator is DistinctResultOperator)
-                SqlStatement.Aggregate = "DISTINCT *";
+                ProcessDistinctAggregate(queryModel);
 
             //Not supported result operators
             else if (resultOperator is ContainsResultOperator)
@@ -109,7 +109,7 @@ namespace LinqToExcel.Query
         protected override void VisitBodyClauses(ObservableCollection<IBodyClause> bodyClauses, QueryModel queryModel)
         {
             var orderClause = bodyClauses
-                .FirstOrDefault(x => x.GetType() == typeof(OrderByClause)) 
+                .FirstOrDefault(x => x.GetType() == typeof(OrderByClause))
                 as OrderByClause;
 
             if (orderClause != null)
@@ -125,11 +125,11 @@ namespace LinqToExcel.Query
                 }
                 else if (exp is MethodCallExpression)
                 {
-					//row["ColumnName"] is being used in order by statement
-                    columnName = ((MethodCallExpression) exp).Arguments.First()
+                    //row["ColumnName"] is being used in order by statement
+                    columnName = ((MethodCallExpression)exp).Arguments.First()
                         .ToString().Replace("\"", "");
                 }
-                
+
                 SqlStatement.OrderBy = columnName;
                 SqlStatement.ColumnNamesUsed.Add(columnName);
                 var orderDirection = orderClause.Orderings.First().OrderingDirection;
@@ -147,10 +147,18 @@ namespace LinqToExcel.Query
             SqlStatement.ColumnNamesUsed.Add(columnName);
         }
 
+        protected void ProcessDistinctAggregate(QueryModel queryModel)
+        {
+            if (queryModel.SelectClause.Selector is MemberExpression)
+                UpdateAggregate(queryModel, "DISTINCT");
+            else
+                throw new NotSupportedException("LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]");
+        }
+
         private string GetResultColumnName(QueryModel queryModel)
         {
             var mExp = queryModel.SelectClause.Selector as MemberExpression;
-            return (_args.ColumnMappings.ContainsKey(mExp.Member.Name)) ?
+            return (_args.ColumnMappings != null && _args.ColumnMappings.ContainsKey(mExp.Member.Name)) ?
                 _args.ColumnMappings[mExp.Member.Name] :
                 mExp.Member.Name;
         }

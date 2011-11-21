@@ -218,7 +218,7 @@ namespace LinqToExcel.Tests
             var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
                             where p.Name.Contains("Paul")
                             select p;
-            
+
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} LIKE ?)", GetSQLFieldName("Name"));
@@ -259,7 +259,7 @@ namespace LinqToExcel.Tests
         {
             var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
                             select c;
-            
+
             try { companies.First(); }
             catch (OleDbException) { }
             Assert.AreEqual("SELECT TOP 1 * FROM [Sheet1$]", GetSQLStatement());
@@ -348,7 +348,7 @@ namespace LinqToExcel.Tests
         public void orderby_desc()
         {
             var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
-                            orderby c.StartDate descending 
+                            orderby c.StartDate descending
                             select c;
 
             try { companies.ToList(); }
@@ -419,11 +419,11 @@ namespace LinqToExcel.Tests
         public void distinct()
         {
             var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
-                            select c).Distinct();
+                             select c.Name).Distinct();
 
             try { companies.ToList(); }
             catch (OleDbException) { }
-            var expectedSql = "SELECT DISTINCT * FROM [Sheet1$]";
+            var expectedSql = "SELECT DISTINCT(Name) FROM [Sheet1$]";
             Assert.AreEqual(expectedSql, GetSQLStatement());
         }
     }

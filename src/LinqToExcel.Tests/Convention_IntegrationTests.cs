@@ -26,7 +26,7 @@ namespace LinqToExcel.Tests
         {
             var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
                             select c;
-            
+
             //Using ToList() because using Count() first would change the sql 
             //string to "SELECT COUNT(*)" which we're not testing here
             Assert.AreEqual(7, companies.ToList().Count);
@@ -188,7 +188,7 @@ namespace LinqToExcel.Tests
                                     CEO = c["CEO"],
                                     Name = c["Name"]
                                 };
-            
+
             foreach (var company in companyCities)
             {
                 Assert.AreEqual("ACME", company.Name);
@@ -201,7 +201,7 @@ namespace LinqToExcel.Tests
         public void selection_row_to_anonymous_projection()
         {
             var companyCities = from c in ExcelQueryFactory.Worksheet(null, _excelFileName, null)
-                                select new 
+                                select new
                                 {
                                     Employees = c["EmployeeCount"].Cast<double>(),
                                     Name = c["Name"].ToString()
@@ -228,8 +228,8 @@ namespace LinqToExcel.Tests
         public void FirstOrDefault_returns_null_when_no_rows_returned()
         {
             var noCompany = (from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
-                                where c.CEO == "Nobody"
-                                select c).FirstOrDefault();
+                             where c.CEO == "Nobody"
+                             select c).FirstOrDefault();
 
             Assert.IsNull(noCompany);
         }
@@ -289,19 +289,10 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        public void distinct_all_different()
+        public void distinct()
         {
-            var distinctCompanies = (from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
-                                     select c).Distinct();
-
-            Assert.AreEqual(7, distinctCompanies.ToList().Count);
-        }
-
-        [Test]
-        public void distinct_some_equal()
-        {
-            var distinctCompanies = (from c in new ExcelQueryFactory(_excelFileName).WorksheetRange<Company>("E1", "E4", "More Companies")
-                                     select c).Distinct();
+            var distinctCompanies = (from c in ExcelQueryFactory.Worksheet<Company>("Null Dates", _excelFileName, null)
+                                     select c.IsActive).Distinct();
 
             Assert.AreEqual(2, distinctCompanies.ToList().Count);
         }

@@ -108,15 +108,28 @@ namespace LinqToExcel.Query
         protected Func<object, T> GetSelectProjector<T>(object firstResult, QueryModel queryModel)
         {
             Func<object, T> projector = (result) => result.Cast<T>();
-            if ((firstResult != null) &&
-                (firstResult.GetType() != typeof(T)) &&
-                (typeof(T) != typeof(int)) &&
-                (typeof(T) != typeof(long)))
+            if (ShouldBuildResultObjectMapping<T>(firstResult, queryModel))
             {
                 var proj = ProjectorBuildingExpressionTreeVisitor.BuildProjector<T>(queryModel.SelectClause.Selector);
                 projector = (result) => proj(new ResultObjectMapping(queryModel.MainFromClause, result));
             }
             return projector;
+        }
+
+        protected bool ShouldBuildResultObjectMapping<T>(object firstResult, QueryModel queryModel)
+        {
+            var ignoredResultOperators = new List<Type>()
+                                             {
+                                                 typeof (MaxResultOperator),
+                                                 typeof (CountResultOperator),
+                                                 typeof (LongCountResultOperator),
+                                                 typeof (MinResultOperator),
+                                                 typeof (SumResultOperator)
+                                             };
+
+            return (firstResult != null &&
+                    firstResult.GetType() != typeof(T) &&
+                    !queryModel.ResultOperators.Any(x => ignoredResultOperators.Contains(x.GetType())));
         }
 
         protected SqlParts GetSqlStatement(QueryModel queryModel)
@@ -266,7 +279,7 @@ namespace LinqToExcel.Query
                         result.SetProperty(prop.Name, GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType));
                 }
                 results.Add(result);
-            } 
+            }
             return results.AsEnumerable();
         }
 
@@ -327,7 +340,7 @@ namespace LinqToExcel.Query
                         paramMessage = paramMessage.Replace("'", "");
                     logMessage.Append(paramMessage);
                 }
-                
+
                 var sqlLog = LogManager.GetLogger("LinqToExcel.SQL");
                 sqlLog.Debug(logMessage.ToString());
             }

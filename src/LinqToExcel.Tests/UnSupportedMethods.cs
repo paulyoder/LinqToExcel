@@ -94,5 +94,49 @@ namespace LinqToExcel.Tests
                              select d)
                              .ToList();
         }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
+        public void distinct_on_whole_row()
+        {
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                             select c).Distinct().ToList();
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
+        public void distinct_on_no_header()
+        {
+            var excel = new ExcelQueryFactory("");
+            var companies = (from c in excel.WorksheetNoHeader()
+                             select c).Distinct().ToList();
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
+        public void distinct_on_no_header_with_selected_column()
+        {
+            var excel = new ExcelQueryFactory("");
+            var companies = (from c in excel.WorksheetNoHeader()
+                             select c[0]).Distinct().ToList();
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
+        public void distinct_on_row()
+        {
+            var excel = new ExcelQueryFactory("");
+            var companies = (from c in excel.Worksheet()
+                             select c).Distinct().ToList();
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
+        public void distinct_on_row_with_selected_column()
+        {
+            var excel = new ExcelQueryFactory("");
+            var companies = (from c in excel.Worksheet()
+                             select c["Name"]).Distinct().ToList();
+        }
     }
 }
