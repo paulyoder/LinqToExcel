@@ -26,7 +26,7 @@ namespace LinqToExcel.Query
         {
             ValidateArgs(args);
             _args = args;
-            _connectionString = ExcelUtilities.GetConnectionString(args.FileName, args.NoHeader);
+            _connectionString = ExcelUtilities.GetConnectionString(args);
             if (_log.IsDebugEnabled)
                 _log.DebugFormat("Connection String: {0}", _connectionString);
             GetWorksheetName();
@@ -35,7 +35,7 @@ namespace LinqToExcel.Query
         private void ValidateArgs(ExcelQueryArgs args)
         {
             if (_log.IsDebugEnabled)
-                _log.DebugFormat("ExcelQueryArgs = {0}", args.ToString());
+                _log.DebugFormat("ExcelQueryArgs = {0}", args);
 
             if (args.FileName == null)
                 throw new ArgumentNullException("FileName", "FileName property cannot be null.");

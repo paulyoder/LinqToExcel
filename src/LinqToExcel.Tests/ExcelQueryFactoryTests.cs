@@ -39,6 +39,13 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void Constructor_defaults_DatabaseEngine_to_Jet()
+        {
+            var repo = new ExcelQueryFactory();
+            Assert.AreEqual(DatabaseEngine.Jet, repo.DatabaseEngine);
+        }
+
+        [Test]
         [ExpectedException(typeof(NullReferenceException), "FileName property is not set")]
         public void GetWorksheetNames_throws_exception_when_filename_not_set()
         {
@@ -61,7 +68,7 @@ namespace LinqToExcel.Tests
 
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
-                "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1", 
+                "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1",
                 string.Join(", ", worksheetNames.ToArray()));
         }
 

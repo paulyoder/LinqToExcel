@@ -5,45 +5,63 @@ using System.Text;
 using System.Data.OleDb;
 using System.Data;
 using System.IO;
+using LinqToExcel.Domain;
 using LinqToExcel.Extensions;
 
 namespace LinqToExcel.Query
 {
     internal static class ExcelUtilities
     {
-        internal static string GetConnectionString(string fileName)
-        {
-            return GetConnectionString(fileName, false);
-        }
-
-        internal static string GetConnectionString(string fileName, bool noHeader)
+        internal static string GetConnectionString(ExcelQueryArgs args)
         {
             var connString = "";
-            var fileNameLower = fileName.ToLower();
+            var fileNameLower = args.FileName.ToLower();
 
             if (fileNameLower.EndsWith("xlsx") ||
                 fileNameLower.EndsWith("xlsm"))
+            {
                 connString = string.Format(
                     @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""",
-                    fileName);
+                    args.FileName);
+            }
             else if (fileNameLower.EndsWith("xlsb"))
             {
                 connString = string.Format(
                     @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                    fileName);
+                    args.FileName);
             }
             else if (fileNameLower.EndsWith("csv"))
             {
-                connString = string.Format(
-                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
-                    Path.GetDirectoryName(fileName));
+                if (args.DatabaseEngine == DatabaseEngine.Jet)
+                {
+                    connString = string.Format(
+                        @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
+                        Path.GetDirectoryName(args.FileName));
+                }
+                else
+                {
+                    connString = string.Format(
+                        @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1""",
+                        Path.GetDirectoryName(args.FileName));
+                }
             }
             else
-                connString = string.Format(
-                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
-                    fileName);
+            {
+                if (args.DatabaseEngine == DatabaseEngine.Jet)
+                {
+                    connString = string.Format(
+                        @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
+                        args.FileName);
+                }
+                else
+                {
+                    connString = string.Format(
+                        @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
+                        args.FileName);
+                }
+            }
 
-            if (noHeader)
+            if (args.NoHeader)
                 connString = connString.Replace("HDR=YES", "HDR=NO");
 
             return connString;
@@ -51,8 +69,15 @@ namespace LinqToExcel.Query
 
         internal static IEnumerable<string> GetWorksheetNames(string fileName)
         {
+            var args = new ExcelQueryArgs();
+            args.FileName = fileName;
+            return GetWorksheetNames(args);
+        }
+
+        internal static IEnumerable<string> GetWorksheetNames(ExcelQueryArgs args)
+        {
             var worksheetNames = new List<string>();
-            using (var conn = new OleDbConnection(GetConnectionString(fileName)))
+            using (var conn = new OleDbConnection(GetConnectionString(args)))
             {
                 conn.Open();
                 var excelTables = conn.GetOleDbSchemaTable(
@@ -80,12 +105,20 @@ namespace LinqToExcel.Query
 
         internal static IEnumerable<string> GetColumnNames(string worksheetName, string fileName)
         {
+            var args = new ExcelQueryArgs();
+            args.WorksheetName = worksheetName;
+            args.FileName = fileName;
+            return GetColumnNames(args);
+        }
+
+        internal static IEnumerable<string> GetColumnNames(ExcelQueryArgs args)
+        {
             var columns = new List<string>();
-            using (var conn = new OleDbConnection(GetConnectionString(fileName)))
+            using (var conn = new OleDbConnection(GetConnectionString(args)))
             using (var command = conn.CreateCommand())
             {
                 conn.Open();
-                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", worksheetName);
+                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", args.WorksheetName);
                 var data = command.ExecuteReader();
                 columns.AddRange(GetColumnNames(data));
             }

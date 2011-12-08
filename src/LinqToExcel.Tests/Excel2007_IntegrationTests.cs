@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using LinqToExcel.Domain;
 using MbUnit.Framework;
 using System.IO;
 
@@ -52,6 +53,21 @@ namespace LinqToExcel.Tests
 
             //Using ToList() because using Count() first would change the sql 
             //string to "SELECT COUNT(*)" which we're not testing here
+            Assert.AreEqual(7, companies.ToList().Count);
+        }
+
+        [Test]
+        public void xls_with_Ace_DatabaseEngine()
+        {
+            var testDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var excelFilesDirectory = Path.Combine(testDirectory, "ExcelFiles");
+            var excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
+
+            var excel = new ExcelQueryFactory(excelFileName);
+            excel.DatabaseEngine = DatabaseEngine.Ace;
+            var companies = from c in excel.Worksheet<Company>()
+                            select c;
+
             Assert.AreEqual(7, companies.ToList().Count);
         }
     }

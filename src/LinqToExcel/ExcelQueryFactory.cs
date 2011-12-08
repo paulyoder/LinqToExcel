@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using LinqToExcel.Domain;
 using LinqToExcel.Query;
 
 namespace LinqToExcel
@@ -9,7 +10,7 @@ namespace LinqToExcel
     {
         private readonly Dictionary<string, string> _columnMappings = new Dictionary<string, string>();
         private readonly Dictionary<string, Func<string, object>> _transformations = new Dictionary<string, Func<string, object>>();
-        
+
         /// <summary>
         /// Full path to the Excel spreadsheet
         /// </summary>
@@ -20,6 +21,11 @@ namespace LinqToExcel
         /// </summary>
         public bool StrictMapping { get; set; }
 
+        /// <summary>
+        /// Sets the database engine to use (spreadsheets ending in xlsx, xlsm, and xlsb must use the Ace database engine)
+        /// </summary>
+        public DatabaseEngine DatabaseEngine { get; set; }
+
         public ExcelQueryFactory()
             : this(null)
         { }
@@ -27,7 +33,8 @@ namespace LinqToExcel
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         public ExcelQueryFactory(string fileName)
         {
-            this.FileName = fileName;
+            FileName = fileName;
+            DatabaseEngine = DatabaseEngine.Jet;
         }
 
         #region Other Methods
@@ -123,6 +130,7 @@ namespace LinqToExcel
             return new ExcelQueryConstructorArgs()
             {
                 FileName = FileName,
+                DatabaseEngine = DatabaseEngine,
                 StrictMapping = StrictMapping,
                 ColumnMappings = _columnMappings,
                 Transformations = _transformations

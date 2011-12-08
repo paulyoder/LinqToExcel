@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using LinqToExcel.Query;
 using System.Collections.Generic;
+using LinqToExcel.Domain;
 
 namespace LinqToExcel
 {
@@ -16,6 +17,11 @@ namespace LinqToExcel
         /// Confirms all the worksheet columns are mapped to a property, and if not, throws a StrictMappingException
         /// </summary>
         bool StrictMapping { get; set; }
+
+        /// <summary>
+        /// Sets the database engine to use (spreadsheets ending in xlsx, xlsm, xlsb will always use the Ace engine)
+        /// </summary>
+        DatabaseEngine DatabaseEngine { get; set; }
 
         /// <summary>
         /// Add a column to property mapping
@@ -65,7 +71,7 @@ namespace LinqToExcel
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
         /// <param name="worksheetName">Name of the worksheet</param>
         ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName);
-        
+
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
@@ -89,7 +95,7 @@ namespace LinqToExcel
         /// </summary>
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         ExcelQueryable<Row> Worksheet(int worksheetIndex);
-        
+
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>

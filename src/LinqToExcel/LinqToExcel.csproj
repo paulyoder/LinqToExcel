@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\Cell.cs" />
+    <Compile Include="Domain\DatabaseEngine.cs" />
     <Compile Include="Domain\RowNoHeader.cs" />
     <Compile Include="Domain\StrictMappingException.cs" />
     <Compile Include="IExcelQueryFactory.cs" />
