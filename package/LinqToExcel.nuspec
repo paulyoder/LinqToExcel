@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?> 
-<package> 
-  <metadata> 
-    <id>LinqToExcel</id> 
-    <version>1.5.5</version> 
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>LinqToExcel</id>
+    <version>Auto populated from AssemblyInfo.cs file</version>
     <authors>Paul Yoder</authors>
-    <description>Easily retrieve data from spreadsheets and csv files by using LINQ</description> 
+    <description>Easily retrieve data from spreadsheets and csv files by using LINQ</description>
     <language>en-US</language>
     <licenseUrl>https://github.com/paulyoder/LinqToExcel/blob/master/License.txt</licenseUrl>
     <projectUrl>http://code.google.com/p/linqtoexcel/</projectUrl>
-		<tags>Linq Excel spreadsheet csv</tags>
-  </metadata> 
+    <tags>Linq Excel spreadsheet csv</tags>
+  </metadata>
 </package>
