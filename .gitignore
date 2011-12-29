@@ -1,8 +1,8 @@
 bin/
+bin64/
 obj/
 *.suo
 LinqToExcel.xml
 *ReSharper*
 *.zip
 *.nupkg
-package/lib/

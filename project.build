@@ -4,21 +4,29 @@
 
 	<property name="dir.base" value="${directory::get-current-directory()}" />
 	<property name="dir.bin" value="${dir.base}\bin" />
+	<property name="dir.bin64" value="${dir.base}\bin64" />
 	<property name="dir.test" value="${dir.base}\tests" />
 	<property name="dir.package" value="${dir.base}\package" />
+	<property name="dir.package64" value="${dir.base}\package64" />
 	<property name="file.project" value="${dir.base}\src\LinqToExcel\LinqToExcel.csproj" />
 	<property name="file.project.test" value="${dir.base}\src\LinqToExcel.Tests\LinqToExcel.Tests.csproj" />
 	<property name="tool.MbUnit" value="${dir.base}\lib\MbUnit\MbUnit.Cons.exe" />
 	<property name="tool.nuget" value="${dir.base}\tools\NuGet\nuget.exe" />
 	
-	<target name="build" depends="clean, compile, deleteLog4netXml" />
-	<target name="publish" depends="test, build, zip, package" />
+	<target name="build" depends="clean, compile, compile64, deleteLog4netXml" />
+	<target name="publish" depends="test, build, zip, zip64, package, package64" />
 	
 	<target name="clean" description="deletes folders used in the build">
 		<delete dir="${dir.bin}" if="${directory::exists(dir.bin)}" />
+		<delete dir="${dir.bin64}" if="${directory::exists(dir.bin64)}" />
 		<delete dir="${dir.test}" if="${directory::exists(dir.test)}" />
 		<delete>
 			<fileset basedir="${dir.package}\lib">
+				<include name="*.*" />
+			</fileset>
+		</delete>
+		<delete>
+			<fileset basedir="${dir.package64}\lib">
 				<include name="*.*" />
 			</fileset>
 		</delete>
@@ -27,6 +35,11 @@
 	<target name="compile" description="compiles the project">
 		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
 			commandline="&quot;${file.project}&quot; /p:Configuration=Release;DocumentationFile=LinqToExcel.xml;OutputPath=&quot;${dir.bin}\\&quot;" />
+	</target>
+
+	<target name="compile64" description="compiles the project in 64 bit mode">
+		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
+			commandline="&quot;${file.project}&quot; /p:Configuration=Release;DocumentationFile=LinqToExcel.xml;Platform=x64;OutputPath=&quot;${dir.bin64}\\&quot;" />
 	</target>
 	
 	<target name="zip" description="zips the contents of the bin folder to the zip.dir">
@@ -41,6 +54,18 @@
 		</zip>
 	</target>
 
+	<target name="zip64" description="zips the contents of the bin64 folder to the zip.dir64">
+		<xmlpeek
+			file="${dir.package}\LinqToExcel.nuspec"
+			xpath="package/metadata/version"
+			property="publish.version" />
+		<zip zipfile="${dir.base}\LinqToExcel_x64_${publish.version}.zip">
+			<fileset basedir="${dir.bin64}">
+				<include name="**/*" />
+			</fileset>
+		</zip>
+	</target>
+
 	<target name="package" description="creates the NuGet package">
 		<copy todir="${dir.package}\lib">
 			<fileset basedir="${dir.bin}">
@@ -49,7 +74,30 @@
 			</fileset>
 		</copy>
 		<exec program="${tool.nuget}" commandline="pack &quot;${dir.package}\LinqToExcel.nuspec&quot;" />
+		<delete dir="${dir.package}\lib" />
 	</target>
+
+  <target name="package64" description="creates the NuGet package for the 64bit version">
+		<copy todir="${dir.package64}\lib">
+			<fileset basedir="${dir.bin64}">
+				<include name="*.dll" />
+				<include name="LinqToExcel.xml" />
+			</fileset>
+		</copy>
+    <copy todir="${dir.package64}">
+      <fileset basedir="${dir.package}">
+        <include name="LinqToExcel.nuspec" />
+      </fileset>
+    </copy>
+    <move file="${dir.package64}/LinqToExcel.nuspec"
+          tofile="${dir.package64}/LinqToExcel_x64.nuspec" />
+		<xmlpoke
+			file="${dir.package64}\LinqToExcel_x64.nuspec"
+			xpath="package/metadata/id"
+			value="LinqToExcel_x64" />
+    <exec program="${tool.nuget}" commandline="pack &quot;${dir.package64}\LinqToExcel_x64.nuspec&quot;" />
+		<delete dir="${dir.package64}" />
+  </target>
 	
 	<target name="compile-test-project" description="compiles the test project">
 		<exec program="${framework::get-framework-directory(framework::get-target-framework())}\msbuild.exe"
@@ -79,5 +127,6 @@
 	
 	<target name="deleteLog4netXml" description="Deletes the log4net.xml file that isn't need and takes up a lot of space">
 		<delete file="${dir.bin}/log4net.xml" />
+		<delete file="${dir.bin64}/log4net.xml" />
 	</target>
 </project>
