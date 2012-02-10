@@ -127,6 +127,9 @@
     <None Include="ExcelFiles\Companies.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ExcelFiles\NamedRanges.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ExcelFiles\NoHeader.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

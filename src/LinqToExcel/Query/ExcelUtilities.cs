@@ -86,6 +86,7 @@ namespace LinqToExcel.Query
 
                 worksheetNames.AddRange(
                     from DataRow row in excelTables.Rows
+                    where IsTable(row)
                     let tableName = row["TABLE_NAME"].ToString()
                         .Replace("$", "")
                         .RegexReplace("(^'|'$)", "")
@@ -96,6 +97,11 @@ namespace LinqToExcel.Query
                 excelTables.Dispose();
             }
             return worksheetNames;
+        }
+
+        internal static bool IsTable(DataRow row)
+        {
+            return row["TABLE_NAME"].ToString().Contains("$");
         }
 
         internal static bool IsNotBuiltinTable(string tableName)

@@ -14,6 +14,7 @@ namespace LinqToExcel.Tests
     {
         private string _excelFileName;
         private string _excelFileWithBuiltinWorksheets;
+        private string _excelFileWithNamedRanges;
 
         [SetUp]
         public void s()
@@ -21,6 +22,7 @@ namespace LinqToExcel.Tests
             var excelFilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExcelFiles");
             _excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
             _excelFileWithBuiltinWorksheets = Path.Combine(excelFilesDirectory, "Companies.xlsx");
+            _excelFileWithNamedRanges = Path.Combine(excelFilesDirectory, "NamedRanges.xlsx");
         }
 
         [Test]
@@ -79,6 +81,16 @@ namespace LinqToExcel.Tests
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
                 "AutoFiltered, ColumnMappings, MoreCompanies, NullCells, Paul's Worksheet, Sheet1",
+                string.Join(", ", worksheetNames.ToArray()));
+        }
+
+        [Test]
+        public void GetWorksheetNames_does_not_include_named_ranges()
+        {
+            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges);
+            var worksheetNames = excel.GetWorksheetNames();
+            Assert.AreEqual(
+                "Tabelle1, Tabelle3, WS2",
                 string.Join(", ", worksheetNames.ToArray()));
         }
 
