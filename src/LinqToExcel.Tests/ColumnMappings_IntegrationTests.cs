@@ -112,5 +112,16 @@ namespace LinqToExcel.Tests
 
             Assert.AreEqual("Looney Tunes", firstCompany.Name);
         }
+
+        [Test]
+        public void transformation_that_returns_null()
+        {
+            //Add transformation to change the Name value to 'Looney Tunes' if it is originally 'ACME'
+            _repo.AddTransformation<Company>(p => p.Name, value => null);
+            var firstCompany = (from c in _repo.Worksheet<Company>(_worksheetName)
+                                select c).First();
+
+            Assert.AreEqual(null, firstCompany.Name);
+        }
     }
 }

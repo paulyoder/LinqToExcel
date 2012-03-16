@@ -38,7 +38,7 @@ namespace LinqToExcel.Extensions
         public static object Cast(this object @object, Type castType)
         {
             //return null for DBNull values
-            if (@object.GetType() == typeof(DBNull))
+            if (@object == null || @object.GetType() == typeof(DBNull))
                 return null;
 
             //checking for nullable types
@@ -60,7 +60,7 @@ namespace LinqToExcel.Extensions
 
         public static IEnumerable<TResult> Cast<TResult>(this IEnumerable<object> list)
         {
-            var func = new Func<object, TResult>((item) => 
+            var func = new Func<object, TResult>((item) =>
                 (TResult)Convert.ChangeType(item, typeof(TResult)));
             return list.Cast<TResult>(func);
         }
@@ -80,7 +80,7 @@ namespace LinqToExcel.Extensions
 
         public static bool IsNullValue(this Expression exp)
         {
-            return ((exp is ConstantExpression) && 
+            return ((exp is ConstantExpression) &&
                 (exp.Cast<ConstantExpression>().Value == null));
         }
 
