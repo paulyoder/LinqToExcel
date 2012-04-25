@@ -20,8 +20,8 @@ You will also need to make sure to have the [64 bit version of the Access Databa
 
 And make sure you manually set the **DatabaseEngine** property to DatabaseEngine.Ace
 
-  var excel = new ExcelQueryFactory("excelFileName");
-  excel.DatabaseEngine = DatabaseEngine.Ace;
+	var excel = new ExcelQueryFactory("excelFileName");
+	excel.DatabaseEngine = DatabaseEngine.Ace;
 
 ## Query a worksheet with a header row
 The default query expects the first row to be the header row containing column names that match the property names on the generic class being used. It also expects the data to be in the worksheet named "Sheet1".
@@ -139,5 +139,5 @@ Set the **StrictMapping** property to true to confirm all the columns in the wor
 ## Manually setting the database engine
 LinqToExcel can use the Jet or Ace database engine, and it automatically determines the database engine to use by the file extension. You can manually set the database engine with the **DatabaseEngine** property
 
-  var excel = new ExcelQueryFactory("excelFileName");
-  excel.DatabaseEngine == DatabaseEngine.Ace;
+	var excel = new ExcelQueryFactory("excelFileName");
+	excel.DatabaseEngine == DatabaseEngine.Ace;
