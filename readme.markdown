@@ -18,6 +18,11 @@ If you want LinqToExcel to run in a 64 bit application, make sure to use the 64 
 
 You will also need to make sure to have the [64 bit version of the Access Database Engine](http://www.microsoft.com/downloads/info.aspx?na=41&srcfamilyid=c06b8369-60dd-4b64-a44b-84b371ede16d&srcdisplaylang=en&u=http%3a%2f%2fdownload.microsoft.com%2fdownload%2f2%2f4%2f3%2f24375141-E08D-4803-AB0E-10F2E3A07AAA%2fAccessDatabaseEngine_x64.exe) installed on the computer.
 
+And make sure you manually set the **DatabaseEngine** property to DatabaseEngine.Ace
+
+  var excel = new ExcelQueryFactory("excelFileName");
+  excel.DatabaseEngine = DatabaseEngine.Ace;
+
 ## Query a worksheet with a header row
 The default query expects the first row to be the header row containing column names that match the property names on the generic class being used. It also expects the data to be in the worksheet named "Sheet1".
 
@@ -130,3 +135,9 @@ Set the **StrictMapping** property to true to confirm all the columns in the wor
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	excel.StrictMapping = true;
+
+## Manually setting the database engine
+LinqToExcel can use the Jet or Ace database engine, and it automatically determines the database engine to use by the file extension. You can manually set the database engine with the **DatabaseEngine** property
+
+  var excel = new ExcelQueryFactory("excelFileName");
+  excel.DatabaseEngine == DatabaseEngine.Ace;
