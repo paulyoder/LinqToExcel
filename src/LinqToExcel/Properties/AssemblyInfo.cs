@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LinqToExcel")]
 [assembly: AssemblyDescription("Easily retrieve data from spreadsheets and csv files by using LINQ")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("Yoder Web Solutions, LLC")]
 [assembly: AssemblyProduct("LinqToExcel")]
-[assembly: AssemblyCopyright("Copyright © Paul Yoder 2011")]
+[assembly: AssemblyCopyright("Copyright © Paul Yoder 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
