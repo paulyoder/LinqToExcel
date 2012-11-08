@@ -22,7 +22,9 @@ namespace LinqToExcel
         public bool StrictMapping { get; set; }
 
         /// <summary>
-        /// Sets the database engine to use (spreadsheets ending in xlsx, xlsm, and xlsb must use the Ace database engine)
+        /// Sets the database engine to use 
+        /// (Spreadsheets ending in xlsx, xlsm, and xlsb must use the Ace database engine)
+        /// (If running 64 bit this defaults to ACE (JET doesn't work anyway), if running 32 bit this detaults to JET)
         /// </summary>
         public DatabaseEngine DatabaseEngine { get; set; }
 
@@ -34,7 +36,12 @@ namespace LinqToExcel
         public ExcelQueryFactory(string fileName)
         {
             FileName = fileName;
-            DatabaseEngine = DatabaseEngine.Jet;
+
+            // Detects if current process is 64/32 bit and defaults appropriately 
+            if (IntPtr.Size == 8) // Running 64 bit
+                DatabaseEngine = Domain.DatabaseEngine.Ace;
+            else // Running 32 bit
+                DatabaseEngine = Domain.DatabaseEngine.Jet;
         }
 
         #region Other Methods
