@@ -140,5 +140,15 @@ namespace LinqToExcel.Query
 
             return columns;
         }
+
+        internal static DatabaseEngine DefaultDatabaseEngine()
+        {
+            return Is64BitProcess() ? DatabaseEngine.Ace : DatabaseEngine.Jet;
+        }
+
+        internal static bool Is64BitProcess()
+        {
+            return (IntPtr.Size == 8);
+        }
     }
 }

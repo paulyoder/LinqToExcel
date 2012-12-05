@@ -20,7 +20,7 @@ namespace LinqToExcel.Query
         internal bool StrictMapping { get; set; }
 
         internal ExcelQueryArgs()
-            : this(new ExcelQueryConstructorArgs())
+            : this(new ExcelQueryConstructorArgs() { DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine() })
         { }
 
         internal ExcelQueryArgs(ExcelQueryConstructorArgs args)

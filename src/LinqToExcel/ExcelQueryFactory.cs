@@ -36,12 +36,7 @@ namespace LinqToExcel
         public ExcelQueryFactory(string fileName)
         {
             FileName = fileName;
-
-            // Detects if current process is 64/32 bit and defaults appropriately 
-            if (IntPtr.Size == 8) // Running 64 bit
-                DatabaseEngine = Domain.DatabaseEngine.Ace;
-            else // Running 32 bit
-                DatabaseEngine = Domain.DatabaseEngine.Jet;
+            DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
         }
 
         #region Other Methods

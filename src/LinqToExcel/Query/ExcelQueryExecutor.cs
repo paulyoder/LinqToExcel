@@ -145,7 +145,7 @@ namespace LinqToExcel.Query
                 _args.WorksheetName = Path.GetFileName(_args.FileName);
             else if (_args.WorksheetIndex.HasValue)
             {
-                var worksheetNames = ExcelUtilities.GetWorksheetNames(_args.FileName);
+                var worksheetNames = ExcelUtilities.GetWorksheetNames(_args);
                 if (_args.WorksheetIndex.Value < worksheetNames.Count())
                     _args.WorksheetName = worksheetNames.ElementAt(_args.WorksheetIndex.Value);
                 else
