@@ -134,7 +134,7 @@ The **StrictMapping** property can be set to:
 The implied default StrictMapping value is 'None'. A **StrictMappingException** is thrown when the specified mapping condition isn't satisified.
 
 	var excel = new ExcelQueryFactory("excelFileName");
-	excel.StrictMapping = StrictMapping.Both;
+	excel.StrictMapping = StrictMappingType.Both;
 
 ## Manually setting the database engine
 LinqToExcel can use the Jet or Ace database engine, and it automatically determines the database engine to use by the file extension. You can manually set the database engine with the **DatabaseEngine** property
