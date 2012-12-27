@@ -196,5 +196,59 @@ namespace LinqToExcel.Tests
 
             Assert.AreEqual(1, companies.Count);
         }
+
+        [Test]
+        public void StrictMapping_None_with_additional_worksheet_column_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.None;
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<Company>("Null Dates")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_None_with_additional_class_properties_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.None;
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyWithCity>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_Not_Explicitly_Set_with_additional_worksheet_column_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<Company>("Null Dates")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_Not_Explicitly_Set_with_additional_class_properties_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyWithCity>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
     }
 }
