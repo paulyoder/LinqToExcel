@@ -126,10 +126,15 @@ The **GetColumnNames()** method can be used to retrieve the list of column names
 	var columnNames = excel.GetColumnNames("worksheetName");
 
 ## Strict Mapping
-Set the **StrictMapping** property to true to confirm all the columns in the worksheet map to a property on the class being used. A **StrictMappingException** is thrown when not all the columns map to a class property.
+The **StrictMapping** property can be set to: 
+* 'WorksheetStrict' in order to enforce all worksheet columns are mapped to a class property.
+* 'ClassStrict' to enforce all class properties are mapped to a to a worksheet column.
+* 'Both' to enforce all worksheet columns map to a class property and vice versa.
+  
+The implied default StrictMapping value is 'None'. A **StrictMappingException** is thrown when the specified mapping condition isn't satisified.
 
 	var excel = new ExcelQueryFactory("excelFileName");
-	excel.StrictMapping = true;
+	excel.StrictMapping = StrictMapping.Both;
 
 ## Manually setting the database engine
 LinqToExcel can use the Jet or Ace database engine, and it automatically determines the database engine to use by the file extension. You can manually set the database engine with the **DatabaseEngine** property
