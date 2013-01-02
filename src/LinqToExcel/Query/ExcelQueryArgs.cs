@@ -17,7 +17,7 @@ namespace LinqToExcel.Query
         internal string StartRange { get; set; }
         internal string EndRange { get; set; }
         internal bool NoHeader { get; set; }
-        internal bool StrictMapping { get; set; }
+        internal StrictMappingType? StrictMapping { get; set; }
 
         internal ExcelQueryArgs()
             : this(new ExcelQueryConstructorArgs() { DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine() })
@@ -29,7 +29,7 @@ namespace LinqToExcel.Query
             DatabaseEngine = args.DatabaseEngine;
             ColumnMappings = args.ColumnMappings ?? new Dictionary<string, string>();
             Transformations = args.Transformations ?? new Dictionary<string, Func<string, object>>();
-            StrictMapping = args.StrictMapping;
+            StrictMapping = args.StrictMapping ?? StrictMappingType.None;
         }
 
         public override string ToString()
