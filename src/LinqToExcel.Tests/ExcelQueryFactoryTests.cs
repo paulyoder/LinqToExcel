@@ -7,6 +7,8 @@ using LinqToExcel.Domain;
 
 namespace LinqToExcel.Tests
 {
+    using LinqToExcel.Query;
+
     [Author("Paul Yoder", "paulyoder@gmail.com")]
     [FixtureCategory("Unit")]
     [TestFixture]
@@ -115,32 +117,134 @@ namespace LinqToExcel.Tests
 
         [Test]
         [ExpectedException(typeof(StrictMappingException), "'City' property is not mapped to a column")]
-        public void StrictMapping_throws_StrictMappingException_when_property_is_not_mapped_to_column()
+        public void StrictMapping_ClassStrict_throws_StrictMappingException_when_property_is_not_mapped_to_column()
         {
             var excel = new ExcelQueryFactory(_excelFileName);
-            excel.StrictMapping = true;
+            excel.StrictMapping = StrictMappingType.ClassStrict;
+            var companies = (from x in excel.Worksheet<CompanyWithCity>()
+                             select x).ToList();
+        }
+
+        [Test]
+        public void StrictMapping_ClassStrict_with_additional_unused_worksheet_columns_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.ClassStrict;
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyNullable>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        [ExpectedException(typeof(StrictMappingException), "'City' column is not mapped to a property")]
+        public void StrictMapping_WorksheetStrict_throws_StrictMappingException_when_column_is_not_mapped_to_property()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.WorksheetStrict;
+            var companies = (from x in excel.Worksheet<Company>("Null Dates")
+                             select x).ToList();
+        }
+
+        [Test]
+        public void StrictMapping_WorksheetStrict_with_additional_unused_class_properties_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.WorksheetStrict;
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyWithCity>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        [ExpectedException(typeof(StrictMappingException), "'City' property is not mapped to a column")]
+        public void StrictMapping_Both_throws_StrictMappingException_when_property_is_not_mapped_to_column()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.Both;
             var companies = (from x in excel.Worksheet<CompanyWithCity>()
                              select x).ToList();
         }
 
         [Test]
         [ExpectedException(typeof(StrictMappingException), "'City' column is not mapped to a property")]
-        public void StrictMapping_throws_StrictMappingException_when_column_is_not_mapped_to_property()
+        public void StrictMapping_Both_throws_StrictMappingException_when_column_is_not_mapped_to_property()
         {
             var excel = new ExcelQueryFactory(_excelFileName);
-            excel.StrictMapping = true;
+            excel.StrictMapping = StrictMappingType.Both;
             var companies = (from x in excel.Worksheet<Company>("Null Dates")
                              select x).ToList();
         }
 
         [Test]
-        public void StrictMapping_with_column_mappings_doesnt_throw_exception()
+        public void StrictMapping_Both_with_column_mappings_doesnt_throw_exception()
         {
             var excel = new ExcelQueryFactory(_excelFileName);
-            excel.StrictMapping = true;
+            excel.StrictMapping = StrictMappingType.Both;
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
             var companies = (from c in excel.Worksheet<Company>("More Companies")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_None_with_additional_worksheet_column_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.None;
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<Company>("Null Dates")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_None_with_additional_class_properties_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.StrictMapping = StrictMappingType.None;
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyWithCity>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_Not_Explicitly_Set_with_additional_worksheet_column_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<Company>("Null Dates")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_Not_Explicitly_Set_with_additional_class_properties_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyWithCity>()
                              where c.Name == "ACME"
                              select c).ToList();
 
