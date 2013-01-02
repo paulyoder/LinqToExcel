@@ -16,7 +16,7 @@ namespace LinqToExcel
         /// <summary>
         /// Confirms all the worksheet columns are mapped to a property, and if not, throws a StrictMappingException
         /// </summary>
-        bool StrictMapping { get; set; }
+        StrictMappingType? StrictMapping { get; set; }
 
         /// <summary>
         /// Sets the database engine to use (spreadsheets ending in xlsx, xlsm, xlsb will always use the Ace engine)
