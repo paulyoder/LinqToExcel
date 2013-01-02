@@ -19,7 +19,7 @@ namespace LinqToExcel
         /// <summary>
         /// Confirms all the worksheet columns are mapped to a property, and if not, throws a StrictMappingException
         /// </summary>
-        public bool StrictMapping { get; set; }
+        public StrictMappingType? StrictMapping { get; set; }
 
         /// <summary>
         /// Sets the database engine to use 

@@ -264,8 +264,8 @@ namespace LinqToExcel.Query
             var results = new List<object>();
             var fromType = queryModel.MainFromClause.ItemType;
             var props = fromType.GetProperties();
-            if (_args.StrictMapping)
-                ConfirmStrictMapping(columns, props);
+            if (_args.StrictMapping.Value != StrictMappingType.None)
+                this.ConfirmStrictMapping(columns, props, _args.StrictMapping.Value);
 
             while (data.Read())
             {
@@ -283,20 +283,27 @@ namespace LinqToExcel.Query
             return results.AsEnumerable();
         }
 
-        private void ConfirmStrictMapping(IEnumerable<string> columns, PropertyInfo[] properties)
+        private void ConfirmStrictMapping(IEnumerable<string> columns, PropertyInfo[] properties, StrictMappingType strictMappingType)
         {
             var propertyNames = properties.Select(x => x.Name);
-            foreach (var column in columns)
+            if (strictMappingType == StrictMappingType.ClassStrict || strictMappingType == StrictMappingType.Both)
             {
-                if (!propertyNames.Contains(column) &&
-                    ColumnIsNotMapped(column))
-                    throw new StrictMappingException("'{0}' column is not mapped to a property", column);
+                foreach (var propertyName in propertyNames)
+                {
+                    if (!columns.Contains(propertyName) &&
+                        PropertyIsNotMapped(propertyName))
+                        throw new StrictMappingException("'{0}' property is not mapped to a column", propertyName);
+                }
             }
-            foreach (var propertyName in propertyNames)
+
+            if (strictMappingType == StrictMappingType.WorksheetStrict || strictMappingType == StrictMappingType.Both)
             {
-                if (!columns.Contains(propertyName) &&
-                    PropertyIsNotMapped(propertyName))
-                    throw new StrictMappingException("'{0}' property is not mapped to a column", propertyName);
+                foreach (var column in columns)
+                {
+                    if (!propertyNames.Contains(column) &&
+                        ColumnIsNotMapped(column))
+                        throw new StrictMappingException("'{0}' column is not mapped to a property", column);
+                }
             }
         }
 
