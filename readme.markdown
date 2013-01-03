@@ -128,7 +128,7 @@ The **GetColumnNames()** method can be used to retrieve the list of column names
 ## Strict Mapping
 The **StrictMapping** property can be set to: 
 * 'WorksheetStrict' in order to enforce all worksheet columns are mapped to a class property.
-* 'ClassStrict' to enforce all class properties are mapped to a to a worksheet column.
+* 'ClassStrict' to enforce all class properties are mapped to a worksheet column.
 * 'Both' to enforce all worksheet columns map to a class property and vice versa.
   
 The implied default StrictMapping value is 'None'. A **StrictMappingException** is thrown when the specified mapping condition isn't satisified.

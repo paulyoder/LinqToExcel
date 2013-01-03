@@ -290,8 +290,7 @@ namespace LinqToExcel.Query
             {
                 foreach (var propertyName in propertyNames)
                 {
-                    if (!columns.Contains(propertyName) &&
-                        PropertyIsNotMapped(propertyName))
+                    if (!columns.Contains(propertyName) && PropertyIsNotMapped(propertyName))
                         throw new StrictMappingException("'{0}' property is not mapped to a column", propertyName);
                 }
             }
@@ -300,8 +299,7 @@ namespace LinqToExcel.Query
             {
                 foreach (var column in columns)
                 {
-                    if (!propertyNames.Contains(column) &&
-                        ColumnIsNotMapped(column))
+                    if (!propertyNames.Contains(column) && ColumnIsNotMapped(column))
                         throw new StrictMappingException("'{0}' column is not mapped to a property", column);
                 }
             }
