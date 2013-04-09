@@ -27,6 +27,7 @@ namespace LinqToExcel.Query
                 "Equals",
                 "Contains",
                 "StartsWith",
+                "IsNullOrEmpty",
                 "EndsWith" };
         }
 
@@ -169,9 +170,16 @@ namespace LinqToExcel.Query
         /// </summary>
         protected override Expression VisitUnaryExpression(UnaryExpression uExp)
         {
-            var columnName = GetColumnName(uExp.Operand);
-            _whereClause.Append(columnName);
+            if (IsNotStringIsNullOrEmpty(uExp))
+                AddStringIsNullOrEmptyToWhereClause((MethodCallExpression)uExp.Operand, true);
+            else
+                _whereClause.Append(GetColumnName(uExp.Operand));
             return uExp;
+        }
+
+        private bool IsNotStringIsNullOrEmpty(UnaryExpression uExp)
+        {
+            return uExp.NodeType == ExpressionType.Not && ((MethodCallExpression)uExp.Operand).Method.Name == "IsNullOrEmpty";
         }
 
         /// <summary>
@@ -206,6 +214,9 @@ namespace LinqToExcel.Query
                 case "Equals":
                     AddStringMethodToWhereClause(mExp, "=", "{0}");
                     break;
+                case "IsNullOrEmpty":
+                    AddStringIsNullOrEmptyToWhereClause(mExp);
+                    break;
             }
         }
 
@@ -218,6 +229,20 @@ namespace LinqToExcel.Query
             var value = mExp.Arguments.First().ToString().Replace("\"", "");
             var parameter = string.Format(argumentFormat, value);
             _params.Add(new OleDbParameter("?", parameter));
+        }
+
+        private void AddStringIsNullOrEmptyToWhereClause(MethodCallExpression mExp)
+        {
+            AddStringIsNullOrEmptyToWhereClause(mExp, false);
+        }
+        
+        private void AddStringIsNullOrEmptyToWhereClause(MethodCallExpression mExp, bool notEqual)
+        {
+            var columnName = GetColumnName((MemberExpression)mExp.Arguments[0]);
+            if (notEqual)
+                _whereClause.AppendFormat("(({0} <> '') OR ({0} IS NOT NULL))", columnName);
+            else
+                _whereClause.AppendFormat("(({0} = '') OR ({0} IS NULL))", columnName);
         }
 
         /// <summary>
