@@ -426,5 +426,31 @@ namespace LinqToExcel.Tests
             var expectedSql = "SELECT DISTINCT(Name) FROM [Sheet1$]";
             Assert.AreEqual(expectedSql, GetSQLStatement());
         }
+
+        [Test]
+        public void where_string_IsNullOrEmpty()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where string.IsNullOrEmpty(c.CEO)
+                            select c;
+
+            try { companies.ToList(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE (({0} = '') OR ({0} IS NULL))", GetSQLFieldName("CEO"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
+
+        [Test]
+        public void where_not_string_IsNullOrEmpty()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                            where !string.IsNullOrEmpty(c.CEO)
+                            select c;
+
+            try { companies.ToList(); }
+            catch (OleDbException) { }
+            var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE (({0} <> '') OR ({0} IS NOT NULL))", GetSQLFieldName("CEO"));
+            Assert.AreEqual(expectedSql, GetSQLStatement());
+        }
     }
 }

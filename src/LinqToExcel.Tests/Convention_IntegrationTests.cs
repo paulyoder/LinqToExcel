@@ -163,6 +163,26 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void where_string_IsNullOrEmpty()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
+                            where String.IsNullOrEmpty(c.CEO)
+                            select c;
+
+            Assert.AreEqual(0, companies.ToList().Count);
+        }
+
+        [Test]
+        public void where_not_string_IsNullOrEmpty()
+        {
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
+                            where !String.IsNullOrEmpty(c.CEO)
+                            select c;
+
+            Assert.AreEqual(7, companies.ToList().Count);
+        }
+
+        [Test]
         public void selection_projection()
         {
             var companyCities = from c in ExcelQueryFactory.Worksheet<Company>(null, _excelFileName, null)
