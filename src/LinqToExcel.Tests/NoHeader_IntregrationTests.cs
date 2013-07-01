@@ -8,14 +8,14 @@ using MbUnit.Framework;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class NoHeader_IntregrationTests
     {
         private IExcelQueryFactory _factory;
         private string _excelFileName;
 
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void ts()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

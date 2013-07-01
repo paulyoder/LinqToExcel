@@ -1,34 +1,39 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Remotion.Data.Linq.Parsing;
 using System.Data.OleDb;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using LinqToExcel.Extensions;
-using Remotion.Data.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
+
+#endregion
 
 namespace LinqToExcel.Query
 {
     public class WhereClauseExpressionTreeVisitor : ThrowingExpressionTreeVisitor
     {
-        private readonly StringBuilder _whereClause = new StringBuilder();
-        private readonly List<OleDbParameter> _params = new List<OleDbParameter>();
         private readonly Dictionary<string, string> _columnMapping;
         private readonly List<string> _columnNamesUsed = new List<string>();
+        private readonly List<OleDbParameter> _params = new List<OleDbParameter>();
         private readonly Type _sheetType;
         private readonly List<string> _validStringMethods;
+        private readonly StringBuilder _whereClause = new StringBuilder();
 
         public WhereClauseExpressionTreeVisitor(Type sheetType, Dictionary<string, string> columnMapping)
         {
             _sheetType = sheetType;
             _columnMapping = columnMapping;
-            _validStringMethods = new List<string>() {
-                "Equals",
-                "Contains",
-                "StartsWith",
-                "IsNullOrEmpty",
-                "EndsWith" };
+            _validStringMethods = new List<string>
+                {
+                    "Equals",
+                    "Contains",
+                    "StartsWith",
+                    "IsNullOrEmpty",
+                    "EndsWith"
+                };
         }
 
         public string WhereClause
@@ -68,7 +73,7 @@ namespace LinqToExcel.Query
             var bLeft = bExp.Left;
             var bRight = bExp.Right;
             if ((bExp.Right.NodeType == ExpressionType.MemberAccess) &&
-                (((MemberExpression)bExp.Right).Member.DeclaringType == _sheetType))
+                (((MemberExpression) bExp.Right).Member.DeclaringType == _sheetType))
             {
                 bLeft = bExp.Right;
                 bRight = bExp.Left;
@@ -120,7 +125,7 @@ namespace LinqToExcel.Query
         {
             if (exp.Left.NodeType == ExpressionType.Call)
             {
-                var compareStringCall = (MethodCallExpression)exp.Left;
+                var compareStringCall = (MethodCallExpression) exp.Left;
                 if (compareStringCall.Method.DeclaringType.FullName == "Microsoft.VisualBasic.CompilerServices.Operators" && compareStringCall.Method.Name == "CompareString")
                 {
                     var arg1 = compareStringCall.Arguments[0];
@@ -150,9 +155,9 @@ namespace LinqToExcel.Query
         {
             //Set the column name to the property mapping if there is one, 
             //else use the property name for the column name
-            var columnName = (_columnMapping.ContainsKey(mExp.Member.Name)) ? 
-                _columnMapping[mExp.Member.Name] : 
-                mExp.Member.Name;
+            var columnName = (_columnMapping.ContainsKey(mExp.Member.Name)) ?
+                                 _columnMapping[mExp.Member.Name] :
+                                 mExp.Member.Name;
             _whereClause.AppendFormat("[{0}]", columnName);
             _columnNamesUsed.Add(columnName);
             return mExp;
@@ -166,12 +171,12 @@ namespace LinqToExcel.Query
         }
 
         /// <summary>
-        /// This method is visited when the LinqToExcel.Row type is used in the query
+        ///     This method is visited when the LinqToExcel.Row type is used in the query
         /// </summary>
         protected override Expression VisitUnaryExpression(UnaryExpression uExp)
         {
             if (IsNotStringIsNullOrEmpty(uExp))
-                AddStringIsNullOrEmptyToWhereClause((MethodCallExpression)uExp.Operand, true);
+                AddStringIsNullOrEmptyToWhereClause((MethodCallExpression) uExp.Operand, true);
             else
                 _whereClause.Append(GetColumnName(uExp.Operand));
             return uExp;
@@ -179,11 +184,11 @@ namespace LinqToExcel.Query
 
         private bool IsNotStringIsNullOrEmpty(UnaryExpression uExp)
         {
-            return uExp.NodeType == ExpressionType.Not && ((MethodCallExpression)uExp.Operand).Method.Name == "IsNullOrEmpty";
+            return uExp.NodeType == ExpressionType.Not && ((MethodCallExpression) uExp.Operand).Method.Name == "IsNullOrEmpty";
         }
 
         /// <summary>
-        /// Only As<>() method calls on the LinqToExcel.Row type are support
+        ///     Only As<>() method calls on the LinqToExcel.Row type are support
         /// </summary>
         protected override Expression VisitMethodCallExpression(MethodCallExpression mExp)
         {
@@ -235,10 +240,10 @@ namespace LinqToExcel.Query
         {
             AddStringIsNullOrEmptyToWhereClause(mExp, false);
         }
-        
+
         private void AddStringIsNullOrEmptyToWhereClause(MethodCallExpression mExp, bool notEqual)
         {
-            var columnName = GetColumnName((MemberExpression)mExp.Arguments[0]);
+            var columnName = GetColumnName((MemberExpression) mExp.Arguments[0]);
             if (notEqual)
                 _whereClause.AppendFormat("(({0} <> '') OR ({0} IS NOT NULL))", columnName);
             else
@@ -246,19 +251,19 @@ namespace LinqToExcel.Query
         }
 
         /// <summary>
-        /// Retrieves the column name from a member expression or method call expression
+        ///     Retrieves the column name from a member expression or method call expression
         /// </summary>
         /// <param name="exp">Expression</param>
         private string GetColumnName(Expression exp)
         {
             if (exp is MemberExpression)
-                return GetColumnName((MemberExpression)exp);
+                return GetColumnName((MemberExpression) exp);
             else
-                return GetColumnName((MethodCallExpression)exp);
+                return GetColumnName((MethodCallExpression) exp);
         }
 
         /// <summary>
-        /// Retrieves the column name from a member expression
+        ///     Retrieves the column name from a member expression
         /// </summary>
         /// <param name="mExp">Member Expression</param>
         private string GetColumnName(MemberExpression mExp)
@@ -267,19 +272,19 @@ namespace LinqToExcel.Query
         }
 
         /// <summary>
-        /// Retrieves the column name from a method call expression
+        ///     Retrieves the column name from a method call expression
         /// </summary>
         /// <param name="exp">Method Call Expression</param>
         private string GetColumnName(MethodCallExpression mExp)
         {
             MethodCallExpression method = mExp;
             if (mExp.Object is MethodCallExpression)
-                method = (MethodCallExpression)mExp.Object;
+                method = (MethodCallExpression) mExp.Object;
 
             var arg = method.Arguments.First();
-            if (arg.Type == typeof(int))
+            if (arg.Type == typeof (int))
             {
-                if (_sheetType == typeof(RowNoHeader))
+                if (_sheetType == typeof (RowNoHeader))
                     return string.Format("F{0}", Int32.Parse(arg.ToString()) + 1);
                 else
                     throw new ArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader");

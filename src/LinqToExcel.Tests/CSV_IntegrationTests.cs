@@ -6,13 +6,13 @@ using System.IO;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class CSV_IntegrationTests
     {
         string _fileName;
 
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

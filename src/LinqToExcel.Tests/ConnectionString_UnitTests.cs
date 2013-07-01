@@ -6,11 +6,11 @@ using LinqToExcel.Domain;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class ConnectionString_UnitTests : SQLLogStatements_Helper
     {
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             InstantiateLogger();

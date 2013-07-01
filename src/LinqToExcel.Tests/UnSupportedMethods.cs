@@ -7,7 +7,7 @@ using System.Data.OleDb;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class UnSupportedMethods
     {

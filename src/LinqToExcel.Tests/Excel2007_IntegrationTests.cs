@@ -7,13 +7,13 @@ using System.IO;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class Excel2007_IntegrationTests
     {
         string _filesDirectory;
 
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

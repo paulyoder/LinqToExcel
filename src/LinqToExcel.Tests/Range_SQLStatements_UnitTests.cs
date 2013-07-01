@@ -8,13 +8,13 @@ using System.Data.OleDb;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class Range_SQLStatements_UnitTests : SQLLogStatements_Helper
     {
         private IExcelQueryFactory _factory;
 
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             InstantiateLogger();

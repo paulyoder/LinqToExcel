@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
-using Remotion.Data.Linq.Clauses;
+﻿#region
+
+using System.Collections.Generic;
+using Remotion.Linq.Clauses;
+
+#endregion
 
 namespace LinqToExcel.Query
 {
@@ -19,7 +23,7 @@ namespace LinqToExcel.Query
 
         public T GetObject<T>(IQuerySource source)
         {
-            return (T)_resultObjectsBySource[source];
+            return (T) _resultObjectsBySource[source];
         }
 
         public IEnumerator<KeyValuePair<IQuerySource, object>> GetEnumerator()

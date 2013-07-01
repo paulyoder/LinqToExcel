@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Gallio_MbUnit</id>
+    <version>3.4.14.0</version>
+    <title>Gallio &amp; MbUnit</title>
+    <authors>yvan</authors>
+    <owners>yvan</owners>
+    <projectUrl>http://www.gallio.org/</projectUrl>
+    <iconUrl>http://www.gallio.org/images/EchoLink100.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Gallio &amp; MbUnit dlls</description>
+    <summary>Gallio &amp; MbUnit dlls</summary>
+    <releaseNotes />
+    <copyright />
+    <language />
+    <tags>mbunit gallio</tags>
+  </metadata>
+</package>

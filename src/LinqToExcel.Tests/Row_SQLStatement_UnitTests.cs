@@ -6,11 +6,11 @@ using System.Data.OleDb;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class Row_SQLStatement_UnitTests : SQLLogStatements_Helper
     {
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             InstantiateLogger();

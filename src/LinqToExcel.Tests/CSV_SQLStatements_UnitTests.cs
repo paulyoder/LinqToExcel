@@ -6,13 +6,13 @@ using System.Data;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class CSV_SQLStatements_UnitTests : SQLLogStatements_Helper
     {
         string _fileName;
 
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             _fileName = Path.Combine(Path.GetTempPath(), "spreadsheet.csv");
