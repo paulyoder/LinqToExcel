@@ -4,7 +4,7 @@ using MbUnit.Framework;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [TestCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class CellTest
     {

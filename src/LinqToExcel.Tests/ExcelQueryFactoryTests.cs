@@ -10,7 +10,7 @@ namespace LinqToExcel.Tests
     using LinqToExcel.Query;
 
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class ExcelQueryFactoryTests
     {

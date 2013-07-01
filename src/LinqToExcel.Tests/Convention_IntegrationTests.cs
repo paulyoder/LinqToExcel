@@ -7,13 +7,13 @@ using System.Data.OleDb;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class Convention_IntegrationTests
     {
         string _excelFileName;
 
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

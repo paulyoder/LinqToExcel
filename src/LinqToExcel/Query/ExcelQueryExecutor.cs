@@ -1,26 +1,29 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Remotion.Data.Linq;
-using System.IO;
-using System.Data.OleDb;
 using System.Data;
+using System.Data.OleDb;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using Remotion.Data.Linq.Clauses.ResultOperators;
-using System.Collections;
-using LinqToExcel.Extensions;
-using log4net;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using LinqToExcel.Domain;
+using LinqToExcel.Extensions;
+using Remotion.Linq;
+using Remotion.Linq.Clauses.ResultOperators;
+using log4net;
+
+#endregion
 
 namespace LinqToExcel.Query
 {
     internal class ExcelQueryExecutor : IQueryExecutor
     {
-        private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly ExcelQueryArgs _args;
         private readonly string _connectionString;
+        private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         internal ExcelQueryExecutor(ExcelQueryArgs args)
         {
@@ -30,6 +33,55 @@ namespace LinqToExcel.Query
             if (_log.IsDebugEnabled)
                 _log.DebugFormat("Connection String: {0}", _connectionString);
             GetWorksheetName();
+        }
+
+        /// <summary>
+        ///     Executes a query with a scalar result, i.e. a query that ends with a result operator such as Count, Sum, or Average.
+        /// </summary>
+        public T ExecuteScalar<T>(QueryModel queryModel)
+        {
+            return ExecuteSingle<T>(queryModel, false);
+        }
+
+        /// <summary>
+        ///     Executes a query with a single result object, i.e. a query that ends with a result operator such as First, Last, Single, Min, or Max.
+        /// </summary>
+        public T ExecuteSingle<T>(QueryModel queryModel, bool returnDefaultWhenEmpty)
+        {
+            var results = ExecuteCollection<T>(queryModel);
+
+            foreach (var resultOperator in queryModel.ResultOperators)
+            {
+                if (resultOperator is LastResultOperator)
+                    return results.LastOrDefault();
+            }
+
+            return (returnDefaultWhenEmpty) ?
+                       results.FirstOrDefault() :
+                       results.First();
+        }
+
+        /// <summary>
+        ///     Executes a query with a collection result.
+        /// </summary>
+        public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
+        {
+            var sql = GetSqlStatement(queryModel);
+            LogSqlStatement(sql);
+
+            var objectResults = GetDataResults(sql, queryModel);
+            var projector = GetSelectProjector<T>(objectResults.FirstOrDefault(), queryModel);
+            var returnResults = objectResults.Cast(projector);
+
+            foreach (var resultOperator in queryModel.ResultOperators)
+            {
+                if (resultOperator is ReverseResultOperator)
+                    returnResults = returnResults.Reverse();
+                if (resultOperator is SkipResultOperator)
+                    returnResults = returnResults.Skip(resultOperator.Cast<SkipResultOperator>().GetConstantCount());
+            }
+
+            return returnResults;
         }
 
         private void ValidateArgs(ExcelQueryArgs args)
@@ -56,55 +108,6 @@ namespace LinqToExcel.Query
                 throw new ArgumentException("Cannot use WorksheetRangeNoHeader on csv files");
         }
 
-        /// <summary>
-        /// Executes a query with a scalar result, i.e. a query that ends with a result operator such as Count, Sum, or Average.
-        /// </summary>
-        public T ExecuteScalar<T>(QueryModel queryModel)
-        {
-            return ExecuteSingle<T>(queryModel, false);
-        }
-
-        /// <summary>
-        /// Executes a query with a single result object, i.e. a query that ends with a result operator such as First, Last, Single, Min, or Max.
-        /// </summary>
-        public T ExecuteSingle<T>(QueryModel queryModel, bool returnDefaultWhenEmpty)
-        {
-            var results = ExecuteCollection<T>(queryModel);
-
-            foreach (var resultOperator in queryModel.ResultOperators)
-            {
-                if (resultOperator is LastResultOperator)
-                    return results.LastOrDefault();
-            }
-
-            return (returnDefaultWhenEmpty) ?
-                results.FirstOrDefault() :
-                results.First();
-        }
-
-        /// <summary>
-        /// Executes a query with a collection result.
-        /// </summary>
-        public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
-        {
-            var sql = GetSqlStatement(queryModel);
-            LogSqlStatement(sql);
-
-            var objectResults = GetDataResults(sql, queryModel);
-            var projector = GetSelectProjector<T>(objectResults.FirstOrDefault(), queryModel);
-            var returnResults = objectResults.Cast<T>(projector);
-
-            foreach (var resultOperator in queryModel.ResultOperators)
-            {
-                if (resultOperator is ReverseResultOperator)
-                    returnResults = returnResults.Reverse();
-                if (resultOperator is SkipResultOperator)
-                    returnResults = returnResults.Skip(resultOperator.Cast<SkipResultOperator>().GetConstantCount());
-            }
-
-            return returnResults;
-        }
-
         protected Func<object, T> GetSelectProjector<T>(object firstResult, QueryModel queryModel)
         {
             Func<object, T> projector = (result) => result.Cast<T>();
@@ -118,17 +121,17 @@ namespace LinqToExcel.Query
 
         protected bool ShouldBuildResultObjectMapping<T>(object firstResult, QueryModel queryModel)
         {
-            var ignoredResultOperators = new List<Type>()
-                                             {
-                                                 typeof (MaxResultOperator),
-                                                 typeof (CountResultOperator),
-                                                 typeof (LongCountResultOperator),
-                                                 typeof (MinResultOperator),
-                                                 typeof (SumResultOperator)
-                                             };
+            var ignoredResultOperators = new List<Type>
+                {
+                    typeof (MaxResultOperator),
+                    typeof (CountResultOperator),
+                    typeof (LongCountResultOperator),
+                    typeof (MinResultOperator),
+                    typeof (SumResultOperator)
+                };
 
             return (firstResult != null &&
-                    firstResult.GetType() != typeof(T) &&
+                    firstResult.GetType() != typeof (T) &&
                     !queryModel.ResultOperators.Any(x => ignoredResultOperators.Contains(x.GetType())));
         }
 
@@ -156,7 +159,7 @@ namespace LinqToExcel.Query
         }
 
         /// <summary>
-        /// Executes the sql query and returns the data results
+        ///     Executes the sql query and returns the data results
         /// </summary>
         /// <typeparam name="T">Data type in the main from clause (queryModel.MainFromClause.ItemType)</typeparam>
         /// <param name="queryModel">Linq query model</param>
@@ -170,7 +173,10 @@ namespace LinqToExcel.Query
                 conn.Open();
                 command.CommandText = sql.ToString();
                 command.Parameters.AddRange(sql.Parameters.ToArray());
-                try { data = command.ExecuteReader(); }
+                try
+                {
+                    data = command.ExecuteReader();
+                }
                 catch (OleDbException e)
                 {
                     if (e.Message.Contains(_args.WorksheetName))
@@ -185,9 +191,9 @@ namespace LinqToExcel.Query
                 LogColumnMappingWarnings(columns);
                 if (columns.Count() == 1 && columns.First() == "Expr1000")
                     results = GetScalarResults(data);
-                else if (queryModel.MainFromClause.ItemType == typeof(Row))
+                else if (queryModel.MainFromClause.ItemType == typeof (Row))
                     results = GetRowResults(data, columns);
-                else if (queryModel.MainFromClause.ItemType == typeof(RowNoHeader))
+                else if (queryModel.MainFromClause.ItemType == typeof (RowNoHeader))
                     results = GetRowNoHeaderResults(data);
                 else
                     results = GetTypeResults(data, columns, queryModel);
@@ -196,7 +202,7 @@ namespace LinqToExcel.Query
         }
 
         /// <summary>
-        /// Logs a warning for any property to column mappings that do not exist in the excel worksheet
+        ///     Logs a warning for any property to column mappings that do not exist in the excel worksheet
         /// </summary>
         /// <param name="Columns">List of columns in the worksheet</param>
         private void LogColumnMappingWarnings(IEnumerable<string> columns)
@@ -206,7 +212,7 @@ namespace LinqToExcel.Query
                 if (!columns.Contains(kvp.Value))
                 {
                     _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
-                        kvp.Value, kvp.Key, _args.WorksheetName);
+                                    kvp.Value, kvp.Key, _args.WorksheetName);
                 }
             }
         }
@@ -265,7 +271,7 @@ namespace LinqToExcel.Query
             var fromType = queryModel.MainFromClause.ItemType;
             var props = fromType.GetProperties();
             if (_args.StrictMapping.Value != StrictMappingType.None)
-                this.ConfirmStrictMapping(columns, props, _args.StrictMapping.Value);
+                ConfirmStrictMapping(columns, props, _args.StrictMapping.Value);
 
             while (data.Read())
             {
@@ -273,8 +279,8 @@ namespace LinqToExcel.Query
                 foreach (var prop in props)
                 {
                     var columnName = (_args.ColumnMappings.ContainsKey(prop.Name)) ?
-                        _args.ColumnMappings[prop.Name] :
-                        prop.Name;
+                                         _args.ColumnMappings[prop.Name] :
+                                         prop.Name;
                     if (columns.Contains(columnName))
                         result.SetProperty(prop.Name, GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType));
                 }
@@ -319,14 +325,14 @@ namespace LinqToExcel.Query
         {
             //Perform the property transformation if there is one
             return (_args.Transformations.ContainsKey(propertyName)) ?
-                _args.Transformations[propertyName](data[columnName].ToString()) :
-                data[columnName];
+                       _args.Transformations[propertyName](data[columnName].ToString()) :
+                       data[columnName];
         }
 
         private IEnumerable<object> GetScalarResults(IDataReader data)
         {
             data.Read();
-            return new List<object> { data[0] };
+            return new List<object> {data[0]};
         }
 
         private void LogSqlStatement(SqlParts sqlParts)
@@ -334,12 +340,12 @@ namespace LinqToExcel.Query
             if (_log.IsDebugEnabled)
             {
                 var logMessage = new StringBuilder();
-                logMessage.AppendFormat("{0};", sqlParts.ToString());
+                logMessage.AppendFormat("{0};", sqlParts);
                 for (var i = 0; i < sqlParts.Parameters.Count(); i++)
                 {
                     var paramValue = sqlParts.Parameters.ElementAt(i).Value.ToString();
                     var paramMessage = string.Format(" p{0} = '{1}';",
-                        i, sqlParts.Parameters.ElementAt(i).Value.ToString());
+                                                     i, sqlParts.Parameters.ElementAt(i).Value);
 
                     if (paramValue.IsNumber())
                         paramMessage = paramMessage.Replace("'", "");

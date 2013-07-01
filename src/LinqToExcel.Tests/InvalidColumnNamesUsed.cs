@@ -7,13 +7,13 @@ using System.Data;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class InvalidColumnNamesUsed
     {
         private string _excelFileName;
 
-        [TestFixtureSetUp]
+        [FixtureSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

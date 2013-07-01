@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region
+
+using System;
 using System.Linq;
-using Remotion.Data.Linq;
-using Remotion.Data.Linq.Clauses;
-using Remotion.Data.Linq.Clauses.ResultOperators;
 using System.Linq.Expressions;
-using Remotion.Data.Linq.Collections;
+using Remotion.Linq;
+using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Collections;
+
+#endregion
 
 namespace LinqToExcel.Query
 {
     internal class SqlGeneratorQueryModelVisitor : QueryModelVisitorBase
     {
-        public SqlParts SqlStatement { get; protected set; }
         private readonly ExcelQueryArgs _args;
 
         internal SqlGeneratorQueryModelVisitor(ExcelQueryArgs args)
@@ -19,14 +21,16 @@ namespace LinqToExcel.Query
             _args = args;
             SqlStatement = new SqlParts();
             SqlStatement.Table = (String.IsNullOrEmpty(_args.StartRange)) ?
-                string.Format("[{0}$]",
-                    _args.WorksheetName) :
-                string.Format("[{0}${1}:{2}]",
-                    _args.WorksheetName, _args.StartRange, _args.EndRange);
+                                     string.Format("[{0}$]",
+                                                   _args.WorksheetName) :
+                                     string.Format("[{0}${1}:{2}]",
+                                                   _args.WorksheetName, _args.StartRange, _args.EndRange);
 
             if (_args.WorksheetName.ToLower().EndsWith(".csv"))
                 SqlStatement.Table = SqlStatement.Table.Replace("$]", "]");
         }
+
+        public SqlParts SqlStatement { get; protected set; }
 
         public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
         {
@@ -85,7 +89,7 @@ namespace LinqToExcel.Query
             else if (resultOperator is DistinctResultOperator)
                 ProcessDistinctAggregate(queryModel);
 
-            //Not supported result operators
+                //Not supported result operators
             else if (resultOperator is ContainsResultOperator)
                 throw new NotSupportedException("LinqToExcel does not provide support for the Contains() method");
             else if (resultOperator is DefaultIfEmptyResultOperator)
@@ -109,8 +113,8 @@ namespace LinqToExcel.Query
         protected override void VisitBodyClauses(ObservableCollection<IBodyClause> bodyClauses, QueryModel queryModel)
         {
             var orderClause = bodyClauses
-                .FirstOrDefault(x => x.GetType() == typeof(OrderByClause))
-                as OrderByClause;
+                                  .FirstOrDefault(x => x.GetType() == typeof (OrderByClause))
+                              as OrderByClause;
 
             if (orderClause != null)
             {
@@ -120,14 +124,14 @@ namespace LinqToExcel.Query
                 {
                     var mExp = exp as MemberExpression;
                     columnName = (_args.ColumnMappings.ContainsKey(mExp.Member.Name)) ?
-                        _args.ColumnMappings[mExp.Member.Name] :
-                        mExp.Member.Name;
+                                     _args.ColumnMappings[mExp.Member.Name] :
+                                     mExp.Member.Name;
                 }
                 else if (exp is MethodCallExpression)
                 {
                     //row["ColumnName"] is being used in order by statement
-                    columnName = ((MethodCallExpression)exp).Arguments.First()
-                        .ToString().Replace("\"", "");
+                    columnName = ((MethodCallExpression) exp).Arguments.First()
+                                                             .ToString().Replace("\"", "");
                 }
 
                 SqlStatement.OrderBy = columnName;
@@ -142,8 +146,8 @@ namespace LinqToExcel.Query
         {
             var columnName = GetResultColumnName(queryModel);
             SqlStatement.Aggregate = string.Format("{0}({1})",
-                aggregateName,
-                columnName);
+                                                   aggregateName,
+                                                   columnName);
             SqlStatement.ColumnNamesUsed.Add(columnName);
         }
 
@@ -159,8 +163,8 @@ namespace LinqToExcel.Query
         {
             var mExp = queryModel.SelectClause.Selector as MemberExpression;
             return (_args.ColumnMappings != null && _args.ColumnMappings.ContainsKey(mExp.Member.Name)) ?
-                _args.ColumnMappings[mExp.Member.Name] :
-                mExp.Member.Name;
+                       _args.ColumnMappings[mExp.Member.Name] :
+                       mExp.Member.Name;
         }
     }
 }
