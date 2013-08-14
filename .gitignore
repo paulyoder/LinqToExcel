@@ -1,6 +1,7 @@
 bin/
 bin64/
 obj/
+tests/
 *.suo
 LinqToExcel.xml
 *ReSharper*
