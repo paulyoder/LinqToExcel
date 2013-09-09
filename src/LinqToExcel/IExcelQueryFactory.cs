@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.OleDb;
 using System.Linq.Expressions;
 using LinqToExcel.Query;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using LinqToExcel.Domain;
 
 namespace LinqToExcel
 {
-    public interface IExcelQueryFactory
+    public interface IExcelQueryFactory : IDisposable
     {
         /// <summary>
         /// Full path to the Excel spreadsheet

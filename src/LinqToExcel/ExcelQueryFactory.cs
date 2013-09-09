@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.OleDb;
 using System.Linq.Expressions;
 using LinqToExcel.Domain;
 using LinqToExcel.Query;
@@ -10,8 +12,9 @@ namespace LinqToExcel
     {
         private readonly Dictionary<string, string> _columnMappings = new Dictionary<string, string>();
         private readonly Dictionary<string, Func<string, object>> _transformations = new Dictionary<string, Func<string, object>>();
+		private OleDbConnection _persistentConnection;
 
-        /// <summary>
+	    /// <summary>
         /// Full path to the Excel spreadsheet
         /// </summary>
         public string FileName { get; set; }
@@ -38,6 +41,21 @@ namespace LinqToExcel
             FileName = fileName;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
         }
+
+		/// <param name="fileName">Full path to the Excel spreadsheet</param>
+		/// <param name="createPersistentConnection">If <c>true</c>, a connection will be created and shared for the lifetime of the factory. If <c>false</c>, a connection will be created and disposed for each query operation (default)</param>
+		public ExcelQueryFactory(string fileName, bool createPersistentConnection) : this(fileName)
+		{
+			if (createPersistentConnection)
+			{
+				_persistentConnection = new OleDbConnection(ExcelUtilities.GetConnectionString(new ExcelQueryArgs
+				{
+					DatabaseEngine = DatabaseEngine,
+					FileName = fileName,
+					NoHeader = true
+				}));
+			}
+		}
 
         #region Other Methods
 
@@ -135,7 +153,8 @@ namespace LinqToExcel
                 DatabaseEngine = DatabaseEngine,
                 StrictMapping = StrictMapping,
                 ColumnMappings = _columnMappings,
-                Transformations = _transformations
+                Transformations = _transformations,
+				PersistentConnection = _persistentConnection
             };
         }
 
@@ -244,7 +263,8 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+					PersistentConnection = _persistentConnection
                 });
         }
 
@@ -412,9 +432,28 @@ namespace LinqToExcel
 
         #endregion
 
-        #region Static Methods
+		#region IDisposable Methods
+		public void Dispose()
+		{
+			try
+			{
+				if (_persistentConnection != null)
+				{
+					_persistentConnection.Dispose();
+				}
+			}
+			catch
+			{}
+			finally
+			{
+				_persistentConnection = null;
+			}
+		}
+		#endregion
 
-        /// <summary>
+		#region Static Methods
+
+		/// <summary>
         /// Enables Linq queries against an Excel worksheet
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
@@ -543,5 +582,5 @@ namespace LinqToExcel
         }
 
         #endregion
-    }
+	}
 }
