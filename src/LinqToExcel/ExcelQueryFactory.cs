@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Linq.Expressions;
+using System.Reflection;
 using LinqToExcel.Domain;
 using LinqToExcel.Query;
+using log4net;
 
 namespace LinqToExcel
 {
@@ -12,7 +14,9 @@ namespace LinqToExcel
     {
         private readonly Dictionary<string, string> _columnMappings = new Dictionary<string, string>();
         private readonly Dictionary<string, Func<string, object>> _transformations = new Dictionary<string, Func<string, object>>();
+        private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private OleDbConnection _persistentConnection;
+        private bool _disposed;
 
 	    /// <summary>
         /// Full path to the Excel spreadsheet
@@ -433,22 +437,41 @@ namespace LinqToExcel
         #endregion
 
 		#region IDisposable Methods
-		public void Dispose()
-		{
-			try
-			{
-				if (_persistentConnection != null)
-				{
-					_persistentConnection.Dispose();
-				}
-			}
-			catch
-			{}
-			finally
-			{
-				_persistentConnection = null;
-			}
-		}
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        ~ExcelQueryFactory()
+        {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+                return;
+
+            if (disposing)
+            {
+                if (_persistentConnection != null)
+                {
+                    try
+                    {
+                        _persistentConnection.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.Error("Error disposing OleDbConnection", ex);
+                    }
+                }
+            }
+
+            _persistentConnection = null;
+            _disposed = true;
+        }
 		#endregion
 
 		#region Static Methods
