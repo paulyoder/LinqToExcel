@@ -52,10 +52,8 @@ namespace LinqToExcel.Extensions
 
         public static IEnumerable<TResult> Cast<TResult>(this IEnumerable<object> list, Func<object, TResult> caster)
         {
-            var results = new List<TResult>();
             foreach (var item in list)
-                results.Add(caster(item));
-            return results;
+                yield return caster(item);
         }
 
         public static IEnumerable<TResult> Cast<TResult>(this IEnumerable<object> list)
