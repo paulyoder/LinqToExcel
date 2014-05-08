@@ -22,6 +22,11 @@ namespace LinqToExcel
         public StrictMappingType? StrictMapping { get; set; }
 
         /// <summary>
+        /// Opens the excel file in read-only mode
+        /// </summary>
+        public bool ReadOnly { get; set; }
+
+        /// <summary>
         /// Sets the database engine to use 
         /// (Spreadsheets ending in xlsx, xlsm, and xlsb must use the Ace database engine)
         /// (If running 64 bit this defaults to ACE (JET doesn't work anyway), if running 32 bit this detaults to JET)
@@ -33,9 +38,10 @@ namespace LinqToExcel
         { }
 
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public ExcelQueryFactory(string fileName)
+        public ExcelQueryFactory(string fileName, bool readOnly = false)
         {
             FileName = fileName;
+            ReadOnly = readOnly;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
         }
 
@@ -150,7 +156,11 @@ namespace LinqToExcel
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>()
         {
             return new ExcelQueryable<TSheetData>(
-                new ExcelQueryArgs(GetConstructorArgs()));
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    ReadOnly = this.ReadOnly
+                });
+
         }
 
         /// <summary>
@@ -159,7 +169,10 @@ namespace LinqToExcel
         public ExcelQueryable<Row> Worksheet()
         {
             return new ExcelQueryable<Row>(
-                new ExcelQueryArgs(GetConstructorArgs()));
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    ReadOnly = this.ReadOnly
+                });
         }
 
         /// <summary>
@@ -172,7 +185,8 @@ namespace LinqToExcel
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -186,7 +200,8 @@ namespace LinqToExcel
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -199,7 +214,8 @@ namespace LinqToExcel
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -212,7 +228,8 @@ namespace LinqToExcel
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -229,7 +246,8 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -244,7 +262,8 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -261,7 +280,8 @@ namespace LinqToExcel
                 {
                     WorksheetName = worksheetName,
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -278,7 +298,8 @@ namespace LinqToExcel
                 {
                     WorksheetIndex = worksheetIndex,
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -296,7 +317,8 @@ namespace LinqToExcel
                 {
                     WorksheetName = worksheetName,
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -314,7 +336,8 @@ namespace LinqToExcel
                 {
                     WorksheetIndex = worksheetIndex,
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -326,7 +349,8 @@ namespace LinqToExcel
             return new ExcelQueryable<RowNoHeader>(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
-                    NoHeader = true
+                    NoHeader = true,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -340,7 +364,8 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true,
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -354,7 +379,8 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true,
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -370,7 +396,8 @@ namespace LinqToExcel
                 {
                     NoHeader = true,
                     StartRange = startRange,
-                    EndRange = endRange
+                    EndRange = endRange,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -388,7 +415,8 @@ namespace LinqToExcel
                     NoHeader = true,
                     StartRange = startRange,
                     EndRange = endRange,
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -406,7 +434,8 @@ namespace LinqToExcel
                     NoHeader = true,
                     StartRange = startRange,
                     EndRange = endRange,
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = this.ReadOnly
                 });
         }
 
@@ -420,13 +449,17 @@ namespace LinqToExcel
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(
+            string worksheetName,
+            string fileName, bool
+            readOnly = false)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = readOnly
                 });
         }
 
@@ -436,13 +469,17 @@ namespace LinqToExcel
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(
+            int worksheetIndex, 
+            string fileName, 
+            bool readOnly = false)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = readOnly
                 });
         }
 
@@ -451,13 +488,17 @@ namespace LinqToExcel
         /// </summary>
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName)
+        public static ExcelQueryable<Row> Worksheet(
+            string worksheetName, 
+            string fileName,
+            bool readOnly = false)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = readOnly
                 });
         }
 
@@ -466,13 +507,17 @@ namespace LinqToExcel
         /// </summary>
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName)
+        public static ExcelQueryable<Row> Worksheet(
+            int worksheetIndex, 
+            string fileName, 
+            bool readOnly = false)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = readOnly
                 });
         }
 
@@ -482,13 +527,18 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<Row> Worksheet(
+            string worksheetName,
+            string fileName, 
+            Dictionary<string, string> columnMappings,
+            bool readOnly = false)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = readOnly
                 });
         }
 
@@ -498,13 +548,18 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<Row> Worksheet(
+            int worksheetIndex, 
+            string fileName, 
+            Dictionary<string, string> columnMappings, 
+            bool readOnly = false)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = readOnly
                 });
         }
 
@@ -515,13 +570,18 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(
+            string worksheetName,
+            string fileName, 
+            Dictionary<string, string> columnMappings, 
+            bool readOnly = false)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
-                    WorksheetName = worksheetName
+                    WorksheetName = worksheetName,
+                    ReadOnly = readOnly
                 });
         }
 
@@ -532,13 +592,18 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(
+            int worksheetIndex, 
+            string fileName, 
+            Dictionary<string, string> columnMappings, 
+            bool readOnly = false)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
-                    WorksheetIndex = worksheetIndex
+                    WorksheetIndex = worksheetIndex,
+                    ReadOnly = readOnly
                 });
         }
 
