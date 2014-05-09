@@ -19,6 +19,11 @@ namespace LinqToExcel
         StrictMappingType? StrictMapping { get; set; }
 
         /// <summary>
+        /// Indicates how to treat leading and trailing spaces in string values.
+        /// </summary>
+        TrimSpacesType TrimSpaces { get; set; }
+
+        /// <summary>
         /// Sets the database engine to use (spreadsheets ending in xlsx, xlsm, xlsb will always use the Ace engine)
         /// </summary>
         DatabaseEngine DatabaseEngine { get; set; }

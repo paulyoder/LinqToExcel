@@ -102,6 +102,7 @@
     <Compile Include="Query\ProjectorBuildingExpressionTreeVisitor.cs" />
     <Compile Include="Query\ResultObjectMapping.cs" />
     <Compile Include="Query\StrictMappingType.cs" />
+    <Compile Include="Query\TrimSpacesType.cs" />
     <Compile Include="Query\WhereClauseExpressionTreeVisitor.cs" />
     <Compile Include="Query\SqlGeneratorQueryModelVisitor.cs" />
     <Compile Include="Query\SqlParts.cs" />
