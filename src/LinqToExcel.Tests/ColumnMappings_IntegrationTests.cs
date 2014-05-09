@@ -123,5 +123,21 @@ namespace LinqToExcel.Tests
 
             Assert.AreEqual(null, firstCompany.Name);
         }
+
+        [Test]
+        public void annotated_properties_map_to_columns()
+        {
+            var companies = from c in _repo.Worksheet<CompanyWithColumnAnnotations>(_worksheetName)
+                            where c.Name == "Taylor University"
+                            select c;
+
+            var rival = companies.ToList().First();
+            Assert.AreEqual(1, companies.ToList().Count, "Result Count");
+            Assert.AreEqual("Taylor University", rival.Name, "Name");
+            Assert.AreEqual("Your Mom", rival.CEO, "CEO");
+            Assert.AreEqual(400, rival.EmployeeCount, "EmployeeCount");
+            Assert.AreEqual(new DateTime(1988, 7, 26), rival.StartDate, "StartDate");
+            Assert.AreEqual("N", rival.IsActive, "IsActive");
+        }
     }
 }
