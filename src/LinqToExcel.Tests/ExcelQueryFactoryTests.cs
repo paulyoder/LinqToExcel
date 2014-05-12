@@ -72,7 +72,7 @@ namespace LinqToExcel.Tests
 
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
-                "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1",
+                "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1, TrimSpaces",
                 string.Join(", ", worksheetNames.ToArray()));
         }
 
@@ -249,6 +249,50 @@ namespace LinqToExcel.Tests
                              select c).ToList();
 
             Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void TrimSpaces_Start_TrimsWhiteSpacesAtTheBeginning()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.Start;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual("White Space In Front", companies[0].Name);
+        }
+
+        [Test]
+        public void TrimSpaces_End_TrimsWhiteSpacesAtTheEnd()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.End;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual("White Space At End", companies[1].Name);
+        }
+
+        [Test]
+        public void TrimSpaces_Both_TrimsWhiteSpacesOnBothSides()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.Both;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual("White Space On Both Sides", companies[2].Name);
+        }
+
+        [Test]
+        public void TrimSpaces_None_DoesntTrimWhitespace()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.None;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual(" White Space On Both Sides ", companies[2].Name);
         }
     }
 }

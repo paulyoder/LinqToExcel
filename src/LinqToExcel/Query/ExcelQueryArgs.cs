@@ -20,6 +20,7 @@ namespace LinqToExcel.Query
         internal bool NoHeader { get; set; }
         internal StrictMappingType? StrictMapping { get; set; }
 		internal OleDbConnection PersistentConnection { get; set; }
+        internal TrimSpacesType TrimSpaces { get; set; }
 
         internal ExcelQueryArgs()
             : this(new ExcelQueryConstructorArgs() { DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine() })
@@ -33,6 +34,7 @@ namespace LinqToExcel.Query
             Transformations = args.Transformations ?? new Dictionary<string, Func<string, object>>();
             StrictMapping = args.StrictMapping ?? StrictMappingType.None;
 	        PersistentConnection = args.PersistentConnection;
+            TrimSpaces = args.TrimSpaces;
         }
 
         public override string ToString()
@@ -43,8 +45,8 @@ namespace LinqToExcel.Query
             var transformationsString = string.Join(", ", Transformations.Keys.ToArray());
 	        string persistentConnection = (PersistentConnection == null) ? string.Empty : PersistentConnection.ConnectionString;
 
-            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange: {4}; NoHeader: {5}; ColumnMappings: {6}; Transformations: {7}, StrictMapping: {8}; PersistentConnection: {9}",
-                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, NoHeader, columnMappingsString, transformationsString, StrictMapping, persistentConnection);
+            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange: {4}; NoHeader: {5}; ColumnMappings: {6}; Transformations: {7}, StrictMapping: {8}, PersistentConnection: {9}, TrimSpaces: {10}",
+                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, NoHeader, columnMappingsString, transformationsString, StrictMapping, persistentConnection, TrimSpaces);
         }
     }
 }

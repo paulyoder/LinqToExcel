@@ -254,7 +254,11 @@ namespace LinqToExcel.Query
             {
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < columns.Count(); i++)
-                    cells.Add(new Cell(data[i]));
+                {
+                    var value = data[i];
+                    value = TrimStringValue(value);
+                    cells.Add(new Cell(value));
+                }
                 results.CallMethod("Add", new Row(cells, columnIndexMapping));
             }
             return results.AsEnumerable();
@@ -267,7 +271,11 @@ namespace LinqToExcel.Query
             {
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < data.FieldCount; i++)
-                    cells.Add(new Cell(data[i]));
+                {
+                    var value = data[i];
+                    value = TrimStringValue(value);
+                    cells.Add(new Cell(value));
+                }
                 results.CallMethod("Add", new RowNoHeader(cells));
             }
             return results.AsEnumerable();
@@ -290,11 +298,39 @@ namespace LinqToExcel.Query
                         _args.ColumnMappings[prop.Name] :
                         prop.Name;
                     if (columns.Contains(columnName))
-                        result.SetProperty(prop.Name, GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType));
+                    {
+                        var value = GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType);
+                        value = TrimStringValue(value);
+                        result.SetProperty(prop.Name, value);
+                    }
                 }
                 results.Add(result);
             }
             return results.AsEnumerable();
+        }
+
+        /// <summary>
+        /// Trims leading and trailing spaces, based on the value of _args.TrimSpaces
+        /// </summary>
+        /// <param name="value">Input string value</param>
+        /// <returns>Trimmed string value</returns>
+        private object TrimStringValue(object value)
+        {
+            if (value == null || value.GetType() != typeof(string))
+                return value;
+
+            switch (_args.TrimSpaces)
+            {
+                case TrimSpacesType.Start:
+                    return ((string)value).TrimStart();
+                case TrimSpacesType.End:
+                    return ((string)value).TrimEnd();
+                case TrimSpacesType.Both:
+                    return ((string)value).Trim();
+                case TrimSpacesType.None:
+                default:
+                    return value;
+            }
         }
 
         private void ConfirmStrictMapping(IEnumerable<string> columns, PropertyInfo[] properties, StrictMappingType strictMappingType)

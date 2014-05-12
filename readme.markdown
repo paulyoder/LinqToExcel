@@ -45,6 +45,20 @@ Column names from the worksheet can be mapped to specific property names on the 
 	                       where c.State == "IN" && c.Employees > 500
 	                       select c;
 
+Column names can alternately be mapped using the **ExcelColumn** attribute on properties of the class.
+
+	public class Company
+	{
+		[ExcelColumn("Company Title")] //maps the "Name" property to the "Company Title" column
+		public string Name { get; set; }
+
+		[ExcelColumn("Providence")] //maps the "State" property to the "Providence" column
+		public string State { get; set; }
+
+		[ExcelColumn("Employee Count")] //maps the "Employees" property to the "Employee Count" column
+		public string Employees { get; set; }
+	}
+
 ## Using the LinqToExcel.Row class
 Query results can be returned as LinqToExcel.Row objects which allows you to access a cell's value by using the column name in the string index. Just use the **Worksheet()** method without a generic argument.
 
@@ -141,3 +155,15 @@ LinqToExcel can use the Jet or Ace database engine, and it automatically determi
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	excel.DatabaseEngine == DatabaseEngine.Ace;
+
+## Trim White Space
+The **TrimSpaces** property can be used to automatically trim leading and trailing white spaces. 
+
+  var excel = new ExcelQueryFactory("excelFileName");
+  excel.TrimSpaces = TrimSpacesType.Both;
+
+There are 4 options for TrimSpaces:
+* None - does not trim any white space. This is the default
+* Both - trims white space from the beginning and end
+* Start - trims white space from only the beginning
+* End - trims white space from only the end
