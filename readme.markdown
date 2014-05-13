@@ -167,3 +167,9 @@ There are 4 options for TrimSpaces:
 * Both - trims white space from the beginning and end
 * Start - trims white space from only the beginning
 * End - trims white space from only the end
+
+## Persistent Connection
+By default a new connection is created and disposed of for each query ran. If you want to use the same connection on all queries performed by the IExcelQueryFactory then set the **UsePersistentConnection** property to true.
+
+	var excel = new ExcelQueryFactory("excelFileName");
+	excel.UsePersistentConnection = true;

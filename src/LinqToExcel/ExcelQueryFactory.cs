@@ -15,7 +15,7 @@ namespace LinqToExcel
         private readonly Dictionary<string, string> _columnMappings = new Dictionary<string, string>();
         private readonly Dictionary<string, Func<string, object>> _transformations = new Dictionary<string, Func<string, object>>();
         private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		private OleDbConnection _persistentConnection;
+        private ExcelQueryArgs _queryArgs;
         private bool _disposed;
 
 	    /// <summary>
@@ -40,6 +40,13 @@ namespace LinqToExcel
         /// </summary>
         public DatabaseEngine DatabaseEngine { get; set; }
 
+        /// <summary>
+        /// If true, uses a single, persistent connection for the lifetime of the factory.
+        /// If false, a new connection is created for each query
+        /// Default is false
+        /// </summary>
+        public bool UsePersistentConnection { get; set; }
+
         public ExcelQueryFactory()
             : this(null)
         { }
@@ -50,21 +57,6 @@ namespace LinqToExcel
             FileName = fileName;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
         }
-
-		/// <param name="fileName">Full path to the Excel spreadsheet</param>
-		/// <param name="createPersistentConnection">If <c>true</c>, a connection will be created and shared for the lifetime of the factory. If <c>false</c>, a connection will be created and disposed for each query operation (default)</param>
-		public ExcelQueryFactory(string fileName, bool createPersistentConnection) : this(fileName)
-		{
-			if (createPersistentConnection)
-			{
-				_persistentConnection = new OleDbConnection(ExcelUtilities.GetConnectionString(new ExcelQueryArgs
-				{
-					DatabaseEngine = DatabaseEngine,
-					FileName = fileName,
-					NoHeader = true
-				}));
-			}
-		}
 
         #region Other Methods
 
@@ -163,7 +155,7 @@ namespace LinqToExcel
                 StrictMapping = StrictMapping,
                 ColumnMappings = _columnMappings,
                 Transformations = _transformations,
-				PersistentConnection = _persistentConnection,
+				UsePersistentConnection = UsePersistentConnection,
                 TrimSpaces = TrimSpaces,
             };
         }
@@ -178,8 +170,8 @@ namespace LinqToExcel
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>()
         {
-            return new ExcelQueryable<TSheetData>(
-                new ExcelQueryArgs(GetConstructorArgs()));
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())));
         }
 
         /// <summary>
@@ -187,8 +179,8 @@ namespace LinqToExcel
         /// </summary>
         public ExcelQueryable<Row> Worksheet()
         {
-            return new ExcelQueryable<Row>(
-                new ExcelQueryArgs(GetConstructorArgs()));
+            return new ExcelQueryable<Row>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())));
         }
 
         /// <summary>
@@ -198,11 +190,11 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName)
         {
-            return new ExcelQueryable<TSheetData>(
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetName = worksheetName
-                });
+                }));
         }
 
         /// <summary>
@@ -212,11 +204,11 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex)
         {
-            return new ExcelQueryable<TSheetData>(
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetIndex = worksheetIndex
-                });
+                }));
         }
 
         /// <summary>
@@ -225,11 +217,11 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         public ExcelQueryable<Row> Worksheet(string worksheetName)
         {
-            return new ExcelQueryable<Row>(
+            return new ExcelQueryable<Row>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetName = worksheetName
-                });
+                }));
         }
 
         /// <summary>
@@ -238,11 +230,11 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         public ExcelQueryable<Row> Worksheet(int worksheetIndex)
         {
-            return new ExcelQueryable<Row>(
+            return new ExcelQueryable<Row>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetIndex = worksheetIndex
-                });
+                }));
         }
 
 
@@ -254,12 +246,12 @@ namespace LinqToExcel
         /// <param name="endRange"></param>
         public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string startRange, string endRange)
         {
-            return new ExcelQueryable<TSheetData>(
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     StartRange = startRange,
                     EndRange = endRange
-                });
+                }));
         }
 
         /// <summary>
@@ -269,13 +261,12 @@ namespace LinqToExcel
         /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
         public ExcelQueryable<Row> WorksheetRange(string startRange, string endRange)
         {
-            return new ExcelQueryable<Row>(
+            return new ExcelQueryable<Row>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     StartRange = startRange,
-                    EndRange = endRange,
-					PersistentConnection = _persistentConnection
-                });
+                    EndRange = endRange
+                }));
         }
 
         /// <summary>
@@ -286,13 +277,13 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         public ExcelQueryable<Row> WorksheetRange(string startRange, string endRange, string worksheetName)
         {
-            return new ExcelQueryable<Row>(
+            return new ExcelQueryable<Row>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetName = worksheetName,
                     StartRange = startRange,
                     EndRange = endRange
-                });
+                }));
         }
 
         /// <summary>
@@ -303,13 +294,13 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         public ExcelQueryable<Row> WorksheetRange(string startRange, string endRange, int worksheetIndex)
         {
-            return new ExcelQueryable<Row>(
+            return new ExcelQueryable<Row>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetIndex = worksheetIndex,
                     StartRange = startRange,
                     EndRange = endRange
-                });
+                }));
         }
 
         /// <summary>
@@ -321,13 +312,13 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string startRange, string endRange, string worksheetName)
         {
-            return new ExcelQueryable<TSheetData>(
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetName = worksheetName,
                     StartRange = startRange,
                     EndRange = endRange
-                });
+                }));
         }
 
         /// <summary>
@@ -339,13 +330,13 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         public ExcelQueryable<TSheetData> WorksheetRange<TSheetData>(string startRange, string endRange, int worksheetIndex)
         {
-            return new ExcelQueryable<TSheetData>(
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetIndex = worksheetIndex,
                     StartRange = startRange,
                     EndRange = endRange
-                });
+                }));
         }
 
         /// <summary>
@@ -353,11 +344,11 @@ namespace LinqToExcel
         /// </summary>
         public ExcelQueryable<RowNoHeader> WorksheetNoHeader()
         {
-            return new ExcelQueryable<RowNoHeader>(
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true
-                });
+                }));
         }
 
         /// <summary>
@@ -366,12 +357,12 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         public ExcelQueryable<RowNoHeader> WorksheetNoHeader(string worksheetName)
         {
-            return new ExcelQueryable<RowNoHeader>(
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true,
                     WorksheetName = worksheetName
-                });
+                }));
         }
 
         /// <summary>
@@ -380,12 +371,12 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         public ExcelQueryable<RowNoHeader> WorksheetNoHeader(int worksheetIndex)
         {
-            return new ExcelQueryable<RowNoHeader>(
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true,
                     WorksheetIndex = worksheetIndex
-                });
+                }));
         }
 
         /// <summary>
@@ -395,13 +386,13 @@ namespace LinqToExcel
         /// <param name="endRange">Bottom right cell name of the range (eg 'D4')</param>
         public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange)
         {
-            return new ExcelQueryable<RowNoHeader>(
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true,
                     StartRange = startRange,
                     EndRange = endRange
-                });
+                }));
         }
 
         /// <summary>
@@ -412,14 +403,14 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, string worksheetName)
         {
-            return new ExcelQueryable<RowNoHeader>(
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true,
                     StartRange = startRange,
                     EndRange = endRange,
                     WorksheetName = worksheetName
-                });
+                }));
         }
 
         /// <summary>
@@ -430,23 +421,32 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         public ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, int worksheetIndex)
         {
-            return new ExcelQueryable<RowNoHeader>(
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true,
                     StartRange = startRange,
                     EndRange = endRange,
                     WorksheetIndex = worksheetIndex
-                });
+                }));
+        }
+
+        private ExcelQueryArgs PersistQueryArgs(ExcelQueryArgs args)
+        {
+            // We want to keep the persistent connection if there is one
+            if (_queryArgs != null)
+                args.PersistentConnection = _queryArgs.PersistentConnection;
+
+            return _queryArgs = args;
         }
 
         #endregion
 
 		#region IDisposable Methods
+
         public void Dispose()
         {
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
 
@@ -462,11 +462,12 @@ namespace LinqToExcel
 
             if (disposing)
             {
-                if (_persistentConnection != null)
+                if (_queryArgs != null && _queryArgs.PersistentConnection != null)
                 {
                     try
                     {
-                        _persistentConnection.Dispose();
+                        _queryArgs.PersistentConnection.Dispose();
+                        _queryArgs.PersistentConnection = null;
                     }
                     catch (Exception ex)
                     {
@@ -475,9 +476,10 @@ namespace LinqToExcel
                 }
             }
 
-            _persistentConnection = null;
+            _queryArgs = null;
             _disposed = true;
         }
+
 		#endregion
 
 		#region Static Methods

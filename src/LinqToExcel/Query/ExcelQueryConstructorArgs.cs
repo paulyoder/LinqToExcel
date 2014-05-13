@@ -14,8 +14,7 @@ namespace LinqToExcel.Query
         internal Dictionary<string, string> ColumnMappings { get; set; }
         internal Dictionary<string, Func<string, object>> Transformations { get; set; }
         internal StrictMappingType? StrictMapping { get; set; }
-		internal bool CreatePersistentConnection { get; set; }
-		internal OleDbConnection PersistentConnection { get; set; }
+		internal bool UsePersistentConnection { get; set; }
         internal TrimSpacesType TrimSpaces { get; set; }
     }
 }

@@ -19,6 +19,7 @@ namespace LinqToExcel.Query
         internal string EndRange { get; set; }
         internal bool NoHeader { get; set; }
         internal StrictMappingType? StrictMapping { get; set; }
+        internal bool UsePersistentConnection { get; set; }
 		internal OleDbConnection PersistentConnection { get; set; }
         internal TrimSpacesType TrimSpaces { get; set; }
 
@@ -33,7 +34,7 @@ namespace LinqToExcel.Query
             ColumnMappings = args.ColumnMappings ?? new Dictionary<string, string>();
             Transformations = args.Transformations ?? new Dictionary<string, Func<string, object>>();
             StrictMapping = args.StrictMapping ?? StrictMappingType.None;
-	        PersistentConnection = args.PersistentConnection;
+            UsePersistentConnection = args.UsePersistentConnection;
             TrimSpaces = args.TrimSpaces;
         }
 
@@ -43,10 +44,9 @@ namespace LinqToExcel.Query
             foreach (var kvp in ColumnMappings)
                 columnMappingsString.AppendFormat("[{0} = '{1}'] ", kvp.Key, kvp.Value);
             var transformationsString = string.Join(", ", Transformations.Keys.ToArray());
-	        string persistentConnection = (PersistentConnection == null) ? string.Empty : PersistentConnection.ConnectionString;
 
-            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange: {4}; NoHeader: {5}; ColumnMappings: {6}; Transformations: {7}, StrictMapping: {8}, PersistentConnection: {9}, TrimSpaces: {10}",
-                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, NoHeader, columnMappingsString, transformationsString, StrictMapping, persistentConnection, TrimSpaces);
+            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange: {4}; NoHeader: {5}; ColumnMappings: {6}; Transformations: {7}, StrictMapping: {8}, UsePersistentConnection: {9}, TrimSpaces: {10}",
+                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, NoHeader, columnMappingsString, transformationsString, StrictMapping, UsePersistentConnection, TrimSpaces);
         }
     }
 }

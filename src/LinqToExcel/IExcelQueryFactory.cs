@@ -30,6 +30,13 @@ namespace LinqToExcel
         DatabaseEngine DatabaseEngine { get; set; }
 
         /// <summary>
+        /// If true, uses a single, persistent connection for the lifetime of the factory.
+        /// If false, a new connection is created for each query
+        /// Default is false
+        /// </summary>
+        bool UsePersistentConnection { get; set; }
+
+        /// <summary>
         /// Add a column to property mapping
         /// </summary>
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>

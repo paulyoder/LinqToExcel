@@ -26,12 +26,8 @@ namespace LinqToExcel.Query
             ValidateArgs(args);
             _args = args;
 
-			string connectionString = args.PersistentConnection != null ? 
-				args.PersistentConnection.ConnectionString : 
-				ExcelUtilities.GetConnectionString(args);
-
 			if (_log.IsDebugEnabled)
-				_log.DebugFormat("Connection String: {0}", connectionString);
+				_log.DebugFormat("Connection String: {0}", ExcelUtilities.GetConnection(args).ConnectionString);
 
             GetWorksheetName();
         }
@@ -170,12 +166,12 @@ namespace LinqToExcel.Query
             OleDbDataReader data = null;
 
 	        var conn = ExcelUtilities.GetConnection(_args);
-            using (var command = conn.CreateCommand())
+            var command = conn.CreateCommand();
+            try
             {
-	            if (conn.State != ConnectionState.Open)
-	            {
-		            conn.Open();
-	            }
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
 	            command.CommandText = sql.ToString();
                 command.Parameters.AddRange(sql.Parameters.ToArray());
                 try { data = command.ExecuteReader(); }
@@ -200,11 +196,16 @@ namespace LinqToExcel.Query
                 else
                     results = GetTypeResults(data, columns, queryModel);
             }
+            finally
+            {
+                command.Dispose();
 
-			if (_args.PersistentConnection == null)
-			{
-				conn.Dispose();
-			}
+                if (!_args.UsePersistentConnection)
+                {
+                    conn.Dispose();
+                    _args.PersistentConnection = null;
+                }
+            }
 
             return results;
         }

@@ -80,10 +80,15 @@ namespace LinqToExcel.Query
 
 		internal static OleDbConnection GetConnection(ExcelQueryArgs args)
 		{
-			if (args.PersistentConnection != null)
-				return args.PersistentConnection;
+			if (args.UsePersistentConnection)
+			{
+                if (args.PersistentConnection == null)
+                    args.PersistentConnection = new OleDbConnection(GetConnectionString(args));
 
-			return new OleDbConnection(GetConnectionString(args));
+				return args.PersistentConnection;
+			}
+
+            return new OleDbConnection(GetConnectionString(args));
 		}
 
         internal static IEnumerable<string> GetWorksheetNames(ExcelQueryArgs args)
@@ -91,32 +96,32 @@ namespace LinqToExcel.Query
             var worksheetNames = new List<string>();
 
 	        var conn = GetConnection(args);
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
 
-	        if (conn.State != ConnectionState.Open)
-	        {
-		        conn.Open();
-	        }
+                var excelTables = conn.GetOleDbSchemaTable(
+                    OleDbSchemaGuid.Tables,
+                    new Object[] { null, null, null, "TABLE" });
 
-	        var excelTables = conn.GetOleDbSchemaTable(
-                OleDbSchemaGuid.Tables,
-                new Object[] { null, null, null, "TABLE" });
+                worksheetNames.AddRange(
+                    from DataRow row in excelTables.Rows
+                    where IsTable(row)
+                    let tableName = row["TABLE_NAME"].ToString()
+                        .Replace("$", "")
+                        .RegexReplace("(^'|'$)", "")
+                        .Replace("''", "'")
+                    where IsNotBuiltinTable(tableName)
+                    select tableName);
 
-            worksheetNames.AddRange(
-                from DataRow row in excelTables.Rows
-                where IsTable(row)
-                let tableName = row["TABLE_NAME"].ToString()
-                    .Replace("$", "")
-                    .RegexReplace("(^'|'$)", "")
-                    .Replace("''", "'")
-                where IsNotBuiltinTable(tableName)
-                select tableName);
-
-            excelTables.Dispose();
-            
-			if (args.PersistentConnection == null)
-			{
-				conn.Dispose();
-			}
+                excelTables.Dispose();
+            }
+            finally
+            {
+                if (!args.UsePersistentConnection)
+                    conn.Dispose();
+            }
 			
             return worksheetNames;
         }
@@ -142,14 +147,25 @@ namespace LinqToExcel.Query
         internal static IEnumerable<string> GetColumnNames(ExcelQueryArgs args)
         {
             var columns = new List<string>();
-            using (var conn = new OleDbConnection(GetConnectionString(args)))
-            using (var command = conn.CreateCommand())
+            var conn = GetConnection(args);
+            try
             {
-                conn.Open();
-                command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", args.WorksheetName);
-                var data = command.ExecuteReader();
-                columns.AddRange(GetColumnNames(data));
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+                using (var command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT TOP 1 * FROM [{0}$]", args.WorksheetName);
+                    var data = command.ExecuteReader();
+                    columns.AddRange(GetColumnNames(data));
+                }
             }
+            finally
+            {
+                if (!args.UsePersistentConnection)
+                    conn.Dispose();
+            }
+
             return columns;
         }
 
