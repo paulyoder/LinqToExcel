@@ -159,8 +159,8 @@ LinqToExcel can use the Jet or Ace database engine, and it automatically determi
 ## Trim White Space
 The **TrimSpaces** property can be used to automatically trim leading and trailing white spaces. 
 
-  var excel = new ExcelQueryFactory("excelFileName");
-  excel.TrimSpaces = TrimSpacesType.Both;
+    var excel = new ExcelQueryFactory("excelFileName");
+    excel.TrimSpaces = TrimSpacesType.Both;
 
 There are 4 options for TrimSpaces:
 * None - does not trim any white space. This is the default
@@ -173,14 +173,15 @@ By default a new connection is created and disposed of for each query ran. If yo
 
 Make sure you properly dispose the ExcelQueryFactory if you use a persistent connection.
 
-	var excel = new ExcelQueryFactory("excelFileName");
-	excel.UsePersistentConnection = true;
-  try
-  {
-    var allCompanies = from c in excel.Worksheet<Company>()
-                       select c;
-  }
-  finally
-  {
-    excel.Dispose();
-  }
+    var excel = new ExcelQueryFactory("excelFileName");
+    excel.UsePersistentConnection = true;
+    
+    try
+    {
+      var allCompanies = from c in excel.Worksheet<Company>()
+                         select c;
+    }
+    finally
+    {
+      excel.Dispose();
+    }
