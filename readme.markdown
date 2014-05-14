@@ -171,5 +171,17 @@ There are 4 options for TrimSpaces:
 ## Persistent Connection
 By default a new connection is created and disposed of for each query ran. If you want to use the same connection on all queries performed by the IExcelQueryFactory then set the **UsePersistentConnection** property to true.
 
+Make sure you properly dispose the ExcelQueryFactory if you use a persistent connection.
+
 	var excel = new ExcelQueryFactory("excelFileName");
 	excel.UsePersistentConnection = true;
+
+  try
+  {
+    var allCompanies = from c in excel.Worksheet<Company>()
+                       select c;
+  }
+  finally
+  {
+    excel.Dispose();
+  }
