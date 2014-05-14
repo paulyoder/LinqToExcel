@@ -175,7 +175,6 @@ Make sure you properly dispose the ExcelQueryFactory if you use a persistent con
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	excel.UsePersistentConnection = true;
-
   try
   {
     var allCompanies = from c in excel.Worksheet<Company>()
