@@ -16,33 +16,38 @@ namespace LinqToExcel.Query
         {
             var connString = "";
             var fileNameLower = args.FileName.ToLower();
+            var readOnlyFragment = (args.ReadOnly) ? ";READONLY=TRUE" : string.Empty;
 
             if (fileNameLower.EndsWith("xlsx") ||
                 fileNameLower.EndsWith("xlsm"))
             {
                 connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""",
-                    args.FileName);
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1{1}""",
+                    args.FileName,
+                    readOnlyFragment);
             }
             else if (fileNameLower.EndsWith("xlsb"))
             {
                 connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                    args.FileName);
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1{1}""",
+                    args.FileName,
+                    readOnlyFragment);
             }
             else if (fileNameLower.EndsWith("csv"))
             {
                 if (args.DatabaseEngine == DatabaseEngine.Jet)
                 {
                     connString = string.Format(
-                        @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
-                        Path.GetDirectoryName(args.FileName));
+                        @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1{1}""",
+                        Path.GetDirectoryName(args.FileName),
+                        readOnlyFragment);
                 }
                 else
                 {
                     connString = string.Format(
-                        @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1""",
-                        Path.GetDirectoryName(args.FileName));
+                        @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1{1}""",
+                        Path.GetDirectoryName(args.FileName),
+                        readOnlyFragment);
                 }
             }
             else
@@ -50,14 +55,16 @@ namespace LinqToExcel.Query
                 if (args.DatabaseEngine == DatabaseEngine.Jet)
                 {
                     connString = string.Format(
-                        @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
-                        args.FileName);
+                        @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1{1}""",
+                        args.FileName,
+                        readOnlyFragment);
                 }
                 else
                 {
                     connString = string.Format(
-                        @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                        args.FileName);
+                        @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1{1}""",
+                        args.FileName,
+                        readOnlyFragment);
                 }
             }
 
@@ -75,6 +82,7 @@ namespace LinqToExcel.Query
 		internal static IEnumerable<string> GetWorksheetNames(string fileName, ExcelQueryArgs args)
 		{
 			args.FileName = fileName;
+            args.ReadOnly = true;
 			return GetWorksheetNames(args);
 		} 
 

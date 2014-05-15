@@ -19,6 +19,7 @@ namespace LinqToExcel.Query
         internal string EndRange { get; set; }
         internal bool NoHeader { get; set; }
         internal StrictMappingType? StrictMapping { get; set; }
+        internal bool ReadOnly { get; set; }
         internal bool UsePersistentConnection { get; set; }
 		internal OleDbConnection PersistentConnection { get; set; }
         internal TrimSpacesType TrimSpaces { get; set; }

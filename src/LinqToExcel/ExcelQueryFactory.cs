@@ -34,6 +34,11 @@ namespace LinqToExcel
         public TrimSpacesType TrimSpaces { get; set; }
 
         /// <summary>
+        /// Opens the excel file in read-only mode
+        /// </summary>
+        public bool ReadOnly { get; set; }
+
+        /// <summary>
         /// Sets the database engine to use 
         /// (Spreadsheets ending in xlsx, xlsm, and xlsb must use the Ace database engine)
         /// (If running 64 bit this defaults to ACE (JET doesn't work anyway), if running 32 bit this detaults to JET)
