@@ -185,3 +185,9 @@ Make sure you properly dispose the ExcelQueryFactory if you use a persistent con
     {
       excel.Dispose();
     }
+
+## ReadOnly Mode
+Set the **ReadOnly** property to true to open the file in readonly mode. The default value is false.
+
+    var excel = new ExcelQueryFactory("excelFileName");
+    excel.ReadOnly = true;

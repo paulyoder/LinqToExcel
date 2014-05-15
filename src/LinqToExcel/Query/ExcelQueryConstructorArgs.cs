@@ -16,5 +16,6 @@ namespace LinqToExcel.Query
         internal StrictMappingType? StrictMapping { get; set; }
 		internal bool UsePersistentConnection { get; set; }
         internal TrimSpacesType TrimSpaces { get; set; }
+        internal bool ReadOnly { get; set; }
     }
 }

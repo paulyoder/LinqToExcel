@@ -37,6 +37,7 @@ namespace LinqToExcel.Query
             StrictMapping = args.StrictMapping ?? StrictMappingType.None;
             UsePersistentConnection = args.UsePersistentConnection;
             TrimSpaces = args.TrimSpaces;
+            ReadOnly = args.ReadOnly;
         }
 
         public override string ToString()

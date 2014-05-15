@@ -57,6 +57,13 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void Constructor_defaults_ReadOnly_to_false()
+        {
+            var repo = new ExcelQueryFactory();
+            Assert.AreEqual(false, repo.ReadOnly);
+        }
+
+        [Test]
         [ExpectedException(typeof(NullReferenceException), "FileName property is not set")]
         public void GetWorksheetNames_throws_exception_when_filename_not_set()
         {

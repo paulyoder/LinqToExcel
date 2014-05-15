@@ -162,6 +162,7 @@ namespace LinqToExcel
                 Transformations = _transformations,
 				UsePersistentConnection = UsePersistentConnection,
                 TrimSpaces = TrimSpaces,
+                ReadOnly = ReadOnly
             };
         }
 
