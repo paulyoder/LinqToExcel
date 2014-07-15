@@ -199,9 +199,28 @@ namespace LinqToExcel
         ExcelQueryable<RowNoHeader> WorksheetRangeNoHeader(string startRange, string endRange, int worksheetIndex);
 
         /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        /// /// <param name="namedRangeName">Name of the named range</param>
+        public ExcelQueryable<RowNoHeader> NamedRangeNoHeader(string worksheetName, string namedRangeName);
+
+        /// <summary>
         /// Returns a list of worksheet names that the spreadsheet contains
         /// </summary>
         IEnumerable<string> GetWorksheetNames();
+
+        /// <summary>
+        /// Returns a list of named ranges that the spreadsheet contains
+        /// </summary>
+        public IEnumerable<string> GetNamedRanges(string worksheetName);
+
+        /// <summary>
+        /// Returns a list of columns names that a worksheet contains
+        /// </summary>
+        /// <param name="worksheetName">Worksheet name to get the list of column names from</param>
+        /// <param name="namedRangeName">Named Range name to get the list of column names from</param>
+        public IEnumerable<string> GetColumnNames(string worksheetName, string namedRangeName);
 
         /// <summary>
         /// Returns a list of columns names that a worksheet contains

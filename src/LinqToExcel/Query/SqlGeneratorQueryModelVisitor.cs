@@ -19,8 +19,8 @@ namespace LinqToExcel.Query
             _args = args;
             SqlStatement = new SqlParts();
             SqlStatement.Table = (String.IsNullOrEmpty(_args.StartRange)) ?
-                string.Format("[{0}$]",
-                    _args.WorksheetName) :
+                string.Format("[{0}${1}]",
+                    _args.WorksheetName, _args.NamedRangeName) :
                 string.Format("[{0}${1}:{2}]",
                     _args.WorksheetName, _args.StartRange, _args.EndRange);
 

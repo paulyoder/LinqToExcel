@@ -140,6 +140,17 @@ namespace LinqToExcel
         }
 
         /// <summary>
+        /// Returns a list of named ranges that the spreadsheet contains
+        /// </summary>
+        public IEnumerable<string> GetNamedRanges(string worksheetName)
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetNamedRanges(FileName, worksheetName);
+        }
+
+        /// <summary>
         /// Returns a list of columns names that a worksheet contains
         /// </summary>
         /// <param name="worksheetName">Worksheet name to get the list of column names from</param>
@@ -149,6 +160,19 @@ namespace LinqToExcel
                 throw new NullReferenceException("FileName property is not set");
 
             return ExcelUtilities.GetColumnNames(worksheetName, FileName);
+        }
+
+        /// <summary>
+        /// Returns a list of columns names that a worksheet contains
+        /// </summary>
+        /// <param name="worksheetName">Worksheet name to get the list of column names from</param>
+        /// <param name="namedRangeName">Named Range name to get the list of column names from</param>
+        public IEnumerable<string> GetColumnNames(string worksheetName, string namedRange)
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetColumnNames(worksheetName, namedRange, FileName);
         }
 
         internal ExcelQueryConstructorArgs GetConstructorArgs()
@@ -434,6 +458,22 @@ namespace LinqToExcel
                     StartRange = startRange,
                     EndRange = endRange,
                     WorksheetIndex = worksheetIndex
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against an Excel worksheet that does not have a header row
+        /// </summary>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        /// /// <param name="namedRangeName">Name of the named range</param>
+        public ExcelQueryable<RowNoHeader> NamedRangeNoHeader(string worksheetName, string namedRangeName)
+        {
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    NoHeader = true,
+                    WorksheetName = worksheetName,
+                    NamedRangeName = namedRangeName
                 }));
         }
 

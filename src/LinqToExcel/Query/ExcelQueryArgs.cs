@@ -15,6 +15,7 @@ namespace LinqToExcel.Query
         internal int? WorksheetIndex { get; set; }
         internal Dictionary<string, string> ColumnMappings { get; set; }
         internal Dictionary<string, Func<string, object>> Transformations { get; private set; }
+        internal string NamedRangeName { get; set; }
         internal string StartRange { get; set; }
         internal string EndRange { get; set; }
         internal bool NoHeader { get; set; }

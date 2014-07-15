@@ -229,7 +229,7 @@ namespace LinqToExcel.Query
         private bool CheckIfInvalidColumnNameUsed(SqlParts sql)
         {
             var usedColumns = sql.ColumnNamesUsed;
-            var tableColumns = ExcelUtilities.GetColumnNames(_args.WorksheetName, _args.FileName);
+            var tableColumns = ExcelUtilities.GetColumnNames(_args.WorksheetName, _args.NamedRangeName, _args.FileName);
             foreach (var column in usedColumns)
             {
                 if (!tableColumns.Contains(column))
