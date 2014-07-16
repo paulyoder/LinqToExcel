@@ -151,8 +151,10 @@ namespace LinqToExcel.Query
                 else
                     throw new DataException("Worksheet Index Out of Range");
             }
-            else if (String.IsNullOrEmpty(_args.WorksheetName))
+            else if (String.IsNullOrEmpty(_args.WorksheetName) && String.IsNullOrEmpty(_args.NamedRangeName))
+            {
                 _args.WorksheetName = "Sheet1";
+            }
         }
 
         /// <summary>
@@ -179,8 +181,8 @@ namespace LinqToExcel.Query
                 {
                     if (e.Message.Contains(_args.WorksheetName))
                         throw new DataException(
-                            string.Format("'{0}' is not a valid worksheet name. Valid worksheet names are: '{1}'",
-                                          _args.WorksheetName, string.Join("', '", ExcelUtilities.GetWorksheetNames(_args.FileName).ToArray())));
+                            string.Format("'{0}' is not a valid worksheet name in file {3}. Valid worksheet names are: '{1}'. Error received: {2}",
+                                          _args.WorksheetName, string.Join("', '", ExcelUtilities.GetWorksheetNames(_args.FileName).ToArray()), e.Message, _args.FileName), e);
                     if (!CheckIfInvalidColumnNameUsed(sql))
                         throw e;
                 }

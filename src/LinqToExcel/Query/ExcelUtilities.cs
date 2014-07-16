@@ -132,12 +132,17 @@ namespace LinqToExcel.Query
 
         internal static bool IsTable(DataRow row)
         {
-            return row["TABLE_NAME"].ToString().EndsWith("$") || row["TABLE_NAME"].ToString().EndsWith("$'");
+            return row["TABLE_NAME"].ToString().EndsWith("$") || (row["TABLE_NAME"].ToString().StartsWith("'") && row["TABLE_NAME"].ToString().EndsWith("$'"));
         }
 
         internal static bool IsNamedRange(DataRow row)
         {
-            return row["TABLE_NAME"].ToString().Contains("$") && !row["TABLE_NAME"].ToString().EndsWith("$") && !row["TABLE_NAME"].ToString().EndsWith("$'");
+            return (row["TABLE_NAME"].ToString().Contains("$") && !row["TABLE_NAME"].ToString().EndsWith("$") && !row["TABLE_NAME"].ToString().EndsWith("$'")) || !row["TABLE_NAME"].ToString().Contains("$");
+        }
+
+        internal static bool IsWorkseetScopedNamedRange(DataRow row)
+        {
+            return IsNamedRange(row) && row["TABLE_NAME"].ToString().Contains("$");
         }
 
         internal static bool IsNotBuiltinTable(string tableName)
@@ -212,6 +217,18 @@ namespace LinqToExcel.Query
             return GetNamedRanges(fileName, worksheetName, new ExcelQueryArgs());
         }
 
+        internal static IEnumerable<string> GetNamedRanges(string fileName)
+        {
+            return GetNamedRanges(fileName, new ExcelQueryArgs());
+        }
+
+        internal static IEnumerable<string> GetNamedRanges(string fileName, ExcelQueryArgs args)
+        {
+            args.FileName = fileName;
+            args.ReadOnly = true;
+            return GetNamedRanges(args);
+        }
+
         internal static IEnumerable<string> GetNamedRanges(string fileName, string worksheetName, ExcelQueryArgs args)
         {
             args.FileName = fileName;
@@ -222,7 +239,7 @@ namespace LinqToExcel.Query
 
         internal static IEnumerable<string> GetNamedRanges(ExcelQueryArgs args)
         {
-            var worksheetNames = new List<string>();
+            var namedRanges = new List<string>();
 
             var conn = GetConnection(args);
             try
@@ -234,9 +251,10 @@ namespace LinqToExcel.Query
                     OleDbSchemaGuid.Tables,
                     new Object[] { null, null, null, "TABLE" });
 
-                worksheetNames.AddRange(
+                namedRanges.AddRange(
                     from DataRow row in excelTables.Rows
-                    where IsNamedRange(row) && row["TABLE_NAME"].ToString().StartsWith(args.WorksheetName)
+                    where IsNamedRange(row)
+                    && (!string.IsNullOrEmpty(args.WorksheetName) ? row["TABLE_NAME"].ToString().StartsWith(args.WorksheetName) : !IsWorkseetScopedNamedRange(row))
                     let tableName = row["TABLE_NAME"].ToString()
                         .Replace("''", "'")
                     where IsNotBuiltinTable(tableName)
@@ -250,7 +268,7 @@ namespace LinqToExcel.Query
                     conn.Dispose();
             }
 
-            return worksheetNames;
+            return namedRanges;
         }
 
     }
