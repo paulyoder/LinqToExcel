@@ -140,6 +140,17 @@ namespace LinqToExcel
         }
 
         /// <summary>
+        /// Returns a list of worksheet names that the spreadsheet contains, in the same order that they would appear in excel
+        /// </summary>
+        public IEnumerable<string> GetWorksheetNamesOrdered()
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetWorksheetNamesOrdered(FileName);
+        }
+
+        /// <summary>
         /// Returns a list of columns names that a worksheet contains
         /// </summary>
         /// <param name="worksheetName">Worksheet name to get the list of column names from</param>
