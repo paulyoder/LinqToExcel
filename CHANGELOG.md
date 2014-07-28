@@ -1,3 +1,8 @@
+### 1.8.1
+
+* Refactorings
+  * Referencing Log4Net through its NuGet package
+
 ### 1.8
 
 * enhancements
