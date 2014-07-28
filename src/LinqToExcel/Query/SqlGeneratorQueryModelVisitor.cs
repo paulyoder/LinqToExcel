@@ -19,12 +19,15 @@ namespace LinqToExcel.Query
             _args = args;
             SqlStatement = new SqlParts();
             SqlStatement.Table = (String.IsNullOrEmpty(_args.StartRange)) ?
-                string.Format("[{0}$]",
-                    _args.WorksheetName) :
+                !String.IsNullOrEmpty(_args.NamedRangeName) && String.IsNullOrEmpty(_args.WorksheetName) ?
+                string.Format("[{0}]",
+                    _args.NamedRangeName) :
+                string.Format("[{0}${1}]",
+                    _args.WorksheetName, _args.NamedRangeName) :
                 string.Format("[{0}${1}:{2}]",
                     _args.WorksheetName, _args.StartRange, _args.EndRange);
 
-            if (_args.WorksheetName.ToLower().EndsWith(".csv"))
+            if (!string.IsNullOrEmpty(_args.WorksheetName) && _args.WorksheetName.ToLower().EndsWith(".csv"))
                 SqlStatement.Table = SqlStatement.Table.Replace("$]", "]");
         }
 
@@ -162,5 +165,6 @@ namespace LinqToExcel.Query
                 _args.ColumnMappings[mExp.Member.Name] :
                 mExp.Member.Name;
         }
+
     }
 }
