@@ -82,8 +82,16 @@ Worksheets that do not contain a header row can also be queried by using the **W
 	                       where c[2] == "IN" //value in 3rd column
 	                       select c;
 
+## Query a named range within a worksheet
+A query can be scoped to only include data from within a named range.
+
+	var excel = new ExcelQueryFactory("excelFileName");
+	var indianaCompanies = from c in excel.NamedRange<Company>("NamedRange") //Selects data within the range named 'NamedRange'
+	                       where c.State == "IN"
+	                       select c;
+
 ## Query a specific range within a worksheet
-Data from only a specific range of cells within a worksheet can be queried as well.
+Data from only a specific range of cells within a worksheet can be queried as well. (This is not the same as a named range, which is noted above)
 
 If the first row of the range contains a header row, then use the **WorksheetRange()** method
 

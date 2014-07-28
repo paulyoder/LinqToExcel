@@ -1,3 +1,8 @@
+### 1.9
+
+* Enhancements
+  * Added support for named ranges (by nkilian)
+
 ### 1.8.1
 
 * Refactorings
