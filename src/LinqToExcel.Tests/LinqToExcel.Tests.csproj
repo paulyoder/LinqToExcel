@@ -87,6 +87,8 @@
     <Compile Include="Convention_SQLStatements_UnitTests.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Convention_IntegrationTests.cs" />
+    <Compile Include="NamedRange_IntegrationTests.cs" />
+    <Compile Include="NamedRange_SQLStatements_UnitTests.cs" />
     <Compile Include="CSV_IntegrationTests.cs" />
     <Compile Include="CSV_SQLStatements_UnitTests.cs" />
     <Compile Include="ConnectionString_UnitTests.cs" />

@@ -140,6 +140,29 @@ namespace LinqToExcel
         }
 
         /// <summary>
+        /// Returns a list of workbook-scope named ranges that the spreadsheet contains
+        /// </summary>
+        public IEnumerable<string> GetNamedRanges()
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetNamedRanges(FileName);
+        }
+
+        /// <summary>
+        /// Returns a list of worksheet-scope named ranges that the worksheet contains
+        /// </summary>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        public IEnumerable<string> GetNamedRanges(string worksheetName)
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetNamedRanges(FileName, worksheetName);
+        }
+
+        /// <summary>
         /// Returns a list of columns names that a worksheet contains
         /// </summary>
         /// <param name="worksheetName">Worksheet name to get the list of column names from</param>
@@ -149,6 +172,19 @@ namespace LinqToExcel
                 throw new NullReferenceException("FileName property is not set");
 
             return ExcelUtilities.GetColumnNames(worksheetName, FileName);
+        }
+
+        /// <summary>
+        /// Returns a list of columns names that a worksheet contains
+        /// </summary>
+        /// <param name="worksheetName">Worksheet name to get the list of column names from</param>
+        /// <param name="namedRangeName">Named Range name to get the list of column names from</param>
+        public IEnumerable<string> GetColumnNames(string worksheetName, string namedRange)
+        {
+            if (String.IsNullOrEmpty(FileName))
+                throw new NullReferenceException("FileName property is not set");
+
+            return ExcelUtilities.GetColumnNames(worksheetName, namedRange, FileName);
         }
 
         internal ExcelQueryConstructorArgs GetConstructorArgs()
@@ -242,7 +278,6 @@ namespace LinqToExcel
                     WorksheetIndex = worksheetIndex
                 }));
         }
-
 
         /// <summary>
         /// Enables Linq queries against an Excel worksheet
@@ -434,6 +469,141 @@ namespace LinqToExcel
                     StartRange = startRange,
                     EndRange = endRange,
                     WorksheetIndex = worksheetIndex
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a workbook-scope named range
+        /// </summary>
+        /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
+        /// <param name="namedRangeName">Name of the workbook-scope named range</param>
+        public ExcelQueryable<TSheetData> NamedRange<TSheetData>(string namedRangeName)
+        {
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a worksheet-scope named range
+        /// </summary>
+        /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        /// <param name="namedRangeName">Name of the worksheet-scope named range</param>
+        public ExcelQueryable<TSheetData> NamedRange<TSheetData>(string worksheetName, string namedRangeName)
+        {
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    WorksheetName = worksheetName,
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a worksheet-scope named range
+        /// </summary>
+        /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        /// <param name="namedRangeName">Name of the worksheet-scope named range</param>
+        public ExcelQueryable<TSheetData> NamedRange<TSheetData>(int worksheetIndex, string namedRangeName)
+        {
+            return new ExcelQueryable<TSheetData>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    WorksheetIndex = worksheetIndex,
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a workbook-scope named range
+        /// </summary>
+        /// <param name="namedRangeName">Name of the workbook-scope named range</param>
+        public ExcelQueryable<Row> NamedRange(string namedRangeName)
+        {
+            return new ExcelQueryable<Row>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a worksheet-scope named range
+        /// </summary>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        /// <param name="namedRangeName">Name of the worksheet-scope named range</param>
+        public ExcelQueryable<Row> NamedRange(string worksheetName, string namedRangeName)
+        {
+            return new ExcelQueryable<Row>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    WorksheetName = worksheetName,
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a worksheet-scope named range
+        /// </summary>
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        /// <param name="namedRangeName">Name of the worksheet-scope named range</param>
+        public ExcelQueryable<Row> NamedRange(int worksheetIndex, string namedRangeName)
+        {
+            return new ExcelQueryable<Row>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    WorksheetIndex = worksheetIndex,
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a workbook-scope named range that does not have a header row
+        /// </summary>
+        /// <param name="namedRangeName">Name of the workbook-scope named range</param>
+        public ExcelQueryable<RowNoHeader> NamedRangeNoHeader(string namedRangeName)
+        {
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    NoHeader = true,
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a worksheet-scope named range that does not have a header row
+        /// </summary>
+        /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
+        /// <param name="namedRangeName">Name of the worksheet-scope named range</param>
+        public ExcelQueryable<RowNoHeader> NamedRangeNoHeader(int worksheetIndex, string namedRangeName)
+        {
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    NoHeader = true,
+                    WorksheetIndex = worksheetIndex,
+                    NamedRangeName = namedRangeName
+                }));
+        }
+
+        /// <summary>
+        /// Enables Linq queries against a worksheet-scope named range that does not have a header row
+        /// </summary>
+        /// <param name="worksheetName">Name of the worksheet</param>
+        /// <param name="namedRangeName">Name of the worksheet-scope named range</param>
+        public ExcelQueryable<RowNoHeader> NamedRangeNoHeader(string worksheetName, string namedRangeName)
+        {
+            return new ExcelQueryable<RowNoHeader>(PersistQueryArgs(
+                new ExcelQueryArgs(GetConstructorArgs())
+                {
+                    NoHeader = true,
+                    WorksheetName = worksheetName,
+                    NamedRangeName = namedRangeName
                 }));
         }
 
