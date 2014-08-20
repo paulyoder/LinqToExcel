@@ -1,3 +1,8 @@
+### 1.10
+
+* Refactorings
+  * Added Log4Net as a dependency in the NuGet file
+
 ### 1.9
 
 * Enhancements

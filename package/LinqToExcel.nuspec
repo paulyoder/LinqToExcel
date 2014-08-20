@@ -9,5 +9,8 @@
     <licenseUrl>https://github.com/paulyoder/LinqToExcel/blob/master/License.txt</licenseUrl>
     <projectUrl>http://code.google.com/p/linqtoexcel/</projectUrl>
     <tags>Linq Excel spreadsheet csv</tags>
+    <dependencies>
+      <dependency id="log4net" />
+    </dependencies>
   </metadata>
 </package>
