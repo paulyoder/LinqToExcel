@@ -13,7 +13,7 @@
 	<property name="tool.MbUnit" value="${dir.base}\lib\MbUnit\MbUnit.Cons.exe" />
 	<property name="tool.nuget" value="${dir.base}\tools\NuGet\nuget.exe" />
 	
-	<target name="build" depends="clean, compile, compile64, deleteLog4netXml" />
+	<target name="build" depends="clean, compile, compile64, deleteLog4net" />
 	<target name="publish" depends="test, build, zip, zip64, package, package64, resetNuspecVersion" />
 	
 	<target name="clean" description="deletes folders used in the build">
@@ -154,8 +154,10 @@
 		<call target="clean" />
 	</target>
 	
-	<target name="deleteLog4netXml" description="Deletes the log4net.xml file that isn't need and takes up a lot of space">
+	<target name="deleteLog4net" description="Deletes the log4net dll and xml file since it's a nuget dependency">
+		<delete file="${dir.bin}/log4net.dll" />
 		<delete file="${dir.bin}/log4net.xml" />
+		<delete file="${dir.bin64}/log4net.dll" />
 		<delete file="${dir.bin64}/log4net.xml" />
 	</target>
 </project>

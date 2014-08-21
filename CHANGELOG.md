@@ -1,3 +1,8 @@
+### 1.10.1
+
+* Refactorings
+  * Manually removing log4net.dll from the package lib folder since it's not needed with the NuGet dependency on log4net
+
 ### 1.10
 
 * Refactorings
