@@ -291,22 +291,32 @@ namespace LinqToExcel.Query
             var props = fromType.GetProperties();
             if (_args.StrictMapping.Value != StrictMappingType.None)
                 this.ConfirmStrictMapping(columns, props, _args.StrictMapping.Value);
-
+            var currentRowNumber = 0;
             while (data.Read())
             {
+                currentRowNumber++;
                 var result = Activator.CreateInstance(fromType);
                 foreach (var prop in props)
                 {
                     var columnName = (_args.ColumnMappings.ContainsKey(prop.Name)) ?
                         _args.ColumnMappings[prop.Name] :
                         prop.Name;
-                    if (columns.Contains(columnName))
+                    try
                     {
-                        var value = GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType);
-                        value = TrimStringValue(value);
-                        result.SetProperty(prop.Name, value);
+                        if (columns.Contains(columnName))
+                        {
+                            var value = GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType);
+                            value = TrimStringValue(value);
+                            result.SetProperty(prop.Name, value);
+                        }
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        ex.Data["LinqToExcel.RowNumber"] = currentRowNumber;
+                        ex.Data["LinqToExcel.ColumnName"] = columnName;
+                        throw;
+                    }
+               }
                 results.Add(result);
             }
             return results.AsEnumerable();
