@@ -64,7 +64,7 @@ Query results can be returned as LinqToExcel.Row objects which allows you to acc
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var indianaCompanies = from c in excel.Worksheet()
-	                       where c["State"] == "IN" || c["Zip" == "46550"
+	                       where c["State"] == "IN" || c["Zip"] == "46550"
 	                       select c;
 
 The LinqToExcel.Row class allows you to easily cast a cell's value by using its **Cast<>()** method
