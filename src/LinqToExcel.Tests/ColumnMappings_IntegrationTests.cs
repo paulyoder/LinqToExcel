@@ -3,7 +3,6 @@ using System.Linq;
 using MbUnit.Framework;
 using System.IO;
 using log4net.Core;
-using System.Data.OleDb;
 
 namespace LinqToExcel.Tests
 {
@@ -139,5 +138,19 @@ namespace LinqToExcel.Tests
             Assert.AreEqual(new DateTime(1988, 7, 26), rival.StartDate, "StartDate");
             Assert.AreEqual("N", rival.IsActive, "IsActive");
         }
+
+        [Test]
+        public void two_transformations_with_the_same_property_but_in_different_types()
+        {
+            _repo.AddTransformation<Transformation1>(x => x.Value, x => x);
+            _repo.AddTransformation<Transformation2>(x => x.Value, x => x);
+
+            var value1 = _repo.Worksheet<Transformation1>("Transformation1").First().Value;
+            var value2 = _repo.Worksheet<Transformation2>("Transformation2").First().Value;
+
+            Assert.AreEqual(1, value1);
+            Assert.AreEqual("some different value", value2);
+        }
+
     }
 }

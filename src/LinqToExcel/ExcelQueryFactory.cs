@@ -125,7 +125,7 @@ namespace LinqToExcel
         /// </example>
         public void AddTransformation<TSheetData>(Expression<Func<TSheetData, object>> property, Func<string, object> transformation)
         {
-            _transformations.Add(GetPropertyName(property), transformation);
+            _transformations.Add(string.Format("{0}.{1}", typeof(TSheetData).Name, GetPropertyName(property)), transformation);
         }
 
         /// <summary>
