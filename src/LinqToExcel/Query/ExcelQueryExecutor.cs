@@ -370,9 +370,10 @@ namespace LinqToExcel.Query
 
         private object GetColumnValue(IDataRecord data, string columnName, string propertyName, string typeName)
         {
+            var transformationKey = string.Format("{0}.{1}", typeName, propertyName);
             //Perform the property transformation if there is one
-            return (_args.Transformations.ContainsKey(propertyName)) ?
-                _args.Transformations[string.Format("{0}.{1}",typeName,propertyName)](data[columnName].ToString()) :
+            return (_args.Transformations.ContainsKey(transformationKey)) ?
+                _args.Transformations[transformationKey](data[columnName].ToString()) :
                 data[columnName];
         }
 
