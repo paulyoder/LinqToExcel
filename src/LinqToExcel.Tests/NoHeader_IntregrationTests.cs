@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MbUnit.Framework;
+using NUnit.Framework;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class NoHeader_IntregrationTests
     {
         private IExcelQueryFactory _factory;
         private string _excelFileName;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void ts()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

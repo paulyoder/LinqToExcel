@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.Data.OleDb;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class Row_SQLStatement_UnitTests : SQLLogStatements_Helper
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             InstantiateLogger();
@@ -39,7 +39,7 @@ namespace LinqToExcel.Tests
             var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
                             where c["City"] == "Omaha"
                             select c;
-            
+
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} = ?)", GetSQLFieldName("City"));
@@ -65,7 +65,7 @@ namespace LinqToExcel.Tests
             var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
                             where c["Modified"].Cast<DateTime>() < new DateTime(2009, 11, 2)
                             select c;
-            
+
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expectedSql = string.Format("SELECT * FROM [Sheet1$] WHERE ({0} < ?)", GetSQLFieldName("Modified"));
@@ -99,14 +99,16 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        [ExpectedArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader")]
         public void argument_exception_thrown_when_column_indexes_used_in_worksheet_where_clause()
         {
             var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
                             where c[0] == "Omaha"
                             select c;
-            
-            try { companies.GetEnumerator(); }
+            try
+            {
+                Assert.That(() => companies.GetEnumerator(),
+                Throws.TypeOf<ArgumentException>(), "Can only use column indexes in WHERE clause when using WorksheetNoHeader");
+            }
             catch (OleDbException) { }
         }
     }
