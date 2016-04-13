@@ -30,7 +30,7 @@ The default query expects the first row to be the header row containing column n
 Data from the worksheet named "Sheet1" is queried by default. To query a worksheet with a different name, pass the worksheet name in as an argument.
 
 	var excel = new ExcelQueryFactory("excelFileName");
-	var oldCompanies = from c in repo.Worksheet<Company>("US Companies") //worksheet name = 'US Companies'
+	var oldCompanies = from c in excel.Worksheet<Company>("US Companies") //worksheet name = 'US Companies'
 	                   where c.LaunchDate < new DateTime(1900, 1, 1)
 	                   select c;
 
@@ -110,10 +110,10 @@ If the first row of the range is not a header row, then use the **WorksheetRange
 ## Query a specific worksheet by index
 A specific worksheet can be queried by its index in relation to the other worksheets in the spreadsheet. 
 
-The worsheets index order is based on their names alphatically; not the order they appear in Excel. For example, if a spreadsheet contains 2 worksheets: "ten" and "eleven". Although "eleven" is the second worksheet in Excel, it is actually the first index.
+The worsheets index order is based on their names alphabetically; not the order they appear in Excel. For example, if a spreadsheet contains 2 worksheets: "ten" and "eleven". Although "eleven" is the second worksheet in Excel, it is actually the first index.
 
 	var excel = new ExcelQueryFactory("excelFileName");
-	var oldCompanies = from c in repo.Worksheet<Company>(1) //Queries the second worksheet in alphabetical order
+	var oldCompanies = from c in excel.Worksheet<Company>(1) //Queries the second worksheet in alphabetical order
 	                   where c.LaunchDate < new DateTime(1900, 1, 1)
 	                   select c;
 
