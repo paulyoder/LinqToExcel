@@ -53,12 +53,12 @@ namespace LinqToExcel
         /// </summary>
         public bool UsePersistentConnection { get; set; }
 
-        public ExcelQueryFactory(ILogManagerFactory logManager)
+        public ExcelQueryFactory(ILogManagerFactory logManager = null)
             : this(null, logManager)
         { }
 
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory)
+        public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory = null)
         {
             FileName = fileName;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
