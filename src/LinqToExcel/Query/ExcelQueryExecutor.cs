@@ -40,7 +40,7 @@ namespace LinqToExcel.Query
 
         private void ValidateArgs(ExcelQueryArgs args)
         {
-            if (_log != null && _log?.IsDebugEnabled == true)
+            if (_log != null && _log.IsDebugEnabled == true)
                 _log.DebugFormat("ExcelQueryArgs = {0}", args);
 
             if (args.FileName == null)
@@ -407,8 +407,8 @@ namespace LinqToExcel.Query
                 }
 
                 if (_logManagerFactory != null) {
-                    var sqlLog = _logManagerFactory?.GetLogger("LinqToExcel.SQL");
-                    sqlLog?.Debug(logMessage.ToString());
+                    var sqlLog = _logManagerFactory.GetLogger("LinqToExcel.SQL");
+                    sqlLog.Debug(logMessage.ToString());
                 }
             }
         }
