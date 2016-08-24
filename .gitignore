@@ -8,5 +8,3 @@ LinqToExcel.xml
 *.zip
 *.nupkg
 src/packages/
-/tools/test092.bat
-/tools/nant-0.92-rc1
