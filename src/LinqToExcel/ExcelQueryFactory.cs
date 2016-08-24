@@ -63,7 +63,7 @@ namespace LinqToExcel
             FileName = fileName;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
 
-            if (_logManagerFactory != null) {
+            if (logManagerFactory != null) {
                _logManagerFactory = logManagerFactory;
                _log = _logManagerFactory.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             }

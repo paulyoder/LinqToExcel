@@ -27,7 +27,7 @@ namespace LinqToExcel.Query
             ValidateArgs(args);
             _args = args;
 
-           if (_logManagerFactory != null) {
+           if (logManagerFactory != null) {
                _logManagerFactory = logManagerFactory;
                _log = _logManagerFactory.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
            }
