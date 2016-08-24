@@ -63,8 +63,10 @@ namespace LinqToExcel
             FileName = fileName;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
 
-            _logManagerFactory = logManagerFactory;
-            _log = _logManagerFactory?.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            if (_logManagerFactory != null) {
+               _logManagerFactory = logManagerFactory;
+               _log = _logManagerFactory.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            }
       }
 
         #region Other Methods
@@ -651,7 +653,8 @@ namespace LinqToExcel
                     }
                     catch (Exception ex)
                     {
-                        _log?.Error("Error disposing OleDbConnection", ex);
+                        if (_log != null)
+                            _log.Error("Error disposing OleDbConnection", ex);
                     }
                 }
             }
