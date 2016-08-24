@@ -31,7 +31,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void data_is_read_from_correct_worksheet()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>("More Companies", _excelFileName)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>("More Companies", _excelFileName, new LogManagerFactory())
                             select c;
 
             Assert.AreEqual(3, companies.ToList().Count);
@@ -40,7 +40,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void worksheetIndex_of_2_uses_third_table_name_orderedby_name()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(2, _excelFileName)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(2, _excelFileName, new LogManagerFactory())
                              select c).ToList();
 
             var expectedSql = "SELECT * FROM [More Companies$]";
@@ -51,7 +51,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(System.Data.DataException), "Worksheet Index Out of Range")]
         public void worksheetIndex_too_high_throws_exception()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(8, _excelFileName)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(8, _excelFileName, new LogManagerFactory())
                             select c;
 
             companies.ToList();

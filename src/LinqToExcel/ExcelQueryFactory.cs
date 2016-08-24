@@ -5,8 +5,8 @@ using System.Data.OleDb;
 using System.Linq.Expressions;
 using System.Reflection;
 using LinqToExcel.Domain;
+using LinqToExcel.Logging;
 using LinqToExcel.Query;
-using log4net;
 
 namespace LinqToExcel
 {
@@ -14,7 +14,8 @@ namespace LinqToExcel
     {
         private readonly Dictionary<string, string> _columnMappings = new Dictionary<string, string>();
         private readonly Dictionary<string, Func<string, object>> _transformations = new Dictionary<string, Func<string, object>>();
-        private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILogManagerFactory _logManagerFactory;
+        private readonly ILogProvider _log;
         private ExcelQueryArgs _queryArgs;
         private bool _disposed;
 
@@ -52,16 +53,19 @@ namespace LinqToExcel
         /// </summary>
         public bool UsePersistentConnection { get; set; }
 
-        public ExcelQueryFactory()
-            : this(null)
+        public ExcelQueryFactory(ILogManagerFactory logManager)
+            : this(null, logManager)
         { }
 
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public ExcelQueryFactory(string fileName)
+        public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory)
         {
             FileName = fileName;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
-        }
+
+            _logManagerFactory = logManagerFactory;
+            _log = _logManagerFactory?.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+      }
 
         #region Other Methods
 
@@ -213,7 +217,7 @@ namespace LinqToExcel
         public ExcelQueryable<TSheetData> Worksheet<TSheetData>()
         {
             return new ExcelQueryable<TSheetData>(PersistQueryArgs(
-                new ExcelQueryArgs(GetConstructorArgs())));
+                new ExcelQueryArgs(GetConstructorArgs())), _logManagerFactory);
         }
 
         /// <summary>
@@ -222,7 +226,7 @@ namespace LinqToExcel
         public ExcelQueryable<Row> Worksheet()
         {
             return new ExcelQueryable<Row>(PersistQueryArgs(
-                new ExcelQueryArgs(GetConstructorArgs())));
+                new ExcelQueryArgs(GetConstructorArgs())), _logManagerFactory);
         }
 
         /// <summary>
@@ -236,7 +240,7 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetName = worksheetName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -250,7 +254,7 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetIndex = worksheetIndex
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -263,7 +267,7 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetName = worksheetName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -276,7 +280,7 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     WorksheetIndex = worksheetIndex
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -292,7 +296,7 @@ namespace LinqToExcel
                 {
                     StartRange = startRange,
                     EndRange = endRange
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -307,7 +311,7 @@ namespace LinqToExcel
                 {
                     StartRange = startRange,
                     EndRange = endRange
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -324,7 +328,7 @@ namespace LinqToExcel
                     WorksheetName = worksheetName,
                     StartRange = startRange,
                     EndRange = endRange
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -341,7 +345,7 @@ namespace LinqToExcel
                     WorksheetIndex = worksheetIndex,
                     StartRange = startRange,
                     EndRange = endRange
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -359,7 +363,7 @@ namespace LinqToExcel
                     WorksheetName = worksheetName,
                     StartRange = startRange,
                     EndRange = endRange
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -377,7 +381,7 @@ namespace LinqToExcel
                     WorksheetIndex = worksheetIndex,
                     StartRange = startRange,
                     EndRange = endRange
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -389,7 +393,7 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NoHeader = true
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -403,7 +407,7 @@ namespace LinqToExcel
                 {
                     NoHeader = true,
                     WorksheetName = worksheetName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -417,7 +421,7 @@ namespace LinqToExcel
                 {
                     NoHeader = true,
                     WorksheetIndex = worksheetIndex
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -433,7 +437,7 @@ namespace LinqToExcel
                     NoHeader = true,
                     StartRange = startRange,
                     EndRange = endRange
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -451,7 +455,7 @@ namespace LinqToExcel
                     StartRange = startRange,
                     EndRange = endRange,
                     WorksheetName = worksheetName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -469,7 +473,7 @@ namespace LinqToExcel
                     StartRange = startRange,
                     EndRange = endRange,
                     WorksheetIndex = worksheetIndex
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -483,7 +487,7 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -499,7 +503,7 @@ namespace LinqToExcel
                 {
                     WorksheetName = worksheetName,
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -515,7 +519,7 @@ namespace LinqToExcel
                 {
                     WorksheetIndex = worksheetIndex,
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -528,7 +532,7 @@ namespace LinqToExcel
                 new ExcelQueryArgs(GetConstructorArgs())
                 {
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -543,7 +547,7 @@ namespace LinqToExcel
                 {
                     WorksheetName = worksheetName,
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -558,7 +562,7 @@ namespace LinqToExcel
                 {
                     WorksheetIndex = worksheetIndex,
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -572,7 +576,7 @@ namespace LinqToExcel
                 {
                     NoHeader = true,
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -588,7 +592,7 @@ namespace LinqToExcel
                     NoHeader = true,
                     WorksheetIndex = worksheetIndex,
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         /// <summary>
@@ -604,7 +608,7 @@ namespace LinqToExcel
                     NoHeader = true,
                     WorksheetName = worksheetName,
                     NamedRangeName = namedRangeName
-                }));
+                }), _logManagerFactory);
         }
 
         private ExcelQueryArgs PersistQueryArgs(ExcelQueryArgs args)
@@ -647,7 +651,7 @@ namespace LinqToExcel
                     }
                     catch (Exception ex)
                     {
-                        _log.Error("Error disposing OleDbConnection", ex);
+                        _log?.Error("Error disposing OleDbConnection", ex);
                     }
                 }
             }
@@ -666,14 +670,15 @@ namespace LinqToExcel
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName,
+                                                                       ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
                     WorksheetName = worksheetName
-                });
+                }, logManagerFactory);
         }
 
         /// <summary>
@@ -682,14 +687,15 @@ namespace LinqToExcel
         /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName,
+                                                                       ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
                     WorksheetIndex = worksheetIndex
-                });
+                }, logManagerFactory);
         }
 
         /// <summary>
@@ -697,14 +703,15 @@ namespace LinqToExcel
         /// </summary>
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName)
+        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName,
+                                                    ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
                     WorksheetName = worksheetName
-                });
+                }, logManagerFactory);
         }
 
         /// <summary>
@@ -712,14 +719,15 @@ namespace LinqToExcel
         /// </summary>
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName)
+        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName,
+                                                    ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName })
                 {
                     WorksheetIndex = worksheetIndex
-                });
+                }, logManagerFactory);
         }
 
         /// <summary>
@@ -728,14 +736,16 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName, 
+                                                    Dictionary<string, string> columnMappings,
+                                                    ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
                     WorksheetName = worksheetName
-                });
+                }, logManagerFactory);
         }
 
         /// <summary>
@@ -744,14 +754,16 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName, 
+                                                    Dictionary<string, string> columnMappings,
+                                                    ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<Row>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
                     WorksheetIndex = worksheetIndex
-                });
+                }, logManagerFactory);
         }
 
         /// <summary>
@@ -761,14 +773,16 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName, 
+                                                                       Dictionary<string, string> columnMappings,
+                                                                       ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
                     WorksheetName = worksheetName
-                });
+                }, logManagerFactory);
         }
 
         /// <summary>
@@ -778,14 +792,16 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName, Dictionary<string, string> columnMappings)
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName, 
+                                                                       Dictionary<string, string> columnMappings,
+                                                                       ILogManagerFactory logManagerFactory)
         {
             return new ExcelQueryable<TSheetData>(
                 new ExcelQueryArgs(
                     new ExcelQueryConstructorArgs() { FileName = fileName, ColumnMappings = columnMappings })
                 {
                     WorksheetIndex = worksheetIndex
-                });
+                }, logManagerFactory);
         }
 
         #endregion

@@ -29,7 +29,7 @@ namespace LinqToExcel.Tests
         [SetUp]
         public void s()
         {
-            _repo = new ExcelQueryFactory();
+            _repo = new ExcelQueryFactory(new LogManagerFactory());
             _repo.FileName = _excelFileName;
         }
 

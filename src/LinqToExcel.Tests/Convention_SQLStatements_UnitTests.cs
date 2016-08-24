@@ -24,7 +24,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void select_all()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -35,7 +35,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_equals()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.Name == "Paul"
                             select p;
 
@@ -49,7 +49,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_equals_method()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.Name.Equals("Paul")
                             select p;
 
@@ -62,7 +62,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_not_equal()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.Name != "Paul"
                             select p;
 
@@ -76,7 +76,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_greater_than()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount > 25
                             select p;
 
@@ -90,7 +90,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_greater_than_or_equal()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount >= 25
                             select p;
 
@@ -104,7 +104,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_lesser_than()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount < 25
                             select p;
 
@@ -118,7 +118,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_lesser_than_or_equal()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount <= 25
                             select p;
 
@@ -132,7 +132,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_null()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount == null
                             select p;
 
@@ -146,7 +146,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_not_null()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount != null
                             select p;
 
@@ -160,7 +160,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_and()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount > 5 && p.CEO == "Paul"
                             select p;
 
@@ -179,7 +179,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_or()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.EmployeeCount > 5 || p.CEO == "Paul"
                             select p;
 
@@ -203,7 +203,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void method_used_in_where_clause()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.Name == GetName("Paul")
                             select p;
 
@@ -215,7 +215,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_contains()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.Name.Contains("Paul")
                             select p;
 
@@ -229,7 +229,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_startswith()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.Name.StartsWith("Paul")
                             select p;
 
@@ -243,7 +243,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_endswith()
         {
-            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from p in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where p.Name.EndsWith("Paul")
                             select p;
 
@@ -257,7 +257,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void first()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.First(); }
@@ -268,7 +268,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void count()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.Count(); }
@@ -279,7 +279,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void long_count()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.LongCount(); }
@@ -290,7 +290,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void sum()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.Sum(x => x.EmployeeCount); }
@@ -301,7 +301,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void average()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.Average(x => x.EmployeeCount); }
@@ -312,7 +312,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void max()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.Max(x => x.EmployeeCount); }
@@ -323,7 +323,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void min()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.Min(x => x.EmployeeCount); }
@@ -334,7 +334,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void orderby()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             orderby c.StartDate ascending
                             select c;
 
@@ -347,7 +347,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void orderby_desc()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             orderby c.StartDate descending
                             select c;
 
@@ -360,7 +360,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void last()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.Last(); }
@@ -371,7 +371,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void take()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).Take(3);
 
             try { companies.ToList(); }
@@ -382,7 +382,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void skip()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).Skip(3);
 
             try { companies.ToList(); }
@@ -393,7 +393,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void worksheetName_is_set_to_Sheet1_when_null_worksheetName_argument()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -404,7 +404,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_and_orderby()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where c.EmployeeCount > 500
                             orderby c.StartDate ascending
                             select c;
@@ -418,7 +418,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void distinct()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c.Name).Distinct();
 
             try { companies.ToList(); }
@@ -430,7 +430,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_string_IsNullOrEmpty()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where string.IsNullOrEmpty(c.CEO)
                             select c;
 
@@ -443,7 +443,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_not_string_IsNullOrEmpty()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             where !string.IsNullOrEmpty(c.CEO)
                             select c;
 

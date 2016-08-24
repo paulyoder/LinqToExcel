@@ -26,7 +26,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void row_column_in_where_clause()
         {
-            var list = (from x in ExcelQueryFactory.Worksheet("Sheet1", _excelFileName)
+            var list = (from x in ExcelQueryFactory.Worksheet("Sheet1", _excelFileName, new LogManagerFactory())
                         where x["Bad Column"].ToString() == "nothing"
                         select x).ToList();
         }
@@ -36,7 +36,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void row_column_in_orderby_clause()
         {
-            var list = (from x in ExcelQueryFactory.Worksheet("Sheet1", _excelFileName)
+            var list = (from x in ExcelQueryFactory.Worksheet("Sheet1", _excelFileName, new LogManagerFactory())
                         select x)
                         .OrderBy(x => x["Bad Column"])
                         .ToList();
@@ -47,7 +47,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_in_where_clause()
         {
-            var list = (from x in ExcelQueryFactory.Worksheet<CompanyWithCity>("Sheet1", _excelFileName)
+            var list = (from x in ExcelQueryFactory.Worksheet<CompanyWithCity>("Sheet1", _excelFileName, new LogManagerFactory())
                         where x.City == "Omaha"
                         select x).ToList();
         }
@@ -57,7 +57,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_mapping_in_where_clause()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<CompanyWithCity>(x => x.City, "Town");
             var list = (from x in excel.Worksheet<CompanyWithCity>("Sheet1")
                         where x.City == "Omaha"
@@ -69,7 +69,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_in_orderby_clause()
         {
-            var list = (from x in ExcelQueryFactory.Worksheet<CompanyWithCity>("Sheet1", _excelFileName)
+            var list = (from x in ExcelQueryFactory.Worksheet<CompanyWithCity>("Sheet1", _excelFileName, new LogManagerFactory())
                         select x)
                         .OrderBy(x => x.City)
                         .ToList();
@@ -80,7 +80,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_mapping_in_orderby_clause()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<CompanyWithCity>(x => x.City, "Town");
             var list = (from x in excel.Worksheet<CompanyWithCity>("Sheet1")
                         select x)
@@ -93,7 +93,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_in_average_aggregate()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<CompanyWithCity>(x => x.EmployeeCount, "Employees");
             var list = (from x in excel.Worksheet<CompanyWithCity>("Sheet1")
                         select x)
@@ -105,7 +105,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_in_max_aggregate()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<CompanyWithCity>(x => x.EmployeeCount, "Employees");
             var list = (from x in excel.Worksheet<CompanyWithCity>("Sheet1")
                         select x)
@@ -117,7 +117,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_in_min_aggregate()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<CompanyWithCity>(x => x.EmployeeCount, "Employees");
             var list = (from x in excel.Worksheet<CompanyWithCity>("Sheet1")
                         select x)
@@ -129,7 +129,7 @@ namespace LinqToExcel.Tests
             "Valid column names are: 'Name', 'CEO', 'EmployeeCount', 'StartDate'")]
         public void bad_column_in_sum_aggregate()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<CompanyWithCity>(x => x.EmployeeCount, "Employees");
             var list = (from x in excel.Worksheet<CompanyWithCity>("Sheet1")
                         select x)
