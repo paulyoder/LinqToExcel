@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Linq;
 using System.Text;
 using LinqToExcel.Domain;
@@ -18,6 +19,7 @@ namespace LinqToExcel.Query
         internal string EndRange { get; set; }
         internal bool NoHeader { get; set; }
         internal StrictMappingType? StrictMapping { get; set; }
+		internal OleDbConnection PersistentConnection { get; set; }
 
         internal ExcelQueryArgs()
             : this(new ExcelQueryConstructorArgs() { DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine() })
@@ -30,6 +32,7 @@ namespace LinqToExcel.Query
             ColumnMappings = args.ColumnMappings ?? new Dictionary<string, string>();
             Transformations = args.Transformations ?? new Dictionary<string, Func<string, object>>();
             StrictMapping = args.StrictMapping ?? StrictMappingType.None;
+	        PersistentConnection = args.PersistentConnection;
         }
 
         public override string ToString()
@@ -38,9 +41,10 @@ namespace LinqToExcel.Query
             foreach (var kvp in ColumnMappings)
                 columnMappingsString.AppendFormat("[{0} = '{1}'] ", kvp.Key, kvp.Value);
             var transformationsString = string.Join(", ", Transformations.Keys.ToArray());
+	        string persistentConnection = (PersistentConnection == null) ? string.Empty : PersistentConnection.ConnectionString;
 
-            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange: {4}; NoHeader: {5}; ColumnMappings: {6}; Transformations: {7}, StrictMapping: {8}",
-                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, NoHeader, columnMappingsString, transformationsString, StrictMapping);
+            return string.Format("FileName: '{0}'; WorksheetName: '{1}'; WorksheetIndex: {2}; StartRange: {3}; EndRange: {4}; NoHeader: {5}; ColumnMappings: {6}; Transformations: {7}, StrictMapping: {8}; PersistentConnection: {9}",
+                FileName, WorksheetName, WorksheetIndex, StartRange, EndRange, NoHeader, columnMappingsString, transformationsString, StrictMapping, persistentConnection);
         }
     }
 }

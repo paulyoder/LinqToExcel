@@ -69,33 +69,55 @@ namespace LinqToExcel.Query
 
         internal static IEnumerable<string> GetWorksheetNames(string fileName)
         {
-            var args = new ExcelQueryArgs();
-            args.FileName = fileName;
-            return GetWorksheetNames(args);
+	        return GetWorksheetNames(fileName, new ExcelQueryArgs());
         }
+
+		internal static IEnumerable<string> GetWorksheetNames(string fileName, ExcelQueryArgs args)
+		{
+			args.FileName = fileName;
+			return GetWorksheetNames(args);
+		} 
+
+		internal static OleDbConnection GetConnection(ExcelQueryArgs args)
+		{
+			if (args.PersistentConnection != null)
+				return args.PersistentConnection;
+
+			return new OleDbConnection(GetConnectionString(args));
+		}
 
         internal static IEnumerable<string> GetWorksheetNames(ExcelQueryArgs args)
         {
             var worksheetNames = new List<string>();
-            using (var conn = new OleDbConnection(GetConnectionString(args)))
-            {
-                conn.Open();
-                var excelTables = conn.GetOleDbSchemaTable(
-                    OleDbSchemaGuid.Tables,
-                    new Object[] { null, null, null, "TABLE" });
 
-                worksheetNames.AddRange(
-                    from DataRow row in excelTables.Rows
-                    where IsTable(row)
-                    let tableName = row["TABLE_NAME"].ToString()
-                        .Replace("$", "")
-                        .RegexReplace("(^'|'$)", "")
-                        .Replace("''", "'")
-                    where IsNotBuiltinTable(tableName)
-                    select tableName);
+	        var conn = GetConnection(args);
 
-                excelTables.Dispose();
-            }
+	        if (conn.State != ConnectionState.Open)
+	        {
+		        conn.Open();
+	        }
+
+	        var excelTables = conn.GetOleDbSchemaTable(
+                OleDbSchemaGuid.Tables,
+                new Object[] { null, null, null, "TABLE" });
+
+            worksheetNames.AddRange(
+                from DataRow row in excelTables.Rows
+                where IsTable(row)
+                let tableName = row["TABLE_NAME"].ToString()
+                    .Replace("$", "")
+                    .RegexReplace("(^'|'$)", "")
+                    .Replace("''", "'")
+                where IsNotBuiltinTable(tableName)
+                select tableName);
+
+            excelTables.Dispose();
+            
+			if (args.PersistentConnection == null)
+			{
+				conn.Dispose();
+			}
+			
             return worksheetNames;
         }
 

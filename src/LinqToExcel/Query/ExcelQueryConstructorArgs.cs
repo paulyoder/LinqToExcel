@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Linq;
 using System.Text;
 using LinqToExcel.Domain;
@@ -13,5 +14,7 @@ namespace LinqToExcel.Query
         internal Dictionary<string, string> ColumnMappings { get; set; }
         internal Dictionary<string, Func<string, object>> Transformations { get; set; }
         internal StrictMappingType? StrictMapping { get; set; }
+		internal bool CreatePersistentConnection { get; set; }
+		internal OleDbConnection PersistentConnection { get; set; }
     }
 }

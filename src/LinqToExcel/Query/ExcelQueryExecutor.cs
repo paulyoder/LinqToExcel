@@ -20,15 +20,19 @@ namespace LinqToExcel.Query
     {
         private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly ExcelQueryArgs _args;
-        private readonly string _connectionString;
 
         internal ExcelQueryExecutor(ExcelQueryArgs args)
         {
             ValidateArgs(args);
             _args = args;
-            _connectionString = ExcelUtilities.GetConnectionString(args);
-            if (_log.IsDebugEnabled)
-                _log.DebugFormat("Connection String: {0}", _connectionString);
+
+			string connectionString = args.PersistentConnection != null ? 
+				args.PersistentConnection.ConnectionString : 
+				ExcelUtilities.GetConnectionString(args);
+
+			if (_log.IsDebugEnabled)
+				_log.DebugFormat("Connection String: {0}", connectionString);
+
             GetWorksheetName();
         }
 
@@ -164,11 +168,15 @@ namespace LinqToExcel.Query
         {
             IEnumerable<object> results;
             OleDbDataReader data = null;
-            using (var conn = new OleDbConnection(_connectionString))
+
+	        var conn = ExcelUtilities.GetConnection(_args);
             using (var command = conn.CreateCommand())
             {
-                conn.Open();
-                command.CommandText = sql.ToString();
+	            if (conn.State != ConnectionState.Open)
+	            {
+		            conn.Open();
+	            }
+	            command.CommandText = sql.ToString();
                 command.Parameters.AddRange(sql.Parameters.ToArray());
                 try { data = command.ExecuteReader(); }
                 catch (OleDbException e)
@@ -192,6 +200,12 @@ namespace LinqToExcel.Query
                 else
                     results = GetTypeResults(data, columns, queryModel);
             }
+
+			if (_args.PersistentConnection == null)
+			{
+				conn.Dispose();
+			}
+
             return results;
         }
 
