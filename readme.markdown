@@ -45,12 +45,26 @@ Column names from the worksheet can be mapped to specific property names on the 
 	                       where c.State == "IN" && c.Employees > 500
 	                       select c;
 
+Column names can alternately be mapped using the **ExcelColumn** attribute on properties of the class.
+
+	public class Company
+	{
+		[ExcelColumn("Company Title")] //maps the "Name" property to the "Company Title" column
+		public string Name { get; set; }
+
+		[ExcelColumn("Providence")] //maps the "State" property to the "Providence" column
+		public string State { get; set; }
+
+		[ExcelColumn("Employee Count")] //maps the "Employees" property to the "Employee Count" column
+		public string Employees { get; set; }
+	}
+
 ## Using the LinqToExcel.Row class
 Query results can be returned as LinqToExcel.Row objects which allows you to access a cell's value by using the column name in the string index. Just use the **Worksheet()** method without a generic argument.
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	var indianaCompanies = from c in excel.Worksheet()
-	                       where c["State"] == "IN" || c.Zip == 46550
+	                       where c["State"] == "IN" || c["Zip"] == "46550"
 	                       select c;
 
 The LinqToExcel.Row class allows you to easily cast a cell's value by using its **Cast<>()** method
@@ -68,8 +82,16 @@ Worksheets that do not contain a header row can also be queried by using the **W
 	                       where c[2] == "IN" //value in 3rd column
 	                       select c;
 
+## Query a named range within a worksheet
+A query can be scoped to only include data from within a named range.
+
+	var excel = new ExcelQueryFactory("excelFileName");
+	var indianaCompanies = from c in excel.NamedRange<Company>("NamedRange") //Selects data within the range named 'NamedRange'
+	                       where c.State == "IN"
+	                       select c;
+
 ## Query a specific range within a worksheet
-Data from only a specific range of cells within a worksheet can be queried as well.
+Data from only a specific range of cells within a worksheet can be queried as well. (This is not the same as a named range, which is noted above)
 
 If the first row of the range contains a header row, then use the **WorksheetRange()** method
 
@@ -141,3 +163,39 @@ LinqToExcel can use the Jet or Ace database engine, and it automatically determi
 
 	var excel = new ExcelQueryFactory("excelFileName");
 	excel.DatabaseEngine == DatabaseEngine.Ace;
+
+## Trim White Space
+The **TrimSpaces** property can be used to automatically trim leading and trailing white spaces. 
+
+    var excel = new ExcelQueryFactory("excelFileName");
+    excel.TrimSpaces = TrimSpacesType.Both;
+
+There are 4 options for TrimSpaces:
+* None - does not trim any white space. This is the default
+* Both - trims white space from the beginning and end
+* Start - trims white space from only the beginning
+* End - trims white space from only the end
+
+## Persistent Connection
+By default a new connection is created and disposed of for each query ran. If you want to use the same connection on all queries performed by the IExcelQueryFactory then set the **UsePersistentConnection** property to true.
+
+Make sure you properly dispose the ExcelQueryFactory if you use a persistent connection.
+
+    var excel = new ExcelQueryFactory("excelFileName");
+    excel.UsePersistentConnection = true;
+    
+    try
+    {
+      var allCompanies = from c in excel.Worksheet<Company>()
+                         select c;
+    }
+    finally
+    {
+      excel.Dispose();
+    }
+
+## ReadOnly Mode
+Set the **ReadOnly** property to true to open the file in readonly mode. The default value is false.
+
+    var excel = new ExcelQueryFactory("excelFileName");
+    excel.ReadOnly = true;

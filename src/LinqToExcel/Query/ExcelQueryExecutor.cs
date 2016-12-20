@@ -20,15 +20,15 @@ namespace LinqToExcel.Query
     {
         private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly ExcelQueryArgs _args;
-        private readonly string _connectionString;
 
         internal ExcelQueryExecutor(ExcelQueryArgs args)
         {
             ValidateArgs(args);
             _args = args;
-            _connectionString = ExcelUtilities.GetConnectionString(args);
-            if (_log.IsDebugEnabled)
-                _log.DebugFormat("Connection String: {0}", _connectionString);
+
+			if (_log.IsDebugEnabled)
+				_log.DebugFormat("Connection String: {0}", ExcelUtilities.GetConnection(args).ConnectionString);
+
             GetWorksheetName();
         }
 
@@ -151,8 +151,10 @@ namespace LinqToExcel.Query
                 else
                     throw new DataException("Worksheet Index Out of Range");
             }
-            else if (String.IsNullOrEmpty(_args.WorksheetName))
+            else if (String.IsNullOrEmpty(_args.WorksheetName) && String.IsNullOrEmpty(_args.NamedRangeName))
+            {
                 _args.WorksheetName = "Sheet1";
+            }
         }
 
         /// <summary>
@@ -164,19 +166,23 @@ namespace LinqToExcel.Query
         {
             IEnumerable<object> results;
             OleDbDataReader data = null;
-            using (var conn = new OleDbConnection(_connectionString))
-            using (var command = conn.CreateCommand())
+
+	        var conn = ExcelUtilities.GetConnection(_args);
+            var command = conn.CreateCommand();
+            try
             {
-                conn.Open();
-                command.CommandText = sql.ToString();
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+	            command.CommandText = sql.ToString();
                 command.Parameters.AddRange(sql.Parameters.ToArray());
                 try { data = command.ExecuteReader(); }
                 catch (OleDbException e)
                 {
                     if (e.Message.Contains(_args.WorksheetName))
                         throw new DataException(
-                            string.Format("'{0}' is not a valid worksheet name. Valid worksheet names are: '{1}'",
-                                          _args.WorksheetName, string.Join("', '", ExcelUtilities.GetWorksheetNames(_args.FileName).ToArray())));
+                            string.Format("'{0}' is not a valid worksheet name in file {3}. Valid worksheet names are: '{1}'. Error received: {2}",
+                                          _args.WorksheetName, string.Join("', '", ExcelUtilities.GetWorksheetNames(_args.FileName).ToArray()), e.Message, _args.FileName), e);
                     if (!CheckIfInvalidColumnNameUsed(sql))
                         throw e;
                 }
@@ -192,6 +198,17 @@ namespace LinqToExcel.Query
                 else
                     results = GetTypeResults(data, columns, queryModel);
             }
+            finally
+            {
+                command.Dispose();
+
+                if (!_args.UsePersistentConnection)
+                {
+                    conn.Dispose();
+                    _args.PersistentConnection = null;
+                }
+            }
+
             return results;
         }
 
@@ -214,7 +231,7 @@ namespace LinqToExcel.Query
         private bool CheckIfInvalidColumnNameUsed(SqlParts sql)
         {
             var usedColumns = sql.ColumnNamesUsed;
-            var tableColumns = ExcelUtilities.GetColumnNames(_args.WorksheetName, _args.FileName);
+            var tableColumns = ExcelUtilities.GetColumnNames(_args.WorksheetName, _args.NamedRangeName, _args.FileName);
             foreach (var column in usedColumns)
             {
                 if (!tableColumns.Contains(column))
@@ -240,7 +257,11 @@ namespace LinqToExcel.Query
             {
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < columns.Count(); i++)
-                    cells.Add(new Cell(data[i]));
+                {
+                    var value = data[i];
+                    value = TrimStringValue(value);
+                    cells.Add(new Cell(value));
+                }
                 results.CallMethod("Add", new Row(cells, columnIndexMapping));
             }
             return results.AsEnumerable();
@@ -253,7 +274,11 @@ namespace LinqToExcel.Query
             {
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < data.FieldCount; i++)
-                    cells.Add(new Cell(data[i]));
+                {
+                    var value = data[i];
+                    value = TrimStringValue(value);
+                    cells.Add(new Cell(value));
+                }
                 results.CallMethod("Add", new RowNoHeader(cells));
             }
             return results.AsEnumerable();
@@ -276,11 +301,39 @@ namespace LinqToExcel.Query
                         _args.ColumnMappings[prop.Name] :
                         prop.Name;
                     if (columns.Contains(columnName))
-                        result.SetProperty(prop.Name, GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType));
+                    {
+                        var value = GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType);
+                        value = TrimStringValue(value);
+                        result.SetProperty(prop.Name, value);
+                    }
                 }
                 results.Add(result);
             }
             return results.AsEnumerable();
+        }
+
+        /// <summary>
+        /// Trims leading and trailing spaces, based on the value of _args.TrimSpaces
+        /// </summary>
+        /// <param name="value">Input string value</param>
+        /// <returns>Trimmed string value</returns>
+        private object TrimStringValue(object value)
+        {
+            if (value == null || value.GetType() != typeof(string))
+                return value;
+
+            switch (_args.TrimSpaces)
+            {
+                case TrimSpacesType.Start:
+                    return ((string)value).TrimStart();
+                case TrimSpacesType.End:
+                    return ((string)value).TrimEnd();
+                case TrimSpacesType.Both:
+                    return ((string)value).Trim();
+                case TrimSpacesType.None:
+                default:
+                    return value;
+            }
         }
 
         private void ConfirmStrictMapping(IEnumerable<string> columns, PropertyInfo[] properties, StrictMappingType strictMappingType)

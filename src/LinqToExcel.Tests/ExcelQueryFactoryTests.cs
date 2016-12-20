@@ -50,6 +50,20 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void Constructor_defaults_UsePersistentConnection_to_false()
+        {
+            var repo = new ExcelQueryFactory();
+            Assert.AreEqual(false, repo.UsePersistentConnection);
+        }
+
+        [Test]
+        public void Constructor_defaults_ReadOnly_to_false()
+        {
+            var repo = new ExcelQueryFactory();
+            Assert.AreEqual(false, repo.ReadOnly);
+        }
+
+        [Test]
         [ExpectedException(typeof(NullReferenceException), "FileName property is not set")]
         public void GetWorksheetNames_throws_exception_when_filename_not_set()
         {
@@ -72,7 +86,7 @@ namespace LinqToExcel.Tests
 
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
-                "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1",
+                "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1, TrimSpaces",
                 string.Join(", ", worksheetNames.ToArray()));
         }
 
@@ -86,7 +100,7 @@ namespace LinqToExcel.Tests
                 string.Join(", ", worksheetNames.ToArray()));
         }
 
-        //[Test] This test is no longer passing. I believe it has something to do with my computer settings
+        [Test] //This test is no longer passing. I believe it has something to do with my computer settings
         public void GetWorksheetNames_does_not_include_named_ranges()
         {
             var excel = new ExcelQueryFactory(_excelFileWithNamedRanges);
@@ -94,6 +108,26 @@ namespace LinqToExcel.Tests
             Assert.AreEqual(
                 "Tabelle1, Tabelle3, WS2",
                 string.Join(", ", worksheetNames.ToArray()));
+        }
+
+        [Test]
+        public void GetNamedRanges()
+        {
+            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges);
+            var namedRanges = excel.GetNamedRanges(excel.GetWorksheetNames().First());
+            Assert.AreEqual(
+                "NameCell",
+                string.Join(", ", namedRanges.ToArray()));
+        }
+
+        [Test]
+        public void GetNamedRangeValue()
+        {
+            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges);
+            var firstCellValue = excel.NamedRangeNoHeader("Tabelle1", "NameCell").First().First().Value;
+            Assert.AreEqual(
+                "NameCell",
+                firstCellValue);
         }
 
         [Test]
@@ -249,6 +283,50 @@ namespace LinqToExcel.Tests
                              select c).ToList();
 
             Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void TrimSpaces_Start_TrimsWhiteSpacesAtTheBeginning()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.Start;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual("White Space In Front", companies[0].Name);
+        }
+
+        [Test]
+        public void TrimSpaces_End_TrimsWhiteSpacesAtTheEnd()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.End;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual("White Space At End", companies[1].Name);
+        }
+
+        [Test]
+        public void TrimSpaces_Both_TrimsWhiteSpacesOnBothSides()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.Both;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual("White Space On Both Sides", companies[2].Name);
+        }
+
+        [Test]
+        public void TrimSpaces_None_DoesntTrimWhitespace()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.TrimSpaces = TrimSpacesType.None;
+
+            var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
+
+            Assert.AreEqual(" White Space On Both Sides ", companies[2].Name);
         }
     }
 }
