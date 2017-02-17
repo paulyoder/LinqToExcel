@@ -53,12 +53,26 @@ namespace LinqToExcel
         /// </summary>
         public bool UsePersistentConnection { get; set; }
 
-        public ExcelQueryFactory(ILogManagerFactory logManager = null)
-            : this(null, logManager)
-        { }
+        public ExcelQueryFactory()
+          : this(null, null) { }
+
+        /// <param name="logManagerFactory">
+        /// Factory that facilitates the creation of an external log manager (i.e. log4net) to 
+        /// allow internal methods of LinqToExcel to perform diagnostic logging.
+        /// </param>
+        public ExcelQueryFactory(ILogManagerFactory logManagerFactory)
+            : this(null, logManagerFactory) { }
 
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
-        public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory = null)
+        public ExcelQueryFactory(string fileName)
+            : this(fileName, null) { }
+
+        /// <param name="fileName">Full path to the Excel spreadsheet</param>
+        /// <param name="logManagerFactory">
+        /// Factory that facilitates the creation of an external log manager (i.e. log4net) to 
+        /// allow internal methods of LinqToExcel to perform diagnostic logging.
+        /// </param>
+        public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory)
         {
             FileName = fileName;
             DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
@@ -67,7 +81,7 @@ namespace LinqToExcel
                _logManagerFactory = logManagerFactory;
                _log = _logManagerFactory.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             }
-      }
+        }
 
         #region Other Methods
 
