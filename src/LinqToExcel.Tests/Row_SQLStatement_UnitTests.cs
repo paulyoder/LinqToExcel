@@ -25,7 +25,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void no_where_clause()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>("", "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>("", "", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -36,7 +36,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void column_name_used_in_where_clause()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet("", "", null, new LogManagerFactory())
                             where c["City"] == "Omaha"
                             select c;
             
@@ -50,7 +50,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void column_name_used_in_orderby_clause()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet("", "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet("", "", null, new LogManagerFactory())
                              select c).OrderBy(x => x["City"]);
 
             try { companies.GetEnumerator(); }
@@ -62,7 +62,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void column_name_is_cast_in_where_clause()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet("", "", null, new LogManagerFactory())
                             where c["Modified"].Cast<DateTime>() < new DateTime(2009, 11, 2)
                             select c;
             
@@ -75,7 +75,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_is_null()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet("", "", null, new LogManagerFactory())
                             where c["City"] == null
                             select c;
 
@@ -88,7 +88,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_is_not_null()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet("", "", null, new LogManagerFactory())
                             where c["City"] != null
                             select c;
 
@@ -102,7 +102,7 @@ namespace LinqToExcel.Tests
         [ExpectedArgumentException("Can only use column indexes in WHERE clause when using WorksheetNoHeader")]
         public void argument_exception_thrown_when_column_indexes_used_in_worksheet_where_clause()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet("", "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet("", "", null, new LogManagerFactory())
                             where c[0] == "Omaha"
                             select c;
             

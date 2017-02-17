@@ -23,7 +23,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void select_all()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null, new LogManagerFactory())
                             select c;
 
             Assert.AreEqual(7, companies.ToList().Count);
@@ -32,7 +32,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_contains_string_criteria()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null, new LogManagerFactory())
                             where c.Name == "ACME"
                             select c;
 
@@ -42,7 +42,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_contains_int_criteria()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null, new LogManagerFactory())
                             where c.EmployeeCount > 20
                             select c;
 
@@ -52,7 +52,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_contains_datetime_criteria()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, _fileName, null, new LogManagerFactory())
                             where c.StartDate == new DateTime(1980, 8, 23)
                             select c;
 

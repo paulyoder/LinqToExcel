@@ -15,7 +15,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Contains() method")]
         public void contains()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).Contains(new Company());
         }
 
@@ -23,7 +23,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the DefaultIfEmpty() method")]
         public void default_if_empty()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).DefaultIfEmpty().ToList();
         }
 
@@ -31,7 +31,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Except() method")]
         public void except()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).Except(new List<Company>()).ToList();
         }
 
@@ -39,7 +39,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Group() method")]
         public void group()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                             group c by c.CEO into g
                             select g;
             try { companies.ToList(); }
@@ -50,9 +50,9 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Intersect() method")]
         public void intersect()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c.CEO).Intersect(
-                             from d in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                             from d in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select d.CEO)
                              .ToList();
         }
@@ -61,7 +61,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the OfType() method")]
         public void of_type()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).OfType<object>().ToList();
         }
 
@@ -69,7 +69,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Single() method. Use the First() method instead")]
         public void single()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).Single();
         }
 
@@ -77,9 +77,9 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Union() method")]
         public void union()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).Union(
-                             from d in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+                             from d in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select d)
                              .ToList();
         }
@@ -88,8 +88,8 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel does not provide support for the Join() method")]
         public void join()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
-                             join d in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
+                             join d in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              on c.CEO equals d.CEO
                              select d)
                              .ToList();
@@ -99,7 +99,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
         public void distinct_on_whole_row()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null)
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(null, "", null, new LogManagerFactory())
                              select c).Distinct().ToList();
         }
 
@@ -107,7 +107,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
         public void distinct_on_no_header()
         {
-            var excel = new ExcelQueryFactory("");
+            var excel = new ExcelQueryFactory("", new LogManagerFactory());
             var companies = (from c in excel.WorksheetNoHeader()
                              select c).Distinct().ToList();
         }
@@ -116,7 +116,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
         public void distinct_on_no_header_with_selected_column()
         {
-            var excel = new ExcelQueryFactory("");
+            var excel = new ExcelQueryFactory("", new LogManagerFactory());
             var companies = (from c in excel.WorksheetNoHeader()
                              select c[0]).Distinct().ToList();
         }
@@ -125,7 +125,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
         public void distinct_on_row()
         {
-            var excel = new ExcelQueryFactory("");
+            var excel = new ExcelQueryFactory("", new LogManagerFactory());
             var companies = (from c in excel.Worksheet()
                              select c).Distinct().ToList();
         }
@@ -134,7 +134,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NotSupportedException), "LinqToExcel only provides support for the Distinct() method when it's mapped to a class and a single property is selected. [e.g. (from row in excel.Worksheet<Person>() select row.FirstName).Distinct()]")]
         public void distinct_on_row_with_selected_column()
         {
-            var excel = new ExcelQueryFactory("");
+            var excel = new ExcelQueryFactory("", new LogManagerFactory());
             var companies = (from c in excel.Worksheet()
                              select c["Name"]).Distinct().ToList();
         }

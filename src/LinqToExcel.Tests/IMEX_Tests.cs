@@ -23,7 +23,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void date_and_text_column_values_are_not_null()
         {
-            var sheet = new ExcelQueryFactory();
+            var sheet = new ExcelQueryFactory(new LogManagerFactory());
             sheet.FileName = _excelFileName;
 
             var names = (from x in sheet.Worksheet("IMEX Table")

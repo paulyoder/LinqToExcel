@@ -26,7 +26,7 @@ namespace LinqToExcel.Tests
         [SetUp]
         public void s()
         {
-            _factory = new ExcelQueryFactory(_excelFileName);
+            _factory = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void use_sheetData_where_null()
         {
-            var factory = new ExcelQueryFactory(_excelFileName + "x");
+            var factory = new ExcelQueryFactory(_excelFileName + "x", new LogManagerFactory());
             var companies = from c in factory.NamedRange<Company>("NullCellCompanies")
                             where c.EmployeeCount == null
                             select c;
@@ -82,7 +82,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void use_row_where_null()
         {
-            var factory = new ExcelQueryFactory(_excelFileName + "x");
+            var factory = new ExcelQueryFactory(_excelFileName + "x", new LogManagerFactory());
             var companies = from c in factory.NamedRange("NullCellCompanies")
                             where c["EmployeeCount"] == null
                             select c;
@@ -93,7 +93,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void use_row_no_header_where_null()
         {
-            var factory = new ExcelQueryFactory(_excelFileName + "x");
+            var factory = new ExcelQueryFactory(_excelFileName + "x", new LogManagerFactory());
             var companies = from c in factory.NamedRangeNoHeader("NullCellCompanies")
                             where c[2] == null
                             select c;

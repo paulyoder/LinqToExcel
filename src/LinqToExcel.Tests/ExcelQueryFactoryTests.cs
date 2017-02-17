@@ -31,35 +31,35 @@ namespace LinqToExcel.Tests
         [ExpectedArgumentNullException]
         public void throw_argumentnullexception_when_filename_is_null()
         {
-            var repo = new ExcelQueryFactory();
+            var repo = new ExcelQueryFactory(new LogManagerFactory());
             var first = (from r in repo.Worksheet() select r).First();
         }
 
         [Test]
         public void Constructor_sets_filename()
         {
-            var repo = new ExcelQueryFactory(@"C:\spreadsheet.xls");
+            var repo = new ExcelQueryFactory(@"C:\spreadsheet.xls", new LogManagerFactory());
             Assert.AreEqual(@"C:\spreadsheet.xls", repo.FileName);
         }
 
         [Test]
         public void Constructor_defaults_DatabaseEngine_to_Jet()
         {
-            var repo = new ExcelQueryFactory();
+            var repo = new ExcelQueryFactory(new LogManagerFactory());
             Assert.AreEqual(DatabaseEngine.Jet, repo.DatabaseEngine);
         }
 
         [Test]
         public void Constructor_defaults_UsePersistentConnection_to_false()
         {
-            var repo = new ExcelQueryFactory();
+            var repo = new ExcelQueryFactory(new LogManagerFactory());
             Assert.AreEqual(false, repo.UsePersistentConnection);
         }
 
         [Test]
         public void Constructor_defaults_ReadOnly_to_false()
         {
-            var repo = new ExcelQueryFactory();
+            var repo = new ExcelQueryFactory(new LogManagerFactory());
             Assert.AreEqual(false, repo.ReadOnly);
         }
 
@@ -67,7 +67,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NullReferenceException), "FileName property is not set")]
         public void GetWorksheetNames_throws_exception_when_filename_not_set()
         {
-            var factory = new ExcelQueryFactory();
+            var factory = new ExcelQueryFactory(new LogManagerFactory());
             factory.GetWorksheetNames();
         }
 
@@ -75,14 +75,14 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(NullReferenceException), "FileName property is not set")]
         public void GetColumnNames_throws_exception_when_filename_not_set()
         {
-            var factory = new ExcelQueryFactory();
+            var factory = new ExcelQueryFactory(new LogManagerFactory());
             factory.GetColumnNames("");
         }
 
         [Test]
         public void GetWorksheetNames_returns_worksheet_names()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
 
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
@@ -93,7 +93,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void GetWorksheetNames_does_not_include_builtin_worksheets()
         {
-            var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets);
+            var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets, new LogManagerFactory());
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
                 "AutoFiltered, ColumnMappings, MoreCompanies, NullCells, Paul's Worksheet, Sheet1",
@@ -103,7 +103,7 @@ namespace LinqToExcel.Tests
         [Test] //This test is no longer passing. I believe it has something to do with my computer settings
         public void GetWorksheetNames_does_not_include_named_ranges()
         {
-            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges);
+            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges, new LogManagerFactory());
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
                 "Tabelle1, Tabelle3, WS2",
@@ -113,7 +113,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void GetNamedRanges()
         {
-            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges);
+            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges, new LogManagerFactory());
             var namedRanges = excel.GetNamedRanges(excel.GetWorksheetNames().First());
             Assert.AreEqual(
                 "NameCell",
@@ -123,7 +123,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void GetNamedRangeValue()
         {
-            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges);
+            var excel = new ExcelQueryFactory(_excelFileWithNamedRanges, new LogManagerFactory());
             var firstCellValue = excel.NamedRangeNoHeader("Tabelle1", "NameCell").First().First().Value;
             Assert.AreEqual(
                 "NameCell",
@@ -133,7 +133,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void GetWorksheetNames_does_not_delete_apostrophes_in_middle_of_worksheet_name()
         {
-            var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets);
+            var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets, new LogManagerFactory());
             var worksheetNames = excel.GetWorksheetNames();
             Assert.IsTrue(worksheetNames.Any(x => x == "Paul's Worksheet"));
         }
@@ -141,7 +141,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void GetColumnNames_returns_column_names()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
 
             var columnNames = excel.GetColumnNames("Sheet1");
             Assert.AreEqual(
@@ -153,7 +153,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(StrictMappingException), "'City' property is not mapped to a column")]
         public void StrictMapping_ClassStrict_throws_StrictMappingException_when_property_is_not_mapped_to_column()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.ClassStrict;
             var companies = (from x in excel.Worksheet<CompanyWithCity>()
                              select x).ToList();
@@ -162,7 +162,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void StrictMapping_ClassStrict_with_additional_unused_worksheet_columns_doesnt_throw_exception()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.ClassStrict;
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
@@ -177,7 +177,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(StrictMappingException), "'City' column is not mapped to a property")]
         public void StrictMapping_WorksheetStrict_throws_StrictMappingException_when_column_is_not_mapped_to_property()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.WorksheetStrict;
             var companies = (from x in excel.Worksheet<Company>("Null Dates")
                              select x).ToList();
@@ -186,7 +186,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void StrictMapping_WorksheetStrict_with_additional_unused_class_properties_doesnt_throw_exception()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.WorksheetStrict;
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
@@ -201,7 +201,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(StrictMappingException), "'City' property is not mapped to a column")]
         public void StrictMapping_Both_throws_StrictMappingException_when_property_is_not_mapped_to_column()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.Both;
             var companies = (from x in excel.Worksheet<CompanyWithCity>()
                              select x).ToList();
@@ -211,7 +211,7 @@ namespace LinqToExcel.Tests
         [ExpectedException(typeof(StrictMappingException), "'City' column is not mapped to a property")]
         public void StrictMapping_Both_throws_StrictMappingException_when_column_is_not_mapped_to_property()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.Both;
             var companies = (from x in excel.Worksheet<Company>("Null Dates")
                              select x).ToList();
@@ -220,7 +220,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void StrictMapping_Both_with_column_mappings_doesnt_throw_exception()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.Both;
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
@@ -234,7 +234,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void StrictMapping_None_with_additional_worksheet_column_doesnt_throw_exception()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.None;
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
@@ -248,7 +248,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void StrictMapping_None_with_additional_class_properties_doesnt_throw_exception()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.StrictMapping = StrictMappingType.None;
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
@@ -262,7 +262,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void StrictMapping_Not_Explicitly_Set_with_additional_worksheet_column_doesnt_throw_exception()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
             var companies = (from c in excel.Worksheet<Company>("Null Dates")
@@ -275,7 +275,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void StrictMapping_Not_Explicitly_Set_with_additional_class_properties_doesnt_throw_exception()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
             var companies = (from c in excel.Worksheet<CompanyWithCity>()
@@ -288,7 +288,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void TrimSpaces_Start_TrimsWhiteSpacesAtTheBeginning()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.TrimSpaces = TrimSpacesType.Start;
 
             var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
@@ -299,7 +299,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void TrimSpaces_End_TrimsWhiteSpacesAtTheEnd()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.TrimSpaces = TrimSpacesType.End;
 
             var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
@@ -310,7 +310,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void TrimSpaces_Both_TrimsWhiteSpacesOnBothSides()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.TrimSpaces = TrimSpacesType.Both;
 
             var companies = excel.Worksheet<Company>("TrimSpaces").ToList();
@@ -321,7 +321,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void TrimSpaces_None_DoesntTrimWhitespace()
         {
-            var excel = new ExcelQueryFactory(_excelFileName);
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
             excel.TrimSpaces = TrimSpacesType.None;
 
             var companies = excel.Worksheet<Company>("TrimSpaces").ToList();

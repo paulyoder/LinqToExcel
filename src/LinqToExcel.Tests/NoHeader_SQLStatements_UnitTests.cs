@@ -23,7 +23,7 @@ namespace LinqToExcel.Tests
         [SetUp]
         public void s()
         {
-            _factory = new ExcelQueryFactory("");
+            _factory = new ExcelQueryFactory("", new LogManagerFactory());
             ClearLogEvents();
         }
 
@@ -33,7 +33,7 @@ namespace LinqToExcel.Tests
         {
             var csvFile = @"C:\ExcelFiles\NoHeaderRange.csv";
 
-            var excel = new ExcelQueryFactory(csvFile);
+            var excel = new ExcelQueryFactory(csvFile, new LogManagerFactory());
             var companies = (from c in excel.WorksheetRangeNoHeader("B9", "E15")
                              select c).ToList();
         }

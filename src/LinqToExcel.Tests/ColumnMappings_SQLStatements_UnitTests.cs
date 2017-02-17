@@ -21,7 +21,7 @@ namespace LinqToExcel.Tests
         [SetUp]
         public void Setup()
         {
-            _repo = new ExcelQueryFactory();
+            _repo = new ExcelQueryFactory(new LogManagerFactory());
             _repo.FileName = "";
             ClearLogEvents();
         }

@@ -22,7 +22,7 @@ namespace LinqToExcel.Tests
 			string excelFilesDirectory = Path.Combine(testDirectory, "ExcelFiles");
 			string excelFileName = Path.Combine(excelFilesDirectory, "Companies.xlsm");
 
-			_factory = new ExcelQueryFactory(excelFileName);
+			_factory = new ExcelQueryFactory(excelFileName, new LogManagerFactory());
             _factory.UsePersistentConnection = true;
 		}
 

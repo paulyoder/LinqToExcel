@@ -25,7 +25,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xls_connection_string()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xls", null)
+            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xls", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -39,7 +39,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xls_readonly_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var excel = new ExcelQueryFactory("spreadsheet.xls", new LogManagerFactory());
             excel.ReadOnly = true;
 
             var companies = from c in excel.Worksheet<Company>()
@@ -56,7 +56,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xls_with_Ace_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var excel = new ExcelQueryFactory("spreadsheet.xls", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
 
             var companies = from c in excel.Worksheet()
@@ -73,7 +73,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xls_readonly_with_Ace_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var excel = new ExcelQueryFactory("spreadsheet.xls", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
             excel.ReadOnly = true;
 
@@ -91,7 +91,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void unknown_file_type_connection_string()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.dlo", null)
+            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.dlo", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -105,7 +105,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void unknown_file_type_readonly_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.dlo");
+            var excel = new ExcelQueryFactory("spreadsheet.dlo", new LogManagerFactory());
             excel.ReadOnly = true;
 
             var companies = from c in excel.Worksheet()
@@ -122,7 +122,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void unknown_file_type_with_Ace_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.dlo");
+            var excel = new ExcelQueryFactory("spreadsheet.dlo", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
 
             var companies = from c in excel.Worksheet()
@@ -139,7 +139,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void unknown_file_type_readonly_with_Ace_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.dlo");
+            var excel = new ExcelQueryFactory("spreadsheet.dlo", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
             excel.ReadOnly = true;
 
@@ -157,7 +157,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void csv_connection_string()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet(null, @"C:\Desktop\spreadsheet.csv", null)
+            var companies = from c in ExcelQueryFactory.Worksheet(null, @"C:\Desktop\spreadsheet.csv", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -171,7 +171,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void csv_readonly_connection_string()
         {
-            var excel = new ExcelQueryFactory(@"C:\Desktop\spreadsheet.csv");
+            var excel = new ExcelQueryFactory(@"C:\Desktop\spreadsheet.csv", new LogManagerFactory());
             excel.ReadOnly = true;
 
             var companies = from c in excel.Worksheet<Company>()
@@ -188,7 +188,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void csv_with_Ace_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory(@"C:\Desktop\spreadsheet.csv");
+            var excel = new ExcelQueryFactory(@"C:\Desktop\spreadsheet.csv", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
 
             var companies = from c in excel.Worksheet()
@@ -205,7 +205,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void csv_readonly_with_Ace_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory(@"C:\Desktop\spreadsheet.csv");
+            var excel = new ExcelQueryFactory(@"C:\Desktop\spreadsheet.csv", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
             excel.ReadOnly = true;
 
@@ -223,7 +223,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsx_connection_string()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xlsx", null)
+            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xlsx", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -237,7 +237,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsx_readonly_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xlsx");
+            var excel = new ExcelQueryFactory("spreadsheet.xlsx", new LogManagerFactory());
             excel.ReadOnly = true;
 
             var companies = from c in excel.Worksheet<Company>()
@@ -254,7 +254,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsx_with_Jet_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xlsx");
+            var excel = new ExcelQueryFactory("spreadsheet.xlsx", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Jet;
 
             var companies = from c in excel.Worksheet()
@@ -271,7 +271,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsm_connection_string()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xlsm", null)
+            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xlsm", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -285,7 +285,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsm_with_Jet_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xlsm");
+            var excel = new ExcelQueryFactory("spreadsheet.xlsm", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Jet;
 
             var companies = from c in excel.Worksheet()
@@ -302,7 +302,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsb_connection_string()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xlsb", null)
+            var companies = from c in ExcelQueryFactory.Worksheet(null, "spreadsheet.xlsb", null, new LogManagerFactory())
                             select c;
 
             try { companies.GetEnumerator(); }
@@ -316,7 +316,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsb_readonly_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xlsb");
+            var excel = new ExcelQueryFactory("spreadsheet.xlsb", new LogManagerFactory());
             excel.ReadOnly = true;
 
             var companies = from c in excel.Worksheet<Company>()
@@ -333,7 +333,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void xlsb_with_Jet_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xlsb");
+            var excel = new ExcelQueryFactory("spreadsheet.xlsb", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Jet;
 
             var companies = from c in excel.Worksheet()
@@ -350,7 +350,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void no_header_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var excel = new ExcelQueryFactory("spreadsheet.xls", new LogManagerFactory());
             var companies = from c in excel.WorksheetNoHeader()
                             select c;
 
@@ -365,7 +365,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void no_header_readonly_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var excel = new ExcelQueryFactory("spreadsheet.xls", new LogManagerFactory());
             excel.ReadOnly = true;
 
             var companies = from c in excel.WorksheetNoHeader()
@@ -382,7 +382,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void no_header_with_Jet_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var excel = new ExcelQueryFactory("spreadsheet.xls", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
 
             var companies = from c in excel.WorksheetNoHeader()
@@ -399,7 +399,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void no_header_readonly_with_Jet_DatabaseEngine_connection_string()
         {
-            var excel = new ExcelQueryFactory("spreadsheet.xls");
+            var excel = new ExcelQueryFactory("spreadsheet.xls", new LogManagerFactory());
             excel.DatabaseEngine = DatabaseEngine.Ace;
             excel.ReadOnly = true;
 

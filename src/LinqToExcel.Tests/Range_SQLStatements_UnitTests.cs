@@ -24,7 +24,7 @@ namespace LinqToExcel.Tests
         public void s()
         {
             ClearLogEvents();
-            _factory = new ExcelQueryFactory("");
+            _factory = new ExcelQueryFactory("", new LogManagerFactory());
         }
 
         [Test]

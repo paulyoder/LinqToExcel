@@ -9,24 +9,30 @@ using System.Reflection;
 using Remotion.Data.Linq.Clauses.ResultOperators;
 using System.Collections;
 using LinqToExcel.Extensions;
-using log4net;
 using System.Text.RegularExpressions;
 using System.Text;
 using LinqToExcel.Domain;
+using LinqToExcel.Logging;
 
 namespace LinqToExcel.Query
 {
     internal class ExcelQueryExecutor : IQueryExecutor
     {
-        private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILogManagerFactory _logManagerFactory;
+        private readonly ILogProvider _log;
         private readonly ExcelQueryArgs _args;
 
-        internal ExcelQueryExecutor(ExcelQueryArgs args)
+        internal ExcelQueryExecutor(ExcelQueryArgs args, ILogManagerFactory logManagerFactory)
         {
             ValidateArgs(args);
             _args = args;
 
-			if (_log.IsDebugEnabled)
+           if (logManagerFactory != null) {
+               _logManagerFactory = logManagerFactory;
+               _log = _logManagerFactory.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+           }
+
+         if (_log != null && _log.IsDebugEnabled == true)
 				_log.DebugFormat("Connection String: {0}", ExcelUtilities.GetConnection(args).ConnectionString);
 
             GetWorksheetName();
@@ -34,7 +40,7 @@ namespace LinqToExcel.Query
 
         private void ValidateArgs(ExcelQueryArgs args)
         {
-            if (_log.IsDebugEnabled)
+            if (_log != null && _log.IsDebugEnabled == true)
                 _log.DebugFormat("ExcelQueryArgs = {0}", args);
 
             if (args.FileName == null)
@@ -222,8 +228,9 @@ namespace LinqToExcel.Query
             {
                 if (!columns.Contains(kvp.Value))
                 {
-                    _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
-                        kvp.Value, kvp.Key, _args.WorksheetName);
+                    if (_log != null)
+                        _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
+                            kvp.Value, kvp.Key, _args.WorksheetName);
                 }
             }
         }
@@ -384,7 +391,7 @@ namespace LinqToExcel.Query
 
         private void LogSqlStatement(SqlParts sqlParts)
         {
-            if (_log.IsDebugEnabled)
+            if (_log != null && _log.IsDebugEnabled == true)
             {
                 var logMessage = new StringBuilder();
                 logMessage.AppendFormat("{0};", sqlParts.ToString());
@@ -399,8 +406,10 @@ namespace LinqToExcel.Query
                     logMessage.Append(paramMessage);
                 }
 
-                var sqlLog = LogManager.GetLogger("LinqToExcel.SQL");
-                sqlLog.Debug(logMessage.ToString());
+                if (_logManagerFactory != null) {
+                    var sqlLog = _logManagerFactory.GetLogger("LinqToExcel.SQL");
+                    sqlLog.Debug(logMessage.ToString());
+                }
             }
         }
     }

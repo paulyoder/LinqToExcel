@@ -5,18 +5,20 @@ using System.Linq.Expressions;
 using LinqToExcel.Attributes;
 using System;
 
+using LinqToExcel.Logging;
+
 namespace LinqToExcel.Query
 {
     public class ExcelQueryable<T> : QueryableBase<T>
     {
-        private static IQueryExecutor CreateExecutor(ExcelQueryArgs args)
+        private static IQueryExecutor CreateExecutor(ExcelQueryArgs args, ILogManagerFactory logManagerFactory)
         {
-            return new ExcelQueryExecutor(args);
+            return new ExcelQueryExecutor(args, logManagerFactory);
         }
 
         // This constructor is called by users, create a new IQueryExecutor.
-        internal ExcelQueryable(ExcelQueryArgs args)
-            : base(CreateExecutor(args))
+        internal ExcelQueryable(ExcelQueryArgs args, ILogManagerFactory logManagerFactory)
+            : base(CreateExecutor(args, logManagerFactory))
         {
             foreach (var property in typeof(T).GetProperties())
             {

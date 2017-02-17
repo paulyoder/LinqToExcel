@@ -26,7 +26,7 @@ namespace LinqToExcel.Tests
         [SetUp]
         public void s()
         {
-            _factory = new ExcelQueryFactory(_excelFileName);
+            _factory = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace LinqToExcel.Tests
                 Path.GetDirectoryName(_excelFileName),
                 "NoHeader.csv");
 
-            _factory = new ExcelQueryFactory(csvFile);
+            _factory = new ExcelQueryFactory(csvFile, new LogManagerFactory());
             var companies = from c in _factory.WorksheetNoHeader()
                             select c;
 
@@ -70,7 +70,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void where_is_null()
         {
-            var factory = new ExcelQueryFactory(_excelFileName.Replace("NoHeader.xls", "Companies.xlsx"));
+            var factory = new ExcelQueryFactory(_excelFileName.Replace("NoHeader.xls", "Companies.xlsx"), new LogManagerFactory());
             var oldCompanies = from c in factory.WorksheetNoHeader("NullCells")
                                where c[2] == null
                                select c;

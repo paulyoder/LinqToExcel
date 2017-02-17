@@ -23,7 +23,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void column_values()
         {
-            var firstCompany = (from c in ExcelQueryFactory.Worksheet(null, _excelFileName, null)
+            var firstCompany = (from c in ExcelQueryFactory.Worksheet(null, _excelFileName, null, new LogManagerFactory())
                                 select c).First();
 
             Assert.AreEqual("ACME", firstCompany["Name"].ToString());
@@ -35,7 +35,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void columnNames_returns_list_of_column_names()
         {
-            var firstCompany = (from c in ExcelQueryFactory.Worksheet(null, _excelFileName, null)
+            var firstCompany = (from c in ExcelQueryFactory.Worksheet(null, _excelFileName, null, new LogManagerFactory())
                                 select c).First();
 
             Assert.AreEqual(4, firstCompany.ColumnNames.Count());
