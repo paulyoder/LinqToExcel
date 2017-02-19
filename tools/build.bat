@@ -1,3 +1,3 @@
 cd ..
-tools\Nant\nant.exe build
+tools\nant-0.92-rc1\nant.exe build
 pause
