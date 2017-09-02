@@ -13,6 +13,13 @@ If you don't want to use the NuGet package you can [Download](http://code.google
 <br />* LinqToExcel.dll
 <br />* Remotion.Data.Linq.dll
 
+#### Access Database Engine
+In order to use LinqToExcel, you need to install the Microsoft [Microsoft Access Database Engine 2010 Redistributable](https://www.microsoft.com/en-in/download/details.aspx?id=13255). If it's not installed, you'll get the following exception:
+
+	The 'Microsoft.ACE.OLEDB.12.0' provider is not registered on the local machine.'
+
+Both a 32-bit and 64-bit version are available, select the one that matches your project settings. You can only have one of them installed at a time.
+
 #### x64 Support
 If you want LinqToExcel to run in a 64 bit application, make sure to use the 64 bit version of the library.
 
