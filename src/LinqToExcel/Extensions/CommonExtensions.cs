@@ -80,8 +80,8 @@ namespace LinqToExcel.Extensions
 
         public static bool IsNullValue(this Expression exp)
         {
-            return ((exp is ConstantExpression) &&
-                (exp.Cast<ConstantExpression>().Value == null));
+            var constantExpression = exp as ConstantExpression;
+            return constantExpression != null && constantExpression.Value == null;
         }
 
         public static string RegexReplace(this string source, string regex, string replacement)

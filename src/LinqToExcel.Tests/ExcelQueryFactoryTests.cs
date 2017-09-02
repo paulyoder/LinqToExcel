@@ -328,5 +328,25 @@ namespace LinqToExcel.Tests
 
             Assert.AreEqual(" White Space On Both Sides ", companies[2].Name);
         }
+
+        [Test]
+        public void Null_ConstantExpression_in_where_expression_should_not_throw_exception()
+        {
+            // The C# 6 compiler made some changes to the expression tree output.
+            // This changes are largely transparent to consumers if they adhere
+            // to the Liskov Substitution Principle.  This test is to specifically
+            // address a bug in which the code didn't allow the derived TypedConstantExpression
+            // to be substituted for a ConstantExpression.  This resulted in a downstream InvalidCastException
+            // when the LinqToExcel invoked Converter.ChangeType since TypedConstantExpression
+            // does not implement IConvertible.
+            var excel = new ExcelQueryFactory(_excelFileName);
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyNullable>()
+                             where c.Name != null
+                             select c).ToList();
+
+            Assert.IsNotNull(companies);
+        }
     }
 }
