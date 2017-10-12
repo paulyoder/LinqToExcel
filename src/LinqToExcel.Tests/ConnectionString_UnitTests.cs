@@ -31,7 +31,7 @@ namespace LinqToExcel.Tests
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
+                @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
                 "spreadsheet.xls");
             Assert.AreEqual(expected, GetConnectionString());
         }
@@ -48,7 +48,7 @@ namespace LinqToExcel.Tests
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1;READONLY=TRUE""",
+                @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1;READONLY=TRUE""",
                 "spreadsheet.xls");
             Assert.AreEqual(expected, GetConnectionString());
         }
@@ -97,7 +97,7 @@ namespace LinqToExcel.Tests
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
+                @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
                 "spreadsheet.dlo");
             Assert.AreEqual(expected, GetConnectionString());
         }
@@ -114,7 +114,7 @@ namespace LinqToExcel.Tests
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1;READONLY=TRUE""",
+                @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1;READONLY=TRUE""",
                 "spreadsheet.dlo");
             Assert.AreEqual(expected, GetConnectionString());
         }
@@ -357,7 +357,7 @@ namespace LinqToExcel.Tests
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=NO;IMEX=1""",
+                @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=NO;IMEX=1""",
                 "spreadsheet.xls");
             Assert.AreEqual(expected, GetConnectionString());
         }
@@ -374,7 +374,7 @@ namespace LinqToExcel.Tests
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
             var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=NO;IMEX=1;READONLY=TRUE""",
+                @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=NO;IMEX=1;READONLY=TRUE""",
                 "spreadsheet.xls");
             Assert.AreEqual(expected, GetConnectionString());
         }
