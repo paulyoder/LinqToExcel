@@ -67,7 +67,7 @@ var indianaCompanies = from c in excel.Worksheet<Company>()
 
 Column names can alternately be mapped using the `ExcelColumn` attribute on properties of the class.
 
-````c#
+```c#
 public class Company
 {
 	[ExcelColumn("Company Title")] //maps the "Name" property to the "Company Title" column
