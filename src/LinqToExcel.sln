@@ -1,9 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToExcel", "LinqToExcel\LinqToExcel.csproj", "{08F80D96-5387-4406-B88B-DCC0CB661702}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqToExcel.Tests", "LinqToExcel.Tests\LinqToExcel.Tests.csproj", "{195B956A-8029-44FD-9518-C04F5280611F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test-kb4041678", "test-kb4041678\test-kb4041678.csproj", "{37387A3F-3161-406B-816C-03F4093B1A9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +23,10 @@ Global
 		{195B956A-8029-44FD-9518-C04F5280611F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{195B956A-8029-44FD-9518-C04F5280611F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{195B956A-8029-44FD-9518-C04F5280611F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37387A3F-3161-406B-816C-03F4093B1A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37387A3F-3161-406B-816C-03F4093B1A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37387A3F-3161-406B-816C-03F4093B1A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37387A3F-3161-406B-816C-03F4093B1A9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
