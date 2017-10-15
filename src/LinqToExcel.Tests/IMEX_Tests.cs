@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Linq;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.IO;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class IMEX_Tests
     {
         string _excelFileName;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

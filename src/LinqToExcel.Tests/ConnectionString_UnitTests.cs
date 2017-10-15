@@ -1,16 +1,16 @@
 ﻿using System.Linq;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.Data.OleDb;
 using LinqToExcel.Domain;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class ConnectionString_UnitTests : SQLLogStatements_Helper
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             InstantiateLogger();

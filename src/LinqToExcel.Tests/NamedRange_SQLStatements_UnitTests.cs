@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.Data.OleDb;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class NamedRange_SQLStatements_UnitTests : SQLLogStatements_Helper
     {
         private IExcelQueryFactory _factory;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             InstantiateLogger();

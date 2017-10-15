@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Linq;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.Data.OleDb;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class ColumnMappings_SQLStatements_UnitTests : SQLLogStatements_Helper
     {
         private ExcelQueryFactory _repo;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             InstantiateLogger();

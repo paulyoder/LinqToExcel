@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.Data.OleDb;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class Range_SQLStatements_UnitTests : SQLLogStatements_Helper
     {
         private IExcelQueryFactory _factory;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             InstantiateLogger();
@@ -39,24 +39,26 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        [ExpectedArgumentException("StartRange argument '22' is invalid format for cell name")]
         public void Throws_argument_exception_if_startRange_is_incorrect_format()
         {
-            var companies = from c in _factory.WorksheetRange("22", "D4")
-                            select c;
-
-            try { companies.GetEnumerator(); }
+            try
+            {
+                Assert.That(() => from c in _factory.WorksheetRange("22", "D4")
+                                  select c,
+                Throws.TypeOf<ArgumentException>(), "StartRange argument '22' is invalid format for cell name");
+            }
             catch (OleDbException) { }
         }
 
         [Test]
-        [ExpectedArgumentException("EndRange argument 'DD' is invalid format for cell name")]
         public void Throws_argument_exception_if_endRange_is_incorrect_format()
         {
-            var companies = from c in _factory.WorksheetRange("B2", "DD")
-                            select c;
-
-            try { companies.GetEnumerator(); }
+            try
+            {
+                Assert.That(() => from c in _factory.WorksheetRange("B2", "DD")
+                                  select c,
+                Throws.TypeOf<ArgumentException>(), "EndRange argument 'DD' is invalid format for cell name");
+            }
             catch (OleDbException) { }
         }
 
