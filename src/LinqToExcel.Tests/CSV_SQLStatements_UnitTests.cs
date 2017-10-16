@@ -1,18 +1,19 @@
-﻿using System.Linq;
-using MbUnit.Framework;
+﻿using System;
+using System.Linq;
+using NUnit.Framework;
 using System.IO;
 using System.Data;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class CSV_SQLStatements_UnitTests : SQLLogStatements_Helper
     {
         string _fileName;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             _fileName = Path.Combine(Path.GetTempPath(), "spreadsheet.csv");
@@ -48,7 +49,12 @@ namespace LinqToExcel.Tests
             catch (DataException) { }
 
             var extendedProperties = GetExtendedProperties();
-            Assert.AreEqual("\"text;HDR=YES;FMT=Delimited;IMEX=1\"", extendedProperties);
+
+            if (IntPtr.Size == 8) {
+                Assert.AreEqual("\"text;Excel 12.0;HDR=YES;IMEX=1\"", extendedProperties);
+            } else {
+                Assert.AreEqual("\"text;HDR=YES;FMT=Delimited;IMEX=1\"", extendedProperties);
+            }
         }
 
         [Test]

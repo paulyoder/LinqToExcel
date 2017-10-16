@@ -1,10 +1,9 @@
 ﻿using System;
-using MbUnit.Framework;
-
+using NUnit.Framework;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [TestCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class CellTest
     {

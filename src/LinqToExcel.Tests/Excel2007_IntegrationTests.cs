@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Linq;
 using LinqToExcel.Domain;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.IO;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class Excel2007_IntegrationTests
     {
         string _filesDirectory;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;

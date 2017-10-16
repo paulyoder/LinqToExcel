@@ -38,7 +38,7 @@ namespace LinqToExcel.Extensions
         public static object Cast(this object @object, Type castType)
         {
             //return null for DBNull values
-            if (@object == null || @object.GetType() == typeof(DBNull))
+            if (@object == null || @object.GetType() == typeof(DBNull) || @object.ToString() == "null")
                 return null;
 
             //checking for nullable types

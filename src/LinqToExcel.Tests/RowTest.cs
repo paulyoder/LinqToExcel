@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using MbUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [TestCategory("Unit")]
+    [Category("Unit")]
     [TestFixture]
     public class RowTest
     {
@@ -44,11 +45,12 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        [ExpectedArgumentException("'First Name' column name does not exist. Valid column names are 'Name', 'Favorite Sport', 'Age'")]
         public void invalid_column_name_index_throws_argument_exception()
         {
             var newRow = new Row(_cells, _columnMappings);
-            var temp = newRow["First Name"];
+            Assert.That(() => newRow["First Name"],
+            Throws.TypeOf<ArgumentException>(), "'First Name' column name does not exist. Valid column names are 'Name', 'Favorite Sport', 'Age'");
+
         }
     }
 }
