@@ -35,13 +35,13 @@ namespace LinqToExcel.Tests
 		[Test]
 		public void WorksheetRangeNoHeader_can_query_sheet_500_times_on_same_connection()
 		{
-			IQueryable<Row> rows = null;
+			IQueryable<RowNoHeader> rows = null;
 
 			int totalRows = 0;
 
 			for (int i = 0; i < 500; i++)
 			{
-				rows = from cm in _factory.WorksheetRange("A2", "D8", "Sheet1")
+				rows = from cm in _factory.WorksheetRangeNoHeader("A2", "D8", "Sheet1")
 				       select cm;
 
 				totalRows += rows.Count();
