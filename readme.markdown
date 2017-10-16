@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/vdbhqae4b2h86k96?svg=true)](https://ci.appveyor.com/project/mrworkman/linqtoexcel)
+
 # Welcome to the LinqToExcel project
 
 Linq to Excel is a .Net library that allows you to query Excel spreadsheets using the LINQ syntax.
