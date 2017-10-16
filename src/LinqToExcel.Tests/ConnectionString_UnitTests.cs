@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using System.Data.OleDb;
 using LinqToExcel.Domain;
@@ -10,6 +11,11 @@ namespace LinqToExcel.Tests
     [TestFixture]
     public class ConnectionString_UnitTests : SQLLogStatements_Helper
     {
+
+        private bool Is64BitProcess() {
+            return IntPtr.Size == 8;
+        }
+
         [OneTimeSetUp]
         public void fs()
         {
@@ -30,9 +36,20 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
-                "spreadsheet.xls");
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
+                    "spreadsheet.xls"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
+                    "spreadsheet.xls"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 
@@ -47,9 +64,20 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1;READONLY=TRUE""",
-                "spreadsheet.xls");
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1;READONLY=TRUE""",
+                    "spreadsheet.xls"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1;READONLY=TRUE""",
+                    "spreadsheet.xls"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 
@@ -96,9 +124,20 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
-                "spreadsheet.dlo");
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
+                    "spreadsheet.dlo"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1""",
+                    "spreadsheet.dlo"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 
@@ -113,9 +152,20 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1;READONLY=TRUE""",
-                "spreadsheet.dlo");
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1;READONLY=TRUE""",
+                    "spreadsheet.dlo"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=YES;IMEX=1;READONLY=TRUE""",
+                    "spreadsheet.dlo"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 
@@ -162,9 +212,21 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
-                @"C:\Desktop");
+
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1""",
+                    @"C:\Desktop"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1""",
+                    @"C:\Desktop"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 
@@ -179,9 +241,20 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1;READONLY=TRUE""",
-                @"C:\Desktop");
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1;READONLY=TRUE""",
+                    @"C:\Desktop"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""text;HDR=YES;FMT=Delimited;IMEX=1;READONLY=TRUE""",
+                    @"C:\Desktop"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 
@@ -356,9 +429,20 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=NO;IMEX=1""",
-                "spreadsheet.xls");
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=NO;IMEX=1""",
+                    "spreadsheet.xls"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=NO;IMEX=1""",
+                    "spreadsheet.xls"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 
@@ -373,9 +457,20 @@ namespace LinqToExcel.Tests
 
             try { companies.GetEnumerator(); }
             catch (OleDbException) { }
-            var expected = string.Format(
-                @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=NO;IMEX=1;READONLY=TRUE""",
-                "spreadsheet.xls");
+            string expected;
+
+            if (Is64BitProcess()) {
+                expected = string.Format(
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=NO;IMEX=1;READONLY=TRUE""",
+                    "spreadsheet.xls"
+                );
+            } else {
+                expected = string.Format(
+                    @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=""Excel 8.0;HDR=NO;IMEX=1;READONLY=TRUE""",
+                    "spreadsheet.xls"
+                );
+            }
+
             Assert.AreEqual(expected, GetConnectionString());
         }
 

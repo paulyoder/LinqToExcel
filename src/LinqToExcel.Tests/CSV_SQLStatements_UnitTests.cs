@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using System.IO;
 using System.Data;
@@ -48,7 +49,12 @@ namespace LinqToExcel.Tests
             catch (DataException) { }
 
             var extendedProperties = GetExtendedProperties();
-            Assert.AreEqual("\"text;HDR=YES;FMT=Delimited;IMEX=1\"", extendedProperties);
+
+            if (IntPtr.Size == 8) {
+                Assert.AreEqual("\"text;Excel 12.0;HDR=YES;IMEX=1\"", extendedProperties);
+            } else {
+                Assert.AreEqual("\"text;HDR=YES;FMT=Delimited;IMEX=1\"", extendedProperties);
+            }
         }
 
         [Test]
