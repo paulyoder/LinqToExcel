@@ -9,6 +9,11 @@ namespace LinqToExcel.Query
 {
     internal class ExcelQueryConstructorArgs
     {
+
+        public ExcelQueryConstructorArgs() {
+            DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
+        }
+
         internal string FileName { get; set; }
         internal DatabaseEngine DatabaseEngine { get; set; }
         internal Dictionary<string, string> ColumnMappings { get; set; }

@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Linq;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.IO;
 using System.Data;
 
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class ConfiguredWorksheetName_IntegrationTests : SQLLogStatements_Helper
     {
         private string _excelFileName;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -48,13 +48,11 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(System.Data.DataException), "Worksheet Index Out of Range")]
         public void worksheetIndex_too_high_throws_exception()
         {
-            var companies = from c in ExcelQueryFactory.Worksheet<Company>(8, _excelFileName, new LogManagerFactory())
-                            select c;
-
-            companies.ToList();
+            Assert.That(() => from c in ExcelQueryFactory.Worksheet<Company>(8, _excelFileName, new LogManagerFactory())
+                              select c,
+            Throws.TypeOf<DataException>());
         }
     }
 }

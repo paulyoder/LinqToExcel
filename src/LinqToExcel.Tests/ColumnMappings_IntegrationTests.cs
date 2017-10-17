@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using MbUnit.Framework;
+using NUnit.Framework;
 using System.IO;
 using log4net.Core;
 using System.Data.OleDb;
@@ -8,7 +8,7 @@ using System.Data.OleDb;
 namespace LinqToExcel.Tests
 {
     [Author("Paul Yoder", "paulyoder@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class ColumnMappings_IntegrationTests : SQLLogStatements_Helper
     {
@@ -16,7 +16,7 @@ namespace LinqToExcel.Tests
         string _excelFileName;
         string _worksheetName;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             InstantiateLogger();
