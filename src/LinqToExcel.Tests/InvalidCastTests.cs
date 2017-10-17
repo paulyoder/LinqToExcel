@@ -1,4 +1,4 @@
-﻿using MbUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,14 +8,14 @@ using System.Text;
 namespace LinqToExcel.Tests
 {
     [Author("Alberto Chvaicer", "achvaicer@gmail.com")]
-    [FixtureCategory("Integration")]
+    [Category("Integration")]
     [TestFixture]
     public class InvalidCastTests
     {
         private IExcelQueryFactory _factory;
         private string _excelFileName;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void fs()
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -30,22 +30,19 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(LinqToExcel.Exceptions.ExcelException), "Error on row 8 and column name 'EmployeeCount'.")]
         public void invalid_number_cast_with_header()
         {
-            var list = (from x in ExcelQueryFactory.Worksheet<Company>("Invalid Cast", _excelFileName, new LogManagerFactory())
-                        select x).ToList();
-
+            Assert.That(() => (from x in ExcelQueryFactory.Worksheet<Company>("Invalid Cast", _excelFileName, new LogManagerFactory())
+                         select x).ToList(), Throws.TypeOf<LinqToExcel.Exceptions.ExcelException>(), "Error on row 8 and column name 'EmployeeCount'.");
         }
 
-        [Test, Ignore]
-        [ExpectedException(typeof(LinqToExcel.Exceptions.NoHeaderExcelException), "Error on row 8 and column 3.")]
+        [Test, Ignore("Cast is not working")]
         public void invalid_number_cast_without_header()
         {
-            
-            var list = (from x in _factory.WorksheetRangeNoHeader("A2", "D9", "Invalid Cast")
-                        where x[2].Cast<double>() > 30.0
-                        select x[2]).ToList();
+            Assert.That(() => (from x in _factory.WorksheetRangeNoHeader("A2", "D9", "Invalid Cast")
+                               where x[2].Cast<double>() > 30.0
+                               select x[2]).ToList(), Throws.TypeOf<LinqToExcel.Exceptions.NoHeaderExcelException>(), "Error on row 8 and column 3.");
+
         }
 
 
