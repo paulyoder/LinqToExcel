@@ -88,7 +88,6 @@
     <Compile Include="Domain\RowNoHeader.cs" />
     <Compile Include="Domain\StrictMappingException.cs" />
     <Compile Include="Exceptions\ExcelException.cs" />
-    <Compile Include="Exceptions\NoHeaderExcelException.cs" />
     <Compile Include="IExcelQueryFactory.cs" />
     <Compile Include="Logging\ILogManagerFactory.cs" />
     <Compile Include="Logging\ILogProvider.cs" />

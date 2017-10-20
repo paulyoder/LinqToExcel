@@ -271,5 +271,21 @@ namespace LinqToExcel.Query
             return namedRanges;
         }
 
+        internal static string ColumnIndexToExcelColumnName(int index)
+        {
+            if (index < 1) throw new ArgumentException("Index should be a positive integer");
+            var quotient = (--index) / 26;
+
+            if (quotient > 0)
+            {
+                return ColumnIndexToExcelColumnName(quotient) + (char)((index % 26) + 65);
+            }
+            else
+
+            {
+                return ((char)((index % 26) + 65)).ToString();
+            }
+        }
+
     }
 }

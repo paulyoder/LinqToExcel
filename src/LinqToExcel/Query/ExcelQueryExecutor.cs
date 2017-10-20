@@ -275,7 +275,7 @@ namespace LinqToExcel.Query
                     }
                     catch (Exception exception)
                     {
-                        throw new Exceptions.NoHeaderExcelException(currentRowNumber, i, exception);
+                        throw new Exceptions.ExcelException(currentRowNumber, i, columns.ElementAtOrDefault(i), exception);
                     }
                 }
                 results.CallMethod("Add", new Row(cells, columnIndexMapping));
@@ -301,7 +301,7 @@ namespace LinqToExcel.Query
                     }
                     catch (Exception exception)
                     {
-                        throw new Exceptions.NoHeaderExcelException(currentRowNumber, i, exception);
+                        throw new Exceptions.ExcelException(currentRowNumber, i, exception);
                     }
                 }
                 results.CallMethod("Add", new RowNoHeader(cells));

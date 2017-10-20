@@ -14,6 +14,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
+// Set internals classes visible to tests project.
+[assembly: InternalsVisibleTo("LinqToExcel.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100df3989453251b43d1e18b928ae2a6a8bab95d29073d395d70ae0705ba98e051cede1e03dfadf103a9e979bdcac69bb95316445cfbd5e4d06ddf3be41445dc6e97d70d85da76eacc68034d1ec4457a57678818880ea53045c5c8782cf3c3a76d17a56bd227567c6f1459c40a4dc8ab82e42c134807165ec9393ec2681697e5b9d")]
+
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
