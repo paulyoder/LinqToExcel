@@ -25,11 +25,6 @@ namespace LinqToExcel
         TrimSpacesType TrimSpaces { get; set; }
 
         /// <summary>
-        /// Sets the database engine to use (spreadsheets ending in xlsx, xlsm, xlsb will always use the Ace engine)
-        /// </summary>
-        DatabaseEngine DatabaseEngine { get; set; }
-
-        /// <summary>
         /// If true, uses a single, persistent connection for the lifetime of the factory.
         /// If false, a new connection is created for each query
         /// Default is false

@@ -40,13 +40,6 @@ namespace LinqToExcel
         public bool ReadOnly { get; set; }
 
         /// <summary>
-        /// Sets the database engine to use 
-        /// (Spreadsheets ending in xlsx, xlsm, and xlsb must use the Ace database engine)
-        /// (If running 64 bit this defaults to ACE (JET doesn't work anyway), if running 32 bit this detaults to JET)
-        /// </summary>
-        public DatabaseEngine DatabaseEngine { get; set; }
-
-        /// <summary>
         /// If true, uses a single, persistent connection for the lifetime of the factory.
         /// If false, a new connection is created for each query
         /// Default is false
@@ -75,7 +68,6 @@ namespace LinqToExcel
         public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory)
         {
             FileName = fileName;
-            DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
 
             if (logManagerFactory != null) {
                _logManagerFactory = logManagerFactory;
@@ -212,11 +204,10 @@ namespace LinqToExcel
             return new ExcelQueryConstructorArgs()
             {
                 FileName = FileName,
-                DatabaseEngine = DatabaseEngine,
                 StrictMapping = StrictMapping,
                 ColumnMappings = _columnMappings,
                 Transformations = _transformations,
-				UsePersistentConnection = UsePersistentConnection,
+                UsePersistentConnection = UsePersistentConnection,
                 TrimSpaces = TrimSpaces,
                 ReadOnly = ReadOnly
             };

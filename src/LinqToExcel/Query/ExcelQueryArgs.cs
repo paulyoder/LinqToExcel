@@ -10,7 +10,6 @@ namespace LinqToExcel.Query
     internal class ExcelQueryArgs
     {
         internal string FileName { get; set; }
-        internal DatabaseEngine DatabaseEngine { get; set; }
         internal string WorksheetName { get; set; }
         internal int? WorksheetIndex { get; set; }
         internal Dictionary<string, string> ColumnMappings { get; set; }
@@ -26,13 +25,12 @@ namespace LinqToExcel.Query
         internal TrimSpacesType TrimSpaces { get; set; }
 
         internal ExcelQueryArgs()
-            : this(new ExcelQueryConstructorArgs() { DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine() })
+            : this(new ExcelQueryConstructorArgs())
         { }
 
         internal ExcelQueryArgs(ExcelQueryConstructorArgs args)
         {
             FileName = args.FileName;
-            DatabaseEngine = args.DatabaseEngine;
             ColumnMappings = args.ColumnMappings ?? new Dictionary<string, string>();
             Transformations = args.Transformations ?? new Dictionary<string, Func<string, object>>();
             StrictMapping = args.StrictMapping ?? StrictMappingType.None;

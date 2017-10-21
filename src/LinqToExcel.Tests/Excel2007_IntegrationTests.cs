@@ -44,7 +44,7 @@ namespace LinqToExcel.Tests
             Assert.AreEqual(3, companies.ToList().Count);
         }
 
-        //don't know why xlsb isn't working. I believe it's a bug with the jet driver
+        [Test]
         public void xlsb()
         {
             var fileName = Path.Combine(_filesDirectory, "Companies.xlsb");
@@ -64,7 +64,6 @@ namespace LinqToExcel.Tests
             var excelFileName = Path.Combine(excelFilesDirectory, "Companies.xls");
 
             var excel = new ExcelQueryFactory(excelFileName, new LogManagerFactory());
-            excel.DatabaseEngine = DatabaseEngine.Ace;
             var companies = from c in excel.Worksheet<Company>()
                             select c;
 

@@ -43,24 +43,6 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
-        public void Constructor_defaults_DatabaseEngine_to_Ace_on_64bit() {
-            if (IntPtr.Size == 8) {
-                var repo = new ExcelQueryFactory(new LogManagerFactory());
-                Assert.AreEqual(DatabaseEngine.Ace, repo.DatabaseEngine);
-            }
-        }
-
-        [Test]
-        public void Constructor_defaults_DatabaseEngine_to_Jet_on_32bit()
-        {
-            if (IntPtr.Size != 8)
-            {
-                var repo = new ExcelQueryFactory(new LogManagerFactory());
-                Assert.AreEqual(DatabaseEngine.Jet, repo.DatabaseEngine);
-            }
-        }
-
-        [Test]
         public void Constructor_defaults_UsePersistentConnection_to_false()
         {
             var repo = new ExcelQueryFactory(new LogManagerFactory());
