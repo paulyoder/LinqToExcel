@@ -1,4 +1,4 @@
 cd ..
-tools\Nant\nant.exe test
+tools\nant-0.92-rc1\nant.exe test
 cd tools
 pause
