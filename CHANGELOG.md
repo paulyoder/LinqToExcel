@@ -1,3 +1,8 @@
+### 1.11.0
+
+* Refactorings
+  * Remove dependency on log4net.
+
 ### 1.10.1
 
 * Refactorings
