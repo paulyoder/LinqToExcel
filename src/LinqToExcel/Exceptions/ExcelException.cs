@@ -10,17 +10,17 @@ namespace LinqToExcel.Exceptions
         /// <summary>
         /// Row index where exception occours
         /// </summary>
-        public int Row { get; set; }
+        public int Row { get; private set; }
 
         /// <summary>
         /// Column name where exception occours
         /// </summary>
-        public string ColumnName { get; set; }
+        public string ColumnName { get; private set; }
 
         /// <summary>
         /// Column index where exception occours
         /// </summary>
-        public int Column { get; set; }
+        public int Column { get; private set; }
 
         public ExcelException(int row, string columnName, Exception innerException)
             : base(string.Format("Error on row {0} and column name '{1}'.", row, columnName), innerException)
