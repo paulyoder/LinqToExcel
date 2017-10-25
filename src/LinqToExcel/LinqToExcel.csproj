@@ -86,6 +86,7 @@
     <Compile Include="Domain\Cell.cs" />
     <Compile Include="Domain\RowNoHeader.cs" />
     <Compile Include="Domain\StrictMappingException.cs" />
+    <Compile Include="Exceptions\ExcelException.cs" />
     <Compile Include="IExcelQueryFactory.cs" />
     <Compile Include="Logging\ILogManagerFactory.cs" />
     <Compile Include="Logging\ILogProvider.cs" />
@@ -131,6 +132,7 @@
   <ItemGroup>
     <None Include="LinqToExcel.snk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

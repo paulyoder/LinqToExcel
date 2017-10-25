@@ -260,14 +260,23 @@ namespace LinqToExcel.Query
             for (var i = 0; i < columns.Count(); i++)
                 columnIndexMapping[columns.ElementAt(i)] = i;
 
+            var currentRowNumber = 0;
             while (data.Read())
             {
+                currentRowNumber++;
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < columns.Count(); i++)
                 {
-                    var value = data[i];
-                    value = TrimStringValue(value);
-                    cells.Add(new Cell(value));
+                    try
+                    {
+                        var value = data[i];
+                        value = TrimStringValue(value);
+                        cells.Add(new Cell(value));
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exceptions.ExcelException(currentRowNumber, i, columns.ElementAtOrDefault(i), exception);
+                    }
                 }
                 results.CallMethod("Add", new Row(cells, columnIndexMapping));
             }
@@ -277,14 +286,23 @@ namespace LinqToExcel.Query
         private IEnumerable<object> GetRowNoHeaderResults(OleDbDataReader data)
         {
             var results = new List<object>();
+            var currentRowNumber = 0;
             while (data.Read())
             {
+                currentRowNumber++;
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < data.FieldCount; i++)
                 {
-                    var value = data[i];
-                    value = TrimStringValue(value);
-                    cells.Add(new Cell(value));
+                    try
+                    {
+                        var value = data[i];
+                        value = TrimStringValue(value);
+                        cells.Add(new Cell(value));
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exceptions.ExcelException(currentRowNumber, i, exception);
+                    }
                 }
                 results.CallMethod("Add", new RowNoHeader(cells));
             }
@@ -299,19 +317,28 @@ namespace LinqToExcel.Query
             if (_args.StrictMapping.Value != StrictMappingType.None)
                 this.ConfirmStrictMapping(columns, props, _args.StrictMapping.Value);
 
+            var currentRowNumber = 0;
             while (data.Read())
             {
+                currentRowNumber++;
                 var result = Activator.CreateInstance(fromType);
                 foreach (var prop in props)
                 {
                     var columnName = (_args.ColumnMappings.ContainsKey(prop.Name)) ?
                         _args.ColumnMappings[prop.Name] :
                         prop.Name;
-                    if (columns.Contains(columnName))
+                    try
                     {
-                        var value = GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType);
-                        value = TrimStringValue(value);
-                        result.SetProperty(prop.Name, value);
+                        if (columns.Contains(columnName))
+                        {
+                            var value = GetColumnValue(data, columnName, prop.Name).Cast(prop.PropertyType);
+                            value = TrimStringValue(value);
+                            result.SetProperty(prop.Name, value);
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exceptions.ExcelException(currentRowNumber, columnName, exception);
                     }
                 }
                 results.Add(result);

@@ -53,6 +53,12 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>LinqToExcel.Tests.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
@@ -91,6 +97,8 @@
     <Compile Include="Convention_SQLStatements_UnitTests.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="Convention_IntegrationTests.cs" />
+    <Compile Include="IndexToColumnNamesTests.cs" />
+    <Compile Include="InvalidCastTests.cs" />
     <Compile Include="LogManagerFactory.cs" />
     <Compile Include="NamedRange_IntegrationTests.cs" />
     <Compile Include="NamedRange_SQLStatements_UnitTests.cs" />
@@ -147,6 +155,7 @@
     <None Include="ExcelFiles\NoHeader.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="LinqToExcel.Tests.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

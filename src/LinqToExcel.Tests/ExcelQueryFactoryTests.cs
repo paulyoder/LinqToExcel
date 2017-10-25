@@ -80,7 +80,7 @@ namespace LinqToExcel.Tests
 
             var worksheetNames = excel.GetWorksheetNames();
             Assert.AreEqual(
-                "ColumnMappings, IMEX Table, More Companies, Null Dates, Range1, Sheet1, TrimSpaces",
+                "ColumnMappings, IMEX Table, Invalid Cast, More Companies, Null Dates, Range1, Sheet1, TrimSpaces",
                 string.Join(", ", worksheetNames.ToArray()));
         }
 

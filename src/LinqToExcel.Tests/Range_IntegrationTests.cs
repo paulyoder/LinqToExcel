@@ -32,7 +32,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void use_sheetData_and_worksheetIndex()
         {
-            var companies = from c in _factory.WorksheetRange<Company>("C6", "F13", 4)
+            var companies = from c in _factory.WorksheetRange<Company>("C6", "F13", 5)
                             select c;
 
             Assert.AreEqual(7, companies.Count(), "Count");
@@ -42,7 +42,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void use_row_and_worksheetIndex()
         {
-            var companies = from c in _factory.WorksheetRange("c6", "f13", 4)
+            var companies = from c in _factory.WorksheetRange("c6", "f13", 5)
                             select c;
 
             Assert.AreEqual(7, companies.Count(), "Count");

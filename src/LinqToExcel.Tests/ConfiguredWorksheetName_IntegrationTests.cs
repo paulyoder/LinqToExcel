@@ -40,7 +40,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void worksheetIndex_of_2_uses_third_table_name_orderedby_name()
         {
-            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(2, _excelFileName, new LogManagerFactory())
+            var companies = (from c in ExcelQueryFactory.Worksheet<Company>(3, _excelFileName, new LogManagerFactory())
                              select c).ToList();
 
             var expectedSql = "SELECT * FROM [More Companies$]";
