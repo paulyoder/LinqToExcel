@@ -49,5 +49,12 @@ namespace LinqToExcel.Tests
             var newCell = new Cell("hello");
             Assert.AreEqual("hello", newCell.ToString());
         }
+
+        [Test]
+        public void As_throws_exception_when_try_to_convert_invalid_value()
+        {
+            var newCell = new Cell("not a number");
+            Assert.Throws<FormatException>(() => newCell.Cast<int>());
+        }
     }
 }
