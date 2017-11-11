@@ -11,3 +11,4 @@ src/packages/
 *.DotSettings.user
 *.csproj.user
 .vs/
+*.csproj.user
