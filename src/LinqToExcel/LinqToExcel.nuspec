@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/paulyoder/LinqToExcel/blob/master/License.txt</licenseUrl>
+    <projectUrl>https://github.com/paulyoder/LinqToExcel</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <!-- <releaseNotes>Summary of changes made in this release of the package.</releaseNotes> -->
+    <copyright>Copyright 2017</copyright>
+    <tags>Linq Excel spreadsheet csv</tags>
+    <language>en-US</language>
+  </metadata>
+  <files>
+    <file src="bin\Release\Remotion*.dll" target="lib\net451" />
+    <file src="LinqToExcel.xml" target="lib\net451" />
+  </files>
+</package>
