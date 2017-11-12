@@ -14,6 +14,9 @@
     <copyright>Copyright 2017</copyright>
     <tags>Linq Excel spreadsheet csv</tags>
     <language>en-US</language>
+    <dependencies>
+      <dependency id="Remotion.Linq" version="(2.1,2.2)" />
+    </dependencies>
   </metadata>
   <files>
     <file src="LinqToExcel.xml" target="lib\net451" />
