@@ -12,3 +12,4 @@ src/packages/
 *.csproj.user
 .vs/
 *.csproj.user
+*.DotSettings.user
