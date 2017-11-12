@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using System.Linq.Expressions;
-using Remotion.Data.Linq.Clauses.Expressions;
-using Remotion.Data.Linq.Parsing;
+using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace LinqToExcel.Query
 {
-    public class ProjectorBuildingExpressionTreeVisitor : ExpressionTreeVisitor
+    public class ProjectorBuildingExpressionTreeVisitor : RelinqExpressionVisitor
     {
         // This is the generic ResultObjectMapping.GetObject<T>() method we'll use to obtain a queried object for an IQuerySource.
         private static readonly MethodInfo s_getObjectGenericMethodDefinition = typeof(ResultObjectMapping).GetMethod("GetObject");
@@ -19,7 +19,7 @@ namespace LinqToExcel.Query
 
             // The visitor gives us the projector's body. It simply replaces all QuerySourceReferenceExpressions with calls to ResultObjectMapping.GetObject<T>().
             var visitor = new ProjectorBuildingExpressionTreeVisitor(resultItemParameter);
-            var body = visitor.VisitExpression(selectExpression);
+            var body = visitor.Visit(selectExpression);
 
             // Construct a LambdaExpression from parameter and body and compile it into a delegate.
             var projector = Expression.Lambda<Func<ResultObjectMapping, T>>(body, resultItemParameter);
@@ -33,7 +33,7 @@ namespace LinqToExcel.Query
             _resultItemParameter = resultItemParameter;
         }
 
-        protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+        protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
         {
             // Substitute generic parameter "T" of ResultObjectMapping.GetObject<T>() with type of query source item, then return a call to that method
             // with the query source referenced by the expression.
@@ -41,7 +41,7 @@ namespace LinqToExcel.Query
             return Expression.Call(_resultItemParameter, getObjectMethod, Expression.Constant(expression.ReferencedQuerySource));
         }
 
-        protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+        protected override Expression VisitSubQuery(SubQueryExpression expression)
         {
             throw new NotSupportedException("This provider does not support subqueries in the select projection.");
         }

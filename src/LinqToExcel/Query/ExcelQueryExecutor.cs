@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Remotion.Data.Linq;
+using Remotion.Linq;
 using System.IO;
 using System.Data.OleDb;
 using System.Data;
 using System.Reflection;
-using Remotion.Data.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.ResultOperators;
 using System.Collections;
 using LinqToExcel.Extensions;
 using System.Text.RegularExpressions;

@@ -16,7 +16,6 @@
     <language>en-US</language>
   </metadata>
   <files>
-    <file src="bin\Release\Remotion*.dll" target="lib\net451" />
     <file src="LinqToExcel.xml" target="lib\net451" />
   </files>
 </package>
