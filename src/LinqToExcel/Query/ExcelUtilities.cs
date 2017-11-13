@@ -9,7 +9,7 @@ using LinqToExcel.Extensions;
 
 namespace LinqToExcel.Query
 {
-    internal static class ExcelUtilities
+    public static class ExcelUtilities
     {
         internal static string GetConnectionString(ExcelQueryArgs args)
         {
@@ -248,7 +248,7 @@ namespace LinqToExcel.Query
             return namedRanges;
         }
 
-        internal static string ColumnIndexToExcelColumnName(int index)
+        public static string ColumnIndexToExcelColumnName(int index)
         {
             if (index < 1) throw new ArgumentException("Index should be a positive integer");
             var quotient = (--index) / 26;
