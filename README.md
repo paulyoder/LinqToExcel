@@ -1,4 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/vdbhqae4b2h86k96?svg=true)](https://ci.appveyor.com/project/mrworkman/linqtoexcel)
+[![Open Source Helpers](https://www.codetriage.com/paulyoder/linqtoexcel/badges/users.svg)](https://www.codetriage.com/paulyoder/linqtoexcel)
 
 # Welcome to the LinqToExcel project
 
