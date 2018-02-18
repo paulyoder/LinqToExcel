@@ -169,6 +169,20 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void StrictMapping_ClassStrict_with_ignore_attribute_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.StrictMapping = StrictMappingType.ClassStrict;
+
+            var companies = (from c in excel.Worksheet<CompanyIgnoreIsActive>("More Companies")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+
+        [Test]
         public void StrictMapping_WorksheetStrict_throws_StrictMappingException_when_column_is_not_mapped_to_property()
         {
             var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
@@ -193,6 +207,21 @@ namespace LinqToExcel.Tests
 
             Assert.AreEqual(1, companies.Count);
         }
+
+        [Test]
+        public void StrictMapping_WorksheetStrict_with_ignore_attribute_throws_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.StrictMapping = StrictMappingType.WorksheetStrict;
+
+            var companies = (from c in excel.Worksheet<CompanyIgnoreIsActive>("More Companies")
+                             where c.Name == "ACME"
+                             select c);
+            Assert.That(() => companies.ToList(),
+            Throws.TypeOf<StrictMappingException>(), "'Active' column is not mapped to a property");
+
+        }
+
 
         [Test]
         public void StrictMapping_Both_throws_StrictMappingException_when_property_is_not_mapped_to_column()
@@ -224,6 +253,19 @@ namespace LinqToExcel.Tests
             excel.AddMapping<Company>(x => x.IsActive, "Active");
 
             var companies = (from c in excel.Worksheet<Company>("More Companies")
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+        }
+
+        [Test]
+        public void StrictMapping_Both_with_ignore_attribute_doesnt_throw_exception()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.StrictMapping = StrictMappingType.Both;
+
+            var companies = (from c in excel.Worksheet<CompanyIgnoreIsActive>("Sheet1")
                              where c.Name == "ACME"
                              select c).ToList();
 
