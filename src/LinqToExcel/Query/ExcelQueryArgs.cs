@@ -23,6 +23,7 @@ namespace LinqToExcel.Query
         internal bool UsePersistentConnection { get; set; }
 		internal OleDbConnection PersistentConnection { get; set; }
         internal TrimSpacesType TrimSpaces { get; set; }
+        internal bool Lazy { get; set; }
 
         internal ExcelQueryArgs()
             : this(new ExcelQueryConstructorArgs())
@@ -37,6 +38,7 @@ namespace LinqToExcel.Query
             UsePersistentConnection = args.UsePersistentConnection;
             TrimSpaces = args.TrimSpaces;
             ReadOnly = args.ReadOnly;
+            Lazy = args.Lazy;
         }
 
         public override string ToString()

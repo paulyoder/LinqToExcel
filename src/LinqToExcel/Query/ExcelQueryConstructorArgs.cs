@@ -9,6 +9,7 @@ namespace LinqToExcel.Query
 {
     internal class ExcelQueryConstructorArgs
     {
+        internal bool Lazy { get; set; }
         internal string FileName { get; set; }
         internal Dictionary<string, string> ColumnMappings { get; set; }
         internal Dictionary<string, Func<string, object>> Transformations { get; set; }

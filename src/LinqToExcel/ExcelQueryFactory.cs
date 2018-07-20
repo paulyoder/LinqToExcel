@@ -46,6 +46,13 @@ namespace LinqToExcel
         /// </summary>
         public bool UsePersistentConnection { get; set; }
 
+        /// <summary>
+        /// If true, the query engine iterates a row at a time.
+        /// If false, the entire query is read into a List.
+        /// Default is false
+        /// </summary>
+        public bool Lazy { get; set; }
+
         public ExcelQueryFactory()
           : this(null, null) { }
 
@@ -209,7 +216,8 @@ namespace LinqToExcel
                 Transformations = _transformations,
                 UsePersistentConnection = UsePersistentConnection,
                 TrimSpaces = TrimSpaces,
-                ReadOnly = ReadOnly
+                ReadOnly = ReadOnly,
+                Lazy = Lazy,
             };
         }
 
