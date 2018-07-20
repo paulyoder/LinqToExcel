@@ -285,6 +285,24 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void IContainsUnmappedCells_FillsInUnmappedCells()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyNameWithUnmappedCells>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+            Assert.AreEqual("ACME", companies[0].Name);
+            Assert.AreEqual(3, companies.First().UnmappedCells.Count);
+            Assert.AreEqual("Bugs Bunny", companies.First().UnmappedCells["CEO"].Value);
+            Assert.AreEqual(25, companies.First().UnmappedCells["EmployeeCount"].Cast<int>());
+            Assert.AreEqual(new DateTime(1918, 11, 11), companies.First().UnmappedCells["StartDate"].Cast<DateTime>());
+        }
+
+        [Test]
         public void TrimSpaces_Start_TrimsWhiteSpacesAtTheBeginning()
         {
             var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());

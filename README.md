@@ -215,6 +215,8 @@ var excel = new ExcelQueryFactory("excelFileName");
 excel.StrictMapping = StrictMappingType.Both;
 ```
 
+If you are using `None` or `ClassStrict` mapping, you can retain unmapped columns by implementing the `IContainsUnmappedCells` interface. This will put all values from the unmapped columns into a dictionary on your class named `UnmappedCells`.
+
 ## Manually setting the database engine
 
 LinqToExcel can use the Jet or Ace database engine, and it automatically determines the database engine to use by the file extension. You can manually set the database engine with the `DatabaseEngine` property

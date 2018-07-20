@@ -92,6 +92,7 @@
     <Compile Include="CompanyNullable.cs" />
     <Compile Include="CompanyWithColumnAnnotations.cs" />
     <Compile Include="CompanyWithCity.cs" />
+    <Compile Include="CompanyNameWithUnmappedCells.cs" />
     <Compile Include="ConfiguredWorksheetName_SQLStatements_UnitTests.cs" />
     <Compile Include="ConfiguredWorksheetName_IntegrationTests.cs" />
     <Compile Include="Convention_SQLStatements_UnitTests.cs" />
