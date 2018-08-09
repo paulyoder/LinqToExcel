@@ -20,26 +20,30 @@ namespace LinqToExcel.Query
                 fileNameLower.EndsWith("xlsm"))
             {
                 connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""",
-                    args.FileName);
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};OLE DB Services={1:d};Extended Properties=""Excel 12.0 Xml;HDR=YES;IMEX=1""",
+                    args.FileName,
+                    args.OleDbServices);
             }
             else if (fileNameLower.EndsWith("xlsb"))
             {
                 connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                    args.FileName);
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};OLE DB Services={1:d};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
+                    args.FileName,
+                    args.OleDbServices);
             }
             else if (fileNameLower.EndsWith("csv"))
             {
                 connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1""",
-                    Path.GetDirectoryName(args.FileName));
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};OLE DB Services={1:d};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1""",
+                    Path.GetDirectoryName(args.FileName),
+                    args.OleDbServices);
             }
             else
             {
                 connString = string.Format(
-                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
-                    args.FileName);
+                    @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};OLE DB Services={1:d};Extended Properties=""Excel 12.0;HDR=YES;IMEX=1""",
+                    args.FileName,
+                    args.OleDbServices);
             }
 
             if (args.NoHeader)
@@ -56,8 +60,9 @@ namespace LinqToExcel.Query
             return GetWorksheetNames(fileName, new ExcelQueryArgs());
         }
 
-        internal static IEnumerable<string> GetWorksheetNames(string fileName, ExcelQueryArgs args)
+        internal static IEnumerable<string> GetWorksheetNames(string fileName, ExcelQueryArgs origArgs)
         {
+            var args = new ExcelQueryArgs(origArgs);
             args.FileName = fileName;
             args.ReadOnly = true;
             return GetWorksheetNames(args);
@@ -139,7 +144,12 @@ namespace LinqToExcel.Query
 
         internal static IEnumerable<string> GetColumnNames(string worksheetName, string fileName)
         {
-            var args = new ExcelQueryArgs();
+            return GetColumnNames(worksheetName, fileName, new ExcelQueryArgs());
+        }
+
+        internal static IEnumerable<string> GetColumnNames(string worksheetName, string fileName, ExcelQueryArgs origArgs)
+        {
+            var args = new ExcelQueryArgs(origArgs);
             args.WorksheetName = worksheetName;
             args.FileName = fileName;
             return GetColumnNames(args);
@@ -147,7 +157,12 @@ namespace LinqToExcel.Query
 
         internal static IEnumerable<string> GetColumnNames(string worksheetName, string namedRange, string fileName)
         {
-            var args = new ExcelQueryArgs();
+            return GetColumnNames(worksheetName, namedRange, fileName, new ExcelQueryArgs());
+        }
+
+        internal static IEnumerable<string> GetColumnNames(string worksheetName, string namedRange, string fileName, ExcelQueryArgs origArgs)
+        {
+            var args = new ExcelQueryArgs(origArgs);
             args.WorksheetName = worksheetName;
             args.NamedRangeName = namedRange;
             args.FileName = fileName;
@@ -199,15 +214,17 @@ namespace LinqToExcel.Query
             return GetNamedRanges(fileName, new ExcelQueryArgs());
         }
 
-        internal static IEnumerable<string> GetNamedRanges(string fileName, ExcelQueryArgs args)
+        internal static IEnumerable<string> GetNamedRanges(string fileName, ExcelQueryArgs origArgs)
         {
+            var args = new ExcelQueryArgs(origArgs);
             args.FileName = fileName;
             args.ReadOnly = true;
             return GetNamedRanges(args);
         }
 
-        internal static IEnumerable<string> GetNamedRanges(string fileName, string worksheetName, ExcelQueryArgs args)
+        internal static IEnumerable<string> GetNamedRanges(string fileName, string worksheetName, ExcelQueryArgs origArgs)
         {
+            var args = new ExcelQueryArgs(origArgs);
             args.FileName = fileName;
             args.WorksheetName = worksheetName;
             args.ReadOnly = true;
