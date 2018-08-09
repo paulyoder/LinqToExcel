@@ -8,3 +8,7 @@ LinqToExcel.xml
 *.zip
 *.nupkg
 src/packages/
+*.DotSettings.user
+*.csproj.user
+.vs/
+
