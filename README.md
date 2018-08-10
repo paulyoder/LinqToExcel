@@ -291,3 +291,14 @@ Set the `ReadOnly` property to true to open the file in readonly mode. The defau
 var excel = new ExcelQueryFactory("excelFileName");
 excel.ReadOnly = true;
 ```
+
+## Continuing on Type Conversion Errors
+
+When mapping a field to a type, if there is a type conversion error, an exception is thrown. You can overcome the
+default exception throwing behavior by implementing the `IAllowFieldTypeConversionExceptions` interface on your class.
+Any class that implements this interface must carry a non-null list of `ExcelException` in `FieldTypeConversionExceptions`.
+If any exceptions occur during the field type conversion, it will be added to this list rather than thrown.
+
+Note that you should check the exceptions list before accessing any values on your strongly typed row, since any
+fields listed in the exception list will be in an indeterminate state.
+

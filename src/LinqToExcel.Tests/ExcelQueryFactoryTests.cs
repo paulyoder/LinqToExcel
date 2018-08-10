@@ -304,6 +304,44 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void IAllowFieldTypeConversionExceptions_NoExceptionsWhenFieldsAreGood()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyGoodWithAllowFieldTypeConversionExceptions>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+
+            var company = companies[0];
+            Assert.AreEqual("ACME", company.Name);
+            Assert.AreEqual("Bugs Bunny", company.CEO);
+            Assert.AreEqual(25, company.EmployeeCount);
+            Assert.AreEqual(0, company.FieldTypeConversionExceptions.Count);
+        }
+
+        [Test]
+        public void IAllowFieldTypeConversionExceptions_GathersExceptions()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyBadWithAllowFieldTypeConversionExceptions>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+
+            var company = companies[0];
+            Assert.AreEqual("ACME", company.Name);
+            Assert.AreEqual(2, company.FieldTypeConversionExceptions.Count);
+            Assert.AreEqual("CEO", company.FieldTypeConversionExceptions[0].ColumnName);
+            Assert.AreEqual("EmployeeCount", company.FieldTypeConversionExceptions[1].ColumnName);
+        }
+
+        [Test]
         public void TrimSpaces_Start_TrimsWhiteSpacesAtTheBeginning()
         {
             var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
