@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data.OleDb;
 using System.Data;
 using System.IO;
-using LinqToExcel.Domain;
+
 using LinqToExcel.Extensions;
 
 namespace LinqToExcel.Query
@@ -54,34 +53,34 @@ namespace LinqToExcel.Query
 
         internal static IEnumerable<string> GetWorksheetNames(string fileName)
         {
-	        return GetWorksheetNames(fileName, new ExcelQueryArgs());
+            return GetWorksheetNames(fileName, new ExcelQueryArgs());
         }
 
-		internal static IEnumerable<string> GetWorksheetNames(string fileName, ExcelQueryArgs args)
-		{
-			args.FileName = fileName;
+        internal static IEnumerable<string> GetWorksheetNames(string fileName, ExcelQueryArgs args)
+        {
+            args.FileName = fileName;
             args.ReadOnly = true;
-			return GetWorksheetNames(args);
-		} 
+            return GetWorksheetNames(args);
+        }
 
-		internal static OleDbConnection GetConnection(ExcelQueryArgs args)
-		{
-			if (args.UsePersistentConnection)
-			{
+        internal static OleDbConnection GetConnection(ExcelQueryArgs args)
+        {
+            if (args.UsePersistentConnection)
+            {
                 if (args.PersistentConnection == null)
                     args.PersistentConnection = new OleDbConnection(GetConnectionString(args));
 
-				return args.PersistentConnection;
-			}
+                return args.PersistentConnection;
+            }
 
             return new OleDbConnection(GetConnectionString(args));
-		}
+        }
 
         internal static IEnumerable<string> GetWorksheetNames(ExcelQueryArgs args)
         {
             var worksheetNames = new List<string>();
 
-	        var conn = GetConnection(args);
+            var conn = GetConnection(args);
             try
             {
                 if (conn.State == ConnectionState.Closed)
@@ -108,7 +107,7 @@ namespace LinqToExcel.Query
                 if (!args.UsePersistentConnection)
                     conn.Dispose();
             }
-			
+
             return worksheetNames;
         }
 
