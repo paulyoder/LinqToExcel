@@ -94,9 +94,9 @@ namespace LinqToExcel.Query
                     from DataRow row in excelTables.Rows
                     where IsTable(row)
                     let tableName = row["TABLE_NAME"].ToString()
-                        .Replace("$", "")
-                        .RegexReplace("(^'|'$)", "")
-                        .Replace("''", "'")
+                       .RegexReplace("(^'|'$)", "")
+                       .RegexReplace(@"\$$", "")
+                       .Replace("''", "'")
                     where IsNotBuiltinTable(tableName)
                     select tableName);
 
@@ -113,17 +113,23 @@ namespace LinqToExcel.Query
 
         internal static bool IsTable(DataRow row)
         {
-            return row["TABLE_NAME"].ToString().EndsWith("$") || (row["TABLE_NAME"].ToString().StartsWith("'") && row["TABLE_NAME"].ToString().EndsWith("$'"));
+           var tableName = row["TABLE_NAME"].ToString();
+
+           return tableName.EndsWith("$") || (tableName.StartsWith("'") && tableName.EndsWith("$'"));
         }
 
         internal static bool IsNamedRange(DataRow row)
         {
-            return (row["TABLE_NAME"].ToString().Contains("$") && !row["TABLE_NAME"].ToString().EndsWith("$") && !row["TABLE_NAME"].ToString().EndsWith("$'")) || !row["TABLE_NAME"].ToString().Contains("$");
+           var tableName = row["TABLE_NAME"].ToString();
+
+           return (tableName.Contains("$") && !tableName.EndsWith("$") && !tableName.EndsWith("$'")) || !tableName.Contains("$");
         }
 
         internal static bool IsWorkseetScopedNamedRange(DataRow row)
         {
-            return IsNamedRange(row) && row["TABLE_NAME"].ToString().Contains("$");
+           var tableName = row["TABLE_NAME"].ToString();
+
+           return IsNamedRange(row) && tableName.Contains("$");
         }
 
         internal static bool IsNotBuiltinTable(string tableName)
