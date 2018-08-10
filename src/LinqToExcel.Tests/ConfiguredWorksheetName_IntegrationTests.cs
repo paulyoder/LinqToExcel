@@ -50,7 +50,7 @@ namespace LinqToExcel.Tests
         [Test]
         public void worksheetIndex_too_high_throws_exception()
         {
-            Assert.That(() => from c in ExcelQueryFactory.Worksheet<Company>(8, _excelFileName, new LogManagerFactory())
+            Assert.That(() => from c in ExcelQueryFactory.Worksheet<Company>(100, _excelFileName, new LogManagerFactory())
                               select c,
             Throws.TypeOf<DataException>());
         }
