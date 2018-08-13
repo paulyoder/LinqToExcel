@@ -338,7 +338,7 @@ namespace LinqToExcel.Query
                     {
                         if (columns.Contains(mapping.columnName))
                         {
-                            var value = GetColumnValue(data, mapping.columnName, mapping.prop.Name).Cast(mapping.prop.PropertyType);
+                            var value = GetColumnValue(data, mapping.columnName, mapping.prop.Name, fromType.Name).Cast(mapping.prop.PropertyType);
                             value = TrimStringValue(value);
                             result.SetProperty(mapping.prop.Name, value);
                         }
@@ -423,11 +423,12 @@ namespace LinqToExcel.Query
             return !_args.ColumnMappings.Values.Contains(columnName);
         }
 
-        private object GetColumnValue(IDataRecord data, string columnName, string propertyName)
+        private object GetColumnValue(IDataRecord data, string columnName, string propertyName, string typeName)
         {
+            var transformationKey = string.Format("{0}.{1}", typeName, propertyName);
             //Perform the property transformation if there is one
-            return (_args.Transformations.ContainsKey(propertyName)) ?
-                _args.Transformations[propertyName](data[columnName].ToString()) :
+            return (_args.Transformations.ContainsKey(transformationKey)) ?
+                _args.Transformations[transformationKey](data[columnName].ToString()) :
                 data[columnName];
         }
 

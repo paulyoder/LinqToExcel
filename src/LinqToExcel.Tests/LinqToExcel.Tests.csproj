@@ -120,7 +120,9 @@
     <Compile Include="Row_IntegrationTests.cs" />
     <Compile Include="Row_SQLStatement_UnitTests.cs" />
     <Compile Include="SQLLogStatements_Helper.cs" />
+    <Compile Include="Transformations.cs" />
     <Compile Include="UnSupportedMethods.cs" />
+    <Compile Include="WorkSheetNameTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LinqToExcel\LinqToExcel.csproj">
@@ -154,6 +156,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ExcelFiles\NoHeader.xls">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ExcelFiles\WorksheetNames.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="LinqToExcel.Tests.snk" />

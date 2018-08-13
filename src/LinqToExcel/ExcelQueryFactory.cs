@@ -50,7 +50,7 @@ namespace LinqToExcel
           : this(null, null) { }
 
         /// <param name="logManagerFactory">
-        /// Factory that facilitates the creation of an external log manager (i.e. log4net) to 
+        /// Factory that facilitates the creation of an external log manager (i.e. log4net) to
         /// allow internal methods of LinqToExcel to perform diagnostic logging.
         /// </param>
         public ExcelQueryFactory(ILogManagerFactory logManagerFactory)
@@ -62,7 +62,7 @@ namespace LinqToExcel
 
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="logManagerFactory">
-        /// Factory that facilitates the creation of an external log manager (i.e. log4net) to 
+        /// Factory that facilitates the creation of an external log manager (i.e. log4net) to
         /// allow internal methods of LinqToExcel to perform diagnostic logging.
         /// </param>
         public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory)
@@ -117,7 +117,7 @@ namespace LinqToExcel
 
             //exp.Body has 2 possible types
             //If the property type is native, then exp.Body == typeof(MemberExpression)
-            //If the property type is not native, then exp.Body == typeof(UnaryExpression) in which 
+            //If the property type is not native, then exp.Body == typeof(UnaryExpression) in which
             //case we can get the MemberExpression from its Operand property
             var mExp = (exp.Body.NodeType == ExpressionType.MemberAccess) ?
                 (MemberExpression)exp.Body :
@@ -137,7 +137,7 @@ namespace LinqToExcel
         /// </example>
         public void AddTransformation<TSheetData>(Expression<Func<TSheetData, object>> property, Func<string, object> transformation)
         {
-            _transformations.Add(GetPropertyName(property), transformation);
+            _transformations.Add(string.Format("{0}.{1}", typeof(TSheetData).Name, GetPropertyName(property)), transformation);
         }
 
         /// <summary>
@@ -644,22 +644,20 @@ namespace LinqToExcel
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
             {
-                if (_queryArgs != null && _queryArgs.PersistentConnection != null)
+                if (_queryArgs?.PersistentConnection != null)
                 {
                     try
                     {
                         _queryArgs.PersistentConnection.Dispose();
                         _queryArgs.PersistentConnection = null;
                     }
-                    catch (Exception ex)
-                    {
-                        if (_log != null)
-                            _log.Error("Error disposing OleDbConnection", ex);
+                    catch (Exception ex) {
+                       _log?.Error("Error disposing OleDbConnection", ex);
                     }
                 }
             }
@@ -744,7 +742,7 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName, 
+        public static ExcelQueryable<Row> Worksheet(string worksheetName, string fileName,
                                                     Dictionary<string, string> columnMappings,
                                                     ILogManagerFactory logManagerFactory)
         {
@@ -762,7 +760,7 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName, 
+        public static ExcelQueryable<Row> Worksheet(int worksheetIndex, string fileName,
                                                     Dictionary<string, string> columnMappings,
                                                     ILogManagerFactory logManagerFactory)
         {
@@ -781,7 +779,7 @@ namespace LinqToExcel
         /// <param name="worksheetName">Name of the worksheet</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName, 
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(string worksheetName, string fileName,
                                                                        Dictionary<string, string> columnMappings,
                                                                        ILogManagerFactory logManagerFactory)
         {
@@ -800,7 +798,7 @@ namespace LinqToExcel
         /// <param name="worksheetIndex">Worksheet index ordered by name, not position in the workbook</param>
         /// <param name="fileName">Full path to the Excel spreadsheet</param>
         /// <param name="columnMappings">Column to property mappings</param>
-        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName, 
+        public static ExcelQueryable<TSheetData> Worksheet<TSheetData>(int worksheetIndex, string fileName,
                                                                        Dictionary<string, string> columnMappings,
                                                                        ILogManagerFactory logManagerFactory)
         {
