@@ -316,29 +316,50 @@ namespace LinqToExcel.Query
             var props = fromType.GetProperties();
             if (_args.StrictMapping.Value != StrictMappingType.None)
                 this.ConfirmStrictMapping(columns, props, _args.StrictMapping.Value);
+            var gatherUnmappedCells = typeof(IContainsUnmappedCells).IsAssignableFrom(fromType);
 
             var currentRowNumber = 0;
             while (data.Read())
             {
                 currentRowNumber++;
                 var result = Activator.CreateInstance(fromType);
-                foreach (var prop in props)
+
+                var propMapping = props.Select(prop => new
                 {
-                    var columnName = (_args.ColumnMappings.ContainsKey(prop.Name)) ?
+                    prop,
+                    columnName = (_args.ColumnMappings.ContainsKey(prop.Name)) ?
                         _args.ColumnMappings[prop.Name] :
-                        prop.Name;
+                        prop.Name
+                });
+
+                foreach (var mapping in propMapping)
+                {
                     try
                     {
-                        if (columns.Contains(columnName))
+                        if (columns.Contains(mapping.columnName))
                         {
-                            var value = GetColumnValue(data, columnName, prop.Name, fromType.Name).Cast(prop.PropertyType);
+                            var value = GetColumnValue(data, mapping.columnName, mapping.prop.Name, fromType.Name).Cast(mapping.prop.PropertyType);
                             value = TrimStringValue(value);
-                            result.SetProperty(prop.Name, value);
+                            result.SetProperty(mapping.prop.Name, value);
                         }
                     }
                     catch (Exception exception)
                     {
-                        throw new Exceptions.ExcelException(currentRowNumber, columnName, exception);
+                        throw new Exceptions.ExcelException(currentRowNumber, mapping.columnName, exception);
+                    }
+                }
+
+                if (gatherUnmappedCells)
+                {
+                    var gatherer = (IContainsUnmappedCells)result;
+                    if (gatherer.UnmappedCells != null)
+                    {
+                        foreach (var col in columns.Except(propMapping.Select(x => x.columnName)))
+                        {
+                            var value = data[col];
+                            value = TrimStringValue(value);
+                            gatherer.UnmappedCells[col] = new Cell(value);
+                        }
                     }
                 }
                 results.Add(result);

@@ -216,6 +216,40 @@ var excel = new ExcelQueryFactory("excelFileName");
 excel.StrictMapping = StrictMappingType.Both;
 ```
 
+### Retaining Values from Unmapped Columns
+
+If you are using `None` or `ClassStrict` mapping, you can retain unmapped columns by implementing the `IContainsUnmappedCells` interface. This will put all values from the unmapped columns into a dictionary on your class named `UnmappedCells`.
+
+Let's say the only field you're guaranteed to have is a `Name` column, and the rest of the columns can be different per spreadsheet. You could write your `Company` class like this, implementing `IContainsUnmappedCells`:
+
+```c#
+public class Company : IContainsUnmappedCells
+{
+    public string Name { get; set; }
+    public IDictionary<string, Cell> UnmappedCells { get; } = new Dictionary<string, Cell>();
+}
+```
+
+Given the following data set:
+
+Name                                   | CEO           | EmployeeCount | StartDate
+-------------------------------------- | ------------- | ------------- | ----------
+ACME                                   | Bugs Bunny    | 25            | 1918-11-11
+Word Made Flesh                        | Chris Heuertz |               | 1994-08-08
+Anderson University                    | James Edwards |               | 1917-09-01
+
+You can query normally and all other fields will be available in the `UnmappedCells` dictionary:
+
+```c#
+var company = from c in excel.Worksheet<Company>()
+              where c.Name == "ACME"
+              select c;
+
+// company.UnmappedCells["CEO"] == "Bugs Bunny"
+// company.UnmappedCells["EmployeeCount"].Cast<int>() == 25
+// company.UnmappedCells["StartDate"].Cast<DateTime>() == new DateTime(1918, 11, 11)
+```
+
 ## Manually setting the database engine
 
 LinqToExcel can use the Jet or Ace database engine, and it automatically determines the database engine to use by the file extension. You can manually set the database engine with the `DatabaseEngine` property
