@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using LinqToExcel.Domain;
 using LinqToExcel.Logging;
+using LinqToExcel.Attributes;
 
 namespace LinqToExcel.Query
 {
@@ -393,7 +394,10 @@ namespace LinqToExcel.Query
 
         private void ConfirmStrictMapping(IEnumerable<string> columns, PropertyInfo[] properties, StrictMappingType strictMappingType)
         {
-            var propertyNames = properties.Select(x => x.Name);
+
+            var propertyNames = properties
+                .Where(x => (ExcelIgnore)Attribute.GetCustomAttribute(x, typeof(ExcelIgnore)) == null)
+                .Select(x => x.Name);
             if (strictMappingType == StrictMappingType.ClassStrict || strictMappingType == StrictMappingType.Both)
             {
                 foreach (var propertyName in propertyNames)

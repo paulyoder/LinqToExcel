@@ -23,7 +23,9 @@ namespace LinqToExcel.Query
             foreach (var property in typeof(T).GetProperties())
             {
                 ExcelColumnAttribute att = (ExcelColumnAttribute)Attribute.GetCustomAttribute(property, typeof(ExcelColumnAttribute));
-                if (att != null && !args.ColumnMappings.ContainsKey(property.Name))
+                ExcelIgnore ignore = (ExcelIgnore)Attribute.GetCustomAttribute(property, typeof(ExcelIgnore));
+
+                if (att != null && !args.ColumnMappings.ContainsKey(property.Name) && (ignore == null))
                 {
                     args.ColumnMappings.Add(property.Name, att.ColumnName);
                 }

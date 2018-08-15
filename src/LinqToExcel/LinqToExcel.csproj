@@ -82,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ExcelIgnoreAttribute.cs" />
     <Compile Include="Attributes\ExcelColumnAttribute.cs" />
     <Compile Include="Domain\Cell.cs" />
     <Compile Include="Domain\IContainsUnmappedCells.cs" />
