@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net451;net46;net47</TargetFrameworks>
+    <TargetFrameworks>net35;net451;net46</TargetFrameworks>
     <DebugType>Full</DebugType>
   </PropertyGroup>
 
@@ -13,6 +13,12 @@
     <PackageReference Include="NUnit.Extension.VSProjectLoader" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
   </ItemGroup>
+
+  <!-- Run tests for .Net 3.5 in x64 mode, by default -->
+  <PropertyGroup Condition="'$(TargetFramework)|$(Platform)' == 'net35|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LinqToExcel\LinqToExcel.csproj" />
