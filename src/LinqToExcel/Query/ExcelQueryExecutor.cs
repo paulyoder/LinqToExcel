@@ -133,8 +133,11 @@ namespace LinqToExcel.Query
                                                  typeof (SumResultOperator)
                                              };
 
+            var resultType = firstResult?.GetType();
+
             return (firstResult != null &&
-                    firstResult.GetType() != typeof(T) &&
+                    resultType != typeof(T) &&
+                    resultType != Nullable.GetUnderlyingType(typeof(T)) &&
                     !queryModel.ResultOperators.Any(x => ignoredResultOperators.Contains(x.GetType())));
         }
 
