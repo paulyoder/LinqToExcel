@@ -161,7 +161,14 @@ namespace LinqToExcel.Query
 
         private string GetResultColumnName(QueryModel queryModel)
         {
-            var mExp = queryModel.SelectClause.Selector as MemberExpression;
+            MemberExpression mExp;
+
+            if (queryModel.SelectClause.Selector is UnaryExpression uExp) {
+               mExp = (MemberExpression) uExp.Operand;
+            } else {
+               mExp = (MemberExpression) queryModel.SelectClause.Selector;
+            }
+
             return (_args.ColumnMappings != null && _args.ColumnMappings.ContainsKey(mExp.Member.Name)) ?
                 _args.ColumnMappings[mExp.Member.Name] :
                 mExp.Member.Name;
