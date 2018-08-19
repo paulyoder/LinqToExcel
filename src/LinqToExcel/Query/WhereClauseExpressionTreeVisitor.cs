@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Remotion.Data.Linq.Parsing;
+using Remotion.Linq.Parsing;
 using System.Data.OleDb;
 using System.Linq.Expressions;
 using LinqToExcel.Extensions;
-using Remotion.Data.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.Expressions;
 
 namespace LinqToExcel.Query
 {
-    public class WhereClauseExpressionTreeVisitor : ThrowingExpressionTreeVisitor
+    public class WhereClauseExpressionTreeVisitor : ThrowingExpressionVisitor
     {
         private readonly StringBuilder _whereClause = new StringBuilder();
         private readonly List<OleDbParameter> _params = new List<OleDbParameter>();
@@ -46,17 +46,12 @@ namespace LinqToExcel.Query
             get { return _columnNamesUsed.Select(x => x.Replace("[", "").Replace("]", "")); }
         }
 
-        public void Visit(Expression expression)
-        {
-            base.VisitExpression(expression);
-        }
-
         protected override Exception CreateUnhandledItemException<T>(T unhandledItem, string visitMethod)
         {
             throw new NotImplementedException(visitMethod + " method is not implemented");
         }
 
-        protected override Expression VisitBinaryExpression(BinaryExpression bExp)
+        protected override Expression VisitBinary(BinaryExpression bExp)
         {
             _whereClause.Append("(");
 
@@ -74,7 +69,7 @@ namespace LinqToExcel.Query
                 bRight = bExp.Left;
             }
 
-            VisitExpression(bLeft);
+            Visit(bLeft);
             switch (bExp.NodeType)
             {
                 case ExpressionType.AndAlso:
@@ -111,7 +106,7 @@ namespace LinqToExcel.Query
                     throw new NotSupportedException(string.Format("{0} statement is not supported", bExp.NodeType.ToString()));
             }
             if (!bRight.IsNullValue())
-                VisitExpression(bRight);
+                Visit(bRight);
             _whereClause.Append(")");
             return bExp;
         }
@@ -146,19 +141,19 @@ namespace LinqToExcel.Query
             return exp;
         }
 
-        protected override Expression VisitMemberExpression(MemberExpression mExp)
+        protected override Expression VisitMember(MemberExpression mExp)
         {
-            //Set the column name to the property mapping if there is one, 
+            //Set the column name to the property mapping if there is one,
             //else use the property name for the column name
-            var columnName = (_columnMapping.ContainsKey(mExp.Member.Name)) ? 
-                _columnMapping[mExp.Member.Name] : 
+            var columnName = (_columnMapping.ContainsKey(mExp.Member.Name)) ?
+                _columnMapping[mExp.Member.Name] :
                 mExp.Member.Name;
             _whereClause.AppendFormat("[{0}]", columnName);
             _columnNamesUsed.Add(columnName);
             return mExp;
         }
 
-        protected override Expression VisitConstantExpression(ConstantExpression cExp)
+        protected override Expression VisitConstant(ConstantExpression cExp)
         {
             _params.Add(new OleDbParameter("?", cExp.Value));
             _whereClause.Append("?");
@@ -168,7 +163,7 @@ namespace LinqToExcel.Query
         /// <summary>
         /// This method is visited when the LinqToExcel.Row type is used in the query
         /// </summary>
-        protected override Expression VisitUnaryExpression(UnaryExpression uExp)
+        protected override Expression VisitUnary(UnaryExpression uExp)
         {
             if (IsNotStringIsNullOrEmpty(uExp))
                 AddStringIsNullOrEmptyToWhereClause((MethodCallExpression)uExp.Operand, true);
@@ -185,7 +180,7 @@ namespace LinqToExcel.Query
         /// <summary>
         /// Only As<>() method calls on the LinqToExcel.Row type are support
         /// </summary>
-        protected override Expression VisitMethodCallExpression(MethodCallExpression mExp)
+        protected override Expression VisitMethodCall(MethodCallExpression mExp)
         {
             if (_validStringMethods.Contains(mExp.Method.Name))
                 ProcessStringMethod(mExp);
@@ -223,7 +218,7 @@ namespace LinqToExcel.Query
         private void AddStringMethodToWhereClause(MethodCallExpression mExp, string operatorString, string argumentFormat)
         {
             _whereClause.Append("(");
-            VisitExpression(mExp.Object);
+            Visit(mExp.Object);
             _whereClause.AppendFormat(" {0} ?)", operatorString);
 
             var value = mExp.Arguments.First().ToString().Replace("\"", "");
@@ -235,7 +230,7 @@ namespace LinqToExcel.Query
         {
             AddStringIsNullOrEmptyToWhereClause(mExp, false);
         }
-        
+
         private void AddStringIsNullOrEmptyToWhereClause(MethodCallExpression mExp, bool notEqual)
         {
             var columnName = GetColumnName((MemberExpression)mExp.Arguments[0]);

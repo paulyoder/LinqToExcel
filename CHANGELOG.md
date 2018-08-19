@@ -1,3 +1,12 @@
+# Changelog
+
+### 2.0.0
+
+* Remove support for Microsoft Jet
+  * MS Ace driver is now a hard requirement
+* Target AnyCPU
+* Switch .Net framework to 4.5.1
+
 ### 1.11.0
 
 * Refactorings

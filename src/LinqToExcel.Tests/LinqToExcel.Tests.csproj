@@ -1,139 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{195B956A-8029-44FD-9518-C04F5280611F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqToExcel.Tests</RootNamespace>
-    <AssemblyName>LinqToExcel.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
+    <TargetFrameworks>net35;net451;net46</TargetFrameworks>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit.Console" Version="3.8.0" />
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.8.0" />
+    <PackageReference Include="NUnit.Extension.VSProjectLoader" Version="3.8.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+  </ItemGroup>
+
+  <!-- Run tests for .Net 3.5 in x64 mode, by default -->
+  <PropertyGroup Condition="'$(TargetFramework)|$(Platform)' == 'net35|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>LinqToExcel.Tests.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.0.5813.39031, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.0.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Remotion.Data.Linq, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Remotion\Remotion.Data.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\LinqToExcel\LinqToExcel.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="CellTest.cs" />
-    <Compile Include="ColumnMappings_IntegrationTests.cs" />
-    <Compile Include="ColumnMappings_SQLStatements_UnitTests.cs" />
-    <Compile Include="CompanyNullable.cs" />
-    <Compile Include="CompanyWithColumnAnnotations.cs" />
-    <Compile Include="CompanyWithCity.cs" />
-    <Compile Include="CompanyNameWithUnmappedCells.cs" />
-    <Compile Include="ConfiguredWorksheetName_SQLStatements_UnitTests.cs" />
-    <Compile Include="ConfiguredWorksheetName_IntegrationTests.cs" />
-    <Compile Include="Convention_SQLStatements_UnitTests.cs" />
-    <Compile Include="Company.cs" />
-    <Compile Include="Convention_IntegrationTests.cs" />
-    <Compile Include="IndexToColumnNamesTests.cs" />
-    <Compile Include="InvalidCastTests.cs" />
-    <Compile Include="LogManagerFactory.cs" />
-    <Compile Include="NamedRange_IntegrationTests.cs" />
-    <Compile Include="NamedRange_SQLStatements_UnitTests.cs" />
-    <Compile Include="CSV_IntegrationTests.cs" />
-    <Compile Include="CSV_SQLStatements_UnitTests.cs" />
-    <Compile Include="ConnectionString_UnitTests.cs" />
-    <Compile Include="Excel2007_IntegrationTests.cs" />
-    <Compile Include="ExcelQueryFactoryTests.cs" />
-    <Compile Include="PersistentConnection_IntegrationTests.cs" />
-    <Compile Include="NoHeader_IntregrationTests.cs" />
-    <Compile Include="NoHeader_SQLStatements_UnitTests.cs" />
-    <Compile Include="Range_IntegrationTests.cs" />
-    <Compile Include="Range_SQLStatements_UnitTests.cs" />
-    <Compile Include="IMEX_Tests.cs" />
-    <Compile Include="InvalidColumnNamesUsed.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RowTest.cs" />
-    <Compile Include="Row_IntegrationTests.cs" />
-    <Compile Include="Row_SQLStatement_UnitTests.cs" />
-    <Compile Include="SQLLogStatements_Helper.cs" />
-    <Compile Include="Transformations.cs" />
-    <Compile Include="UnSupportedMethods.cs" />
-    <Compile Include="WorkSheetNameTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LinqToExcel\LinqToExcel.csproj">
-      <Project>{08F80D96-5387-4406-B88B-DCC0CB661702}</Project>
-      <Name>LinqToExcel</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="ExcelFiles\Companies.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -158,38 +49,13 @@
     <None Include="ExcelFiles\NoHeader.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="ExcelFiles\WorksheetNames.xlsx">
+    <None Update="ExcelFiles\WorksheetNames.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LinqToExcel.Tests.snk" />
-    <None Include="packages.config" />
   </ItemGroup>
+
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

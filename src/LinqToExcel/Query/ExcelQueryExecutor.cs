@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Remotion.Data.Linq;
+using Remotion.Linq;
 using System.IO;
 using System.Data.OleDb;
 using System.Data;
 using System.Reflection;
-using Remotion.Data.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.ResultOperators;
 using System.Collections;
 using LinqToExcel.Extensions;
 using System.Text.RegularExpressions;
@@ -133,8 +133,11 @@ namespace LinqToExcel.Query
                                                  typeof (SumResultOperator)
                                              };
 
+            var resultType = firstResult?.GetType();
+
             return (firstResult != null &&
-                    firstResult.GetType() != typeof(T) &&
+                    resultType != typeof(T) &&
+                    resultType != Nullable.GetUnderlyingType(typeof(T)) &&
                     !queryModel.ResultOperators.Any(x => ignoredResultOperators.Contains(x.GetType())));
         }
 

@@ -1,145 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{08F80D96-5387-4406-B88B-DCC0CB661702}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqToExcel</RootNamespace>
-    <AssemblyName>LinqToExcel</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\LinqToExcel.xml</DocumentationFile>
-    <NoWarn>CS1570;CS1591;CS1572;CS1573;</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TargetFrameworks>net35;net451;net46</TargetFrameworks>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0.0-PRERELEASE</Version>
+    <Company>Yoder Web Solutions, LLC</Company>
+    <Authors>Paul Yoder</Authors>
+    <Description>Easily retrieve data from spreadsheets and csv files by using LINQ</Description>
+    <Copyright>Copyright © Paul Yoder 2018</Copyright>
+    <PackageLicenseUrl>https://github.com/paulyoder/LinqToExcel/blob/master/License.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/paulyoder/LinqToExcel</PackageProjectUrl>
+    <PackageTags>Linq Excel spreadsheet csv</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
+    <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>LinqToExcel.snk</AssemblyOriginatorKeyFile>
+    <RepositoryUrl>https://github.com/paulyoder/LinqToExcel</RepositoryUrl>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Remotion, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Remotion\Remotion.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Data.Linq, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Remotion\Remotion.Data.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Remotion.Linq" Version="[2.1.2,2.2)" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Attributes\ExcelColumnAttribute.cs" />
-    <Compile Include="Domain\Cell.cs" />
-    <Compile Include="Domain\IContainsUnmappedCells.cs" />
-    <Compile Include="Domain\RowNoHeader.cs" />
-    <Compile Include="Domain\StrictMappingException.cs" />
-    <Compile Include="Exceptions\ExcelException.cs" />
-    <Compile Include="IExcelQueryFactory.cs" />
-    <Compile Include="Logging\ILogManagerFactory.cs" />
-    <Compile Include="Logging\ILogProvider.cs" />
-    <Compile Include="Query\ExcelQueryable.cs" />
-    <Compile Include="Query\ExcelQueryArgs.cs" />
-    <Compile Include="Query\ExcelQueryConstructorArgs.cs" />
-    <Compile Include="Query\ExcelQueryExecutor.cs" />
-    <Compile Include="ExcelQueryFactory.cs" />
-    <Compile Include="Extensions\CommonExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\ExcelUtilities.cs" />
-    <Compile Include="Query\ProjectorBuildingExpressionTreeVisitor.cs" />
-    <Compile Include="Query\ResultObjectMapping.cs" />
-    <Compile Include="Query\StrictMappingType.cs" />
-    <Compile Include="Query\TrimSpacesType.cs" />
-    <Compile Include="Query\WhereClauseExpressionTreeVisitor.cs" />
-    <Compile Include="Query\SqlGeneratorQueryModelVisitor.cs" />
-    <Compile Include="Query\SqlParts.cs" />
-    <Compile Include="Domain\Row.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="License.txt">
+    <None Update="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="LinqToExcel.snk" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
