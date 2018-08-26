@@ -1,11 +1,23 @@
 # Changelog
 
-### 2.0.0
+### 2.0.0 (PRERELEASE)
 
-* Remove support for Microsoft Jet
-  * MS Ace driver is now a hard requirement
+* Remove support for Microsoft Jet as it was deprecated many years ago, and only works in 32-bit applications.
+  * MS Ace driver is now a *requirement*.
 * Target AnyCPU
-* Switch .Net framework to 4.5.1
+* Target .Net Framework v3.5, v4.5.1, and v4.6.
+* Fix `ExcelQueryFactory` not being disposed properly.
+* Fix incorrect worksheet names that contain a `$`.
+* Remotion.Linq updated, and no longer bundled with project.
+* Added support for unary expressions in Linq aggregate functions.
+* Added support for primitive value type results to be cast to `Nullable<T>` counterparts.
+* Fix "item already inserted" issue in AddTransformation. Thanks **@tkestowicz**.
+* Throw Exception with row number and column name/number. Thanks **@achvaicer**.
+* Added a method of gathering "unmapped cells". Thanks **@freakingawesome**.
+
+* Other notes:
+  * Thanks to **@cuongtranba** for helping to move the project to Nunit.
+
 
 ### 1.11.0
 
