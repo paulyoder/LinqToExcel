@@ -4,6 +4,9 @@ Linq to Excel is a .Net library that allows you to query Excel spreadsheets usin
 
 Checkout the [introduction video.](http://www.youtube.com/watch?v=t3BEUP0OTFM)
 
+## Note on Microsoft Jet
+Recently (end of 2017) Microsoft pushed out a patch that broke Microsoft Jet. If you are having issues with LinqToExcel v1.x and Jet, please see the following issue: https://github.com/paulyoder/LinqToExcel/issues/124.
+
 ## Adding LinqToExcel to your project
 
 #### NuGet
