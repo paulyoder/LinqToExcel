@@ -10,26 +10,14 @@ Checkout the [introduction video.](http://www.youtube.com/watch?v=t3BEUP0OTFM)
 ## Adding LinqToExcel to your project
 
 #### NuGet
-You can use NuGet to quickly add LinqToExcel to your project. Just search for `linqtoexcel` and install the package. For 64 bit applications, you should install the package named `LinqToExcel_x64`.
-
-#### Manually Add References
-
-If you don't want to use the NuGet package you can [Download](http://code.google.com/p/linqtoexcel/downloads/list) the latest files and add the following references to your project:
-* LinqToExcel.dll
-* Remotion.Data.Linq.dll
+You can use NuGet to quickly add LinqToExcel to your project. Just search for `linqtoexcel` and install the package.
 
 #### Access Database Engine
 In order to use LinqToExcel, you need to install the Microsoft [Microsoft Access Database Engine 2010 Redistributable](https://www.microsoft.com/en-in/download/details.aspx?id=13255). If it's not installed, you'll get the following exception:
 
 	The 'Microsoft.ACE.OLEDB.12.0' provider is not registered on the local machine.'
 
-Both a 32-bit and 64-bit version are available, select the one that matches your project settings. You can only have one of them installed at a time.
-
-#### x64 Support
-
-If you want LinqToExcel to run in a 64 bit application, make sure to use the 64 bit version of the library.
-
-You will also need to make sure to have the [64 bit version of the Access Database Engine](http://www.microsoft.com/downloads/info.aspx?na=41&srcfamilyid=c06b8369-60dd-4b64-a44b-84b371ede16d&srcdisplaylang=en&u=http%3a%2f%2fdownload.microsoft.com%2fdownload%2f2%2f4%2f3%2f24375141-E08D-4803-AB0E-10F2E3A07AAA%2fAccessDatabaseEngine_x64.exe) installed on the computer.
+*Both a 32-bit and 64-bit version are available, select the one that matches your project settings.* You can only have one of them installed at a time.
 
 ## Query a worksheet with a header row
 
