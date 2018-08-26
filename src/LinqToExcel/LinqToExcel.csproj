@@ -6,7 +6,7 @@
     <FileVersion>2.0.0.0</FileVersion>
     <Version>2.0.0-PRERELEASE</Version>
     <Company>Yoder Web Solutions, LLC</Company>
-    <Authors>Paul Yoder</Authors>
+    <Authors>Paul Yoder, Stephen Workman</Authors>
     <Description>Easily retrieve data from spreadsheets and csv files by using LINQ</Description>
     <Copyright>Copyright © Paul Yoder 2018</Copyright>
     <PackageLicenseUrl>https://github.com/paulyoder/LinqToExcel/blob/master/License.txt</PackageLicenseUrl>
