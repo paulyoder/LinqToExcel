@@ -46,6 +46,12 @@ namespace LinqToExcel
         /// </summary>
         public bool UsePersistentConnection { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of the OLE DB Services flag sent in the connection strings,
+        /// which among other features, can disable auto-enlistment in TransactionScopes.
+        /// </summary>
+        public OleDbServices OleDbServices { get; set; }
+
         public ExcelQueryFactory()
           : this(null, null) { }
 
@@ -68,6 +74,7 @@ namespace LinqToExcel
         public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory)
         {
             FileName = fileName;
+            OleDbServices = OleDbServices.AllServices;
 
             if (logManagerFactory != null) {
                _logManagerFactory = logManagerFactory;
@@ -148,7 +155,7 @@ namespace LinqToExcel
             if (String.IsNullOrEmpty(FileName))
                 throw new NullReferenceException("FileName property is not set");
 
-            return ExcelUtilities.GetWorksheetNames(FileName);
+            return ExcelUtilities.GetWorksheetNames(FileName, GetQueryArgs());
         }
 
         /// <summary>
@@ -159,7 +166,7 @@ namespace LinqToExcel
             if (String.IsNullOrEmpty(FileName))
                 throw new NullReferenceException("FileName property is not set");
 
-            return ExcelUtilities.GetNamedRanges(FileName);
+            return ExcelUtilities.GetNamedRanges(FileName, GetQueryArgs());
         }
 
         /// <summary>
@@ -171,7 +178,7 @@ namespace LinqToExcel
             if (String.IsNullOrEmpty(FileName))
                 throw new NullReferenceException("FileName property is not set");
 
-            return ExcelUtilities.GetNamedRanges(FileName, worksheetName);
+            return ExcelUtilities.GetNamedRanges(FileName, worksheetName, GetQueryArgs());
         }
 
         /// <summary>
@@ -183,7 +190,7 @@ namespace LinqToExcel
             if (String.IsNullOrEmpty(FileName))
                 throw new NullReferenceException("FileName property is not set");
 
-            return ExcelUtilities.GetColumnNames(worksheetName, FileName);
+            return ExcelUtilities.GetColumnNames(worksheetName, FileName, GetQueryArgs());
         }
 
         /// <summary>
@@ -196,7 +203,7 @@ namespace LinqToExcel
             if (String.IsNullOrEmpty(FileName))
                 throw new NullReferenceException("FileName property is not set");
 
-            return ExcelUtilities.GetColumnNames(worksheetName, namedRange, FileName);
+            return ExcelUtilities.GetColumnNames(worksheetName, namedRange, FileName, GetQueryArgs());
         }
 
         internal ExcelQueryConstructorArgs GetConstructorArgs()
@@ -209,8 +216,14 @@ namespace LinqToExcel
                 Transformations = _transformations,
                 UsePersistentConnection = UsePersistentConnection,
                 TrimSpaces = TrimSpaces,
-                ReadOnly = ReadOnly
+                ReadOnly = ReadOnly,
+                OleDbServices = OleDbServices,
             };
+        }
+
+        internal ExcelQueryArgs GetQueryArgs()
+        {
+            return new ExcelQueryArgs(GetConstructorArgs());
         }
 
         #endregion

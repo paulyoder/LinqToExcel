@@ -302,3 +302,18 @@ If any exceptions occur during the field type conversion, it will be added to th
 Note that you should check the exceptions list before accessing any values on your strongly typed row, since any
 fields listed in the exception list will be in an indeterminate state.
 
+## Suppressing TransactionScope
+
+By default, the OLE DB Provider will try to enlist in an open TransactionScope and will fail because Excel does not
+allow for transactions. To avoid this behavior and opt out of TransactionScope for the connection, set `OleDbServices`
+to `AllServicesExceptPoolingAndAutoEnlistment`.
+
+See [Pooling in the Microsoft Data Access
+Components](https://msdn.microsoft.com/en-us/library/ms810829.aspx#Troubleshooting%20MDAC%20Pooling) for more
+information.
+
+```c#
+var excel = new ExcelQueryFactory("excelFileName");
+excel.OleDbServices = Query.OleDbServices.AllServicesExceptPoolingAndAutoEnlistment;
+```
+

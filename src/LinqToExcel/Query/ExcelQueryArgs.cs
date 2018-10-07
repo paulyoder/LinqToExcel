@@ -23,10 +23,38 @@ namespace LinqToExcel.Query
         internal bool UsePersistentConnection { get; set; }
 		internal OleDbConnection PersistentConnection { get; set; }
         internal TrimSpacesType TrimSpaces { get; set; }
+        internal OleDbServices OleDbServices { get; set; }
 
         internal ExcelQueryArgs()
             : this(new ExcelQueryConstructorArgs())
-        { }
+        {
+            OleDbServices = OleDbServices.AllServices;
+        }
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        internal ExcelQueryArgs(ExcelQueryArgs orig) : this()
+        {
+            if (orig != null)
+            {
+                FileName = orig.FileName;
+                WorksheetName = orig.WorksheetName;
+                WorksheetIndex = orig.WorksheetIndex;
+                ColumnMappings = orig.ColumnMappings;
+                Transformations = orig.Transformations;
+                NamedRangeName = orig.NamedRangeName;
+                StartRange = orig.StartRange;
+                EndRange = orig.EndRange;
+                NoHeader = orig.NoHeader;
+                StrictMapping = orig.StrictMapping;
+                ReadOnly = orig.ReadOnly;
+                UsePersistentConnection = orig.UsePersistentConnection;
+                PersistentConnection = orig.PersistentConnection;
+                TrimSpaces = orig.TrimSpaces;
+                OleDbServices = orig.OleDbServices;
+            }
+        }
 
         internal ExcelQueryArgs(ExcelQueryConstructorArgs args)
         {
@@ -37,6 +65,7 @@ namespace LinqToExcel.Query
             UsePersistentConnection = args.UsePersistentConnection;
             TrimSpaces = args.TrimSpaces;
             ReadOnly = args.ReadOnly;
+            OleDbServices = args.OleDbServices;
         }
 
         public override string ToString()

@@ -8,6 +8,7 @@ using LinqToExcel.Domain;
 namespace LinqToExcel.Tests
 {
     using LinqToExcel.Query;
+    using System.Transactions;
 
     [Author("Paul Yoder", "paulyoder@gmail.com")]
     [Category("Unit")]
@@ -403,6 +404,33 @@ namespace LinqToExcel.Tests
                              select c).ToList();
 
             Assert.IsNotNull(companies);
+        }
+
+        [Test]
+        public void TransactionScope_causes_exception_when_not_suppressed()
+        {
+            using (var trans = new TransactionScope())
+            {
+                var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets, new LogManagerFactory());
+
+                Assert.Throws<InvalidOperationException>(() => excel.GetWorksheetNames());
+            }
+        }
+
+        [Test]
+        public void TransactionScope_is_suppressed_when_requested()
+        {
+            using (var trans = new TransactionScope())
+            {
+                var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets, new LogManagerFactory());
+                excel.OleDbServices = OleDbServices.AllServicesExceptPoolingAndAutoEnlistment;
+
+                var worksheetNames = excel.GetWorksheetNames();
+
+                Assert.AreEqual(
+                    "AutoFiltered, ColumnMappings, MoreCompanies, NullCells, Paul's Worksheet, Sheet1",
+                    string.Join(", ", worksheetNames.ToArray()), "TransactionScope was not suppressed");
+            }
         }
     }
 }
