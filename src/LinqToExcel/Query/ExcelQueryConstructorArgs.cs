@@ -9,6 +9,11 @@ namespace LinqToExcel.Query
 {
     internal class ExcelQueryConstructorArgs
     {
+        public ExcelQueryConstructorArgs()
+        {
+            OleDbServices = OleDbServices.AllServices;
+        }
+
         internal string FileName { get; set; }
         internal Dictionary<string, string> ColumnMappings { get; set; }
         internal Dictionary<string, Func<string, object>> Transformations { get; set; }
@@ -16,5 +21,6 @@ namespace LinqToExcel.Query
         internal bool UsePersistentConnection { get; set; }
         internal TrimSpacesType TrimSpaces { get; set; }
         internal bool ReadOnly { get; set; }
+        internal OleDbServices OleDbServices { get; set; }
     }
 }
