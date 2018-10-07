@@ -292,6 +292,20 @@ var excel = new ExcelQueryFactory("excelFileName");
 excel.ReadOnly = true;
 ```
 
+## Lazy Mode
+
+Set the `Lazy` property to true to read rows one at a time instead of pulling everything into memory at once. Under the
+hood, this is accomplished using C# `yield` statements.
+
+If you read lazily, you will want to make sure you dispose of the `IEnumerator<T>` when finished. C# will do this
+automatically for you in `foreach` statements and most, if not all, LINQ statements (e.g. `FirstOrDefault()` reads the
+first row and disposes automatically).
+
+```c#
+var excel = new ExcelQueryFactory("excelFileName");
+excel.Lazy = true;
+```
+
 ## Continuing on Type Conversion Errors
 
 When mapping a field to a type, if there is a type conversion error, an exception is thrown. You can overcome the

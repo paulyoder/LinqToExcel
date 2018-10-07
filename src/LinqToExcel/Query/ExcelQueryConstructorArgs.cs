@@ -9,6 +9,8 @@ namespace LinqToExcel.Query
 {
     internal class ExcelQueryConstructorArgs
     {
+        internal bool Lazy { get; set; }
+
         public ExcelQueryConstructorArgs()
         {
             OleDbServices = OleDbServices.AllServices;

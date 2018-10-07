@@ -96,9 +96,12 @@ namespace LinqToExcel.Query
             var sql = GetSqlStatement(queryModel);
             LogSqlStatement(sql);
 
-            var objectResults = GetDataResults(sql, queryModel);
-            var projector = GetSelectProjector<T>(objectResults.FirstOrDefault(), queryModel);
-            var returnResults = objectResults.Cast<T>(projector);
+            IEnumerable<T> returnResults = Project<T>(queryModel, sql);
+
+            if (!_args.Lazy)
+            {
+                returnResults = returnResults.ToList();
+            }
 
             foreach (var resultOperator in queryModel.ResultOperators)
             {
@@ -109,6 +112,22 @@ namespace LinqToExcel.Query
             }
 
             return returnResults;
+        }
+
+        private IEnumerable<T> Project<T>(QueryModel queryModel, SqlParts sql)
+        {
+            Func<object, T> projector = null;
+
+            var objectResults = GetDataResults(sql, queryModel);
+            foreach (var row in objectResults)
+            {
+                if (projector == null)
+                {
+                    projector = GetSelectProjector<T>(row, queryModel);
+                }
+
+                yield return projector(row);
+            }
         }
 
         protected Func<object, T> GetSelectProjector<T>(object firstResult, QueryModel queryModel)
@@ -206,6 +225,11 @@ namespace LinqToExcel.Query
                     results = GetRowNoHeaderResults(data);
                 else
                     results = GetTypeResults(data, columns, queryModel);
+
+                foreach (var result in results)
+                {
+                    yield return result;
+                }
             }
             finally
             {
@@ -217,8 +241,6 @@ namespace LinqToExcel.Query
                     _args.PersistentConnection = null;
                 }
             }
-
-            return results;
         }
 
         /// <summary>
@@ -258,7 +280,6 @@ namespace LinqToExcel.Query
 
         private IEnumerable<object> GetRowResults(IDataReader data, IEnumerable<string> columns)
         {
-            var results = new List<object>();
             var columnIndexMapping = new Dictionary<string, int>();
             for (var i = 0; i < columns.Count(); i++)
                 columnIndexMapping[columns.ElementAt(i)] = i;
@@ -281,14 +302,12 @@ namespace LinqToExcel.Query
                         throw new Exceptions.ExcelException(currentRowNumber, i, columns.ElementAtOrDefault(i), exception);
                     }
                 }
-                results.CallMethod("Add", new Row(cells, columnIndexMapping));
+                yield return new Row(cells, columnIndexMapping);
             }
-            return results.AsEnumerable();
         }
 
         private IEnumerable<object> GetRowNoHeaderResults(OleDbDataReader data)
         {
-            var results = new List<object>();
             var currentRowNumber = 0;
             while (data.Read())
             {
@@ -307,14 +326,12 @@ namespace LinqToExcel.Query
                         throw new Exceptions.ExcelException(currentRowNumber, i, exception);
                     }
                 }
-                results.CallMethod("Add", new RowNoHeader(cells));
+                yield return new RowNoHeader(cells);
             }
-            return results.AsEnumerable();
         }
 
         private IEnumerable<object> GetTypeResults(IDataReader data, IEnumerable<string> columns, QueryModel queryModel)
         {
-            var results = new List<object>();
             var fromType = queryModel.MainFromClause.ItemType;
             var props = fromType.GetProperties();
             if (_args.StrictMapping.Value != StrictMappingType.None)
@@ -383,9 +400,8 @@ namespace LinqToExcel.Query
                         }
                     }
                 }
-                results.Add(result);
+                yield return result;
             }
-            return results.AsEnumerable();
         }
 
         /// <summary>

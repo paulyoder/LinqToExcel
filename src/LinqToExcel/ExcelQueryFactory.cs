@@ -47,6 +47,12 @@ namespace LinqToExcel
         public bool UsePersistentConnection { get; set; }
 
         /// <summary>
+        /// If true, the query engine iterates a row at a time.
+        /// If false, the entire query is read into a List.
+        /// Default is false
+        /// </summary>
+        public bool Lazy { get; set; }
+        
         /// Gets or sets the value of the OLE DB Services flag sent in the connection strings,
         /// which among other features, can disable auto-enlistment in TransactionScopes.
         /// </summary>
@@ -217,6 +223,7 @@ namespace LinqToExcel
                 UsePersistentConnection = UsePersistentConnection,
                 TrimSpaces = TrimSpaces,
                 ReadOnly = ReadOnly,
+                Lazy = Lazy,
                 OleDbServices = OleDbServices,
             };
         }
