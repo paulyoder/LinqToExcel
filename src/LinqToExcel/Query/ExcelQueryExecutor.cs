@@ -320,6 +320,7 @@ namespace LinqToExcel.Query
             if (_args.StrictMapping.Value != StrictMappingType.None)
                 this.ConfirmStrictMapping(columns, props, _args.StrictMapping.Value);
             var gatherUnmappedCells = typeof(IContainsUnmappedCells).IsAssignableFrom(fromType);
+            var gatherFieldTypeConversionExceptions = typeof(IAllowFieldTypeConversionExceptions).IsAssignableFrom(fromType);
 
             var currentRowNumber = 0;
             while (data.Read())
@@ -337,18 +338,35 @@ namespace LinqToExcel.Query
 
                 foreach (var mapping in propMapping)
                 {
-                    try
+                    if (columns.Contains(mapping.columnName))
                     {
-                        if (columns.Contains(mapping.columnName))
+                        try
                         {
                             var value = GetColumnValue(data, mapping.columnName, mapping.prop.Name, fromType.Name).Cast(mapping.prop.PropertyType);
                             value = TrimStringValue(value);
                             result.SetProperty(mapping.prop.Name, value);
                         }
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new Exceptions.ExcelException(currentRowNumber, mapping.columnName, exception);
+                        catch (Exception exception)
+                        {
+                            var excelException = new Exceptions.ExcelException(currentRowNumber, mapping.columnName, exception);
+
+                            if (gatherFieldTypeConversionExceptions)
+                            {
+                                var gatherer = (IAllowFieldTypeConversionExceptions)result;
+                                if (gatherer.FieldTypeConversionExceptions != null)
+                                {
+                                    gatherer.FieldTypeConversionExceptions.Add(excelException);
+                                }
+                                else
+                                {
+                                    throw excelException;
+                                }
+                            }
+                            else
+                            {
+                                throw excelException;
+                            }
+                        }
                     }
                 }
 
