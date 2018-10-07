@@ -8,6 +8,7 @@ using LinqToExcel.Domain;
 namespace LinqToExcel.Tests
 {
     using LinqToExcel.Query;
+    using System.Transactions;
 
     [Author("Paul Yoder", "paulyoder@gmail.com")]
     [Category("Unit")]
@@ -304,6 +305,44 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void IAllowFieldTypeConversionExceptions_NoExceptionsWhenFieldsAreGood()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyGoodWithAllowFieldTypeConversionExceptions>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+
+            var company = companies[0];
+            Assert.AreEqual("ACME", company.Name);
+            Assert.AreEqual("Bugs Bunny", company.CEO);
+            Assert.AreEqual(25, company.EmployeeCount);
+            Assert.AreEqual(0, company.FieldTypeConversionExceptions.Count);
+        }
+
+        [Test]
+        public void IAllowFieldTypeConversionExceptions_GathersExceptions()
+        {
+            var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
+            excel.AddMapping<Company>(x => x.IsActive, "Active");
+
+            var companies = (from c in excel.Worksheet<CompanyBadWithAllowFieldTypeConversionExceptions>()
+                             where c.Name == "ACME"
+                             select c).ToList();
+
+            Assert.AreEqual(1, companies.Count);
+
+            var company = companies[0];
+            Assert.AreEqual("ACME", company.Name);
+            Assert.AreEqual(2, company.FieldTypeConversionExceptions.Count);
+            Assert.AreEqual("CEO", company.FieldTypeConversionExceptions[0].ColumnName);
+            Assert.AreEqual("EmployeeCount", company.FieldTypeConversionExceptions[1].ColumnName);
+        }
+
+        [Test]
         public void TrimSpaces_Start_TrimsWhiteSpacesAtTheBeginning()
         {
             var excel = new ExcelQueryFactory(_excelFileName, new LogManagerFactory());
@@ -365,6 +404,33 @@ namespace LinqToExcel.Tests
                              select c).ToList();
 
             Assert.IsNotNull(companies);
+        }
+
+        [Test]
+        public void TransactionScope_causes_exception_when_not_suppressed()
+        {
+            using (var trans = new TransactionScope())
+            {
+                var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets, new LogManagerFactory());
+
+                Assert.Throws<InvalidOperationException>(() => excel.GetWorksheetNames());
+            }
+        }
+
+        [Test]
+        public void TransactionScope_is_suppressed_when_requested()
+        {
+            using (var trans = new TransactionScope())
+            {
+                var excel = new ExcelQueryFactory(_excelFileWithBuiltinWorksheets, new LogManagerFactory());
+                excel.OleDbServices = OleDbServices.AllServicesExceptPoolingAndAutoEnlistment;
+
+                var worksheetNames = excel.GetWorksheetNames();
+
+                Assert.AreEqual(
+                    "AutoFiltered, ColumnMappings, MoreCompanies, NullCells, Paul's Worksheet, Sheet1",
+                    string.Join(", ", worksheetNames.ToArray()), "TransactionScope was not suppressed");
+            }
         }
     }
 }
