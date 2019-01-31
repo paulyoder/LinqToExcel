@@ -59,7 +59,9 @@ namespace LinqToExcel
         public OleDbServices OleDbServices { get; set; }
 
         /// <summary>
-        /// Gets or set the value of the Code Page Identifier
+        /// Gets or sets the value of the Code Page Identifier sent in the connection strings,
+        /// this allows for files with different encodings. For the full
+        /// list see https://docs.microsoft.com/en-us/windows/desktop/intl/code-page-identifiers
         /// </summary>
         public int? CodePageIdentifier { get; set; }
 
