@@ -36,7 +36,7 @@ namespace LinqToExcel.Query
                 connString = string.Format(
                     @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};OLE DB Services={1:d};Extended Properties=""text;Excel 12.0;HDR=YES;IMEX=1""",
                     Path.GetDirectoryName(args.FileName),
-                    args.OleDbServices);
+                    args.OleDbServices);                
             }
             else
             {
@@ -51,6 +51,9 @@ namespace LinqToExcel.Query
 
             if (args.ReadOnly)
                 connString = connString.Replace("IMEX=1", "IMEX=1;READONLY=TRUE");
+
+            if(args.CodePageIdentifier > 0)
+                connString = connString.Replace("IMEX=1",string.Format ("IMEX=1;CharacterSet={0:000}",args.CodePageIdentifier));
 
             return connString;
         }

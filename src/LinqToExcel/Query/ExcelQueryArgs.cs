@@ -25,6 +25,7 @@ namespace LinqToExcel.Query
         internal TrimSpacesType TrimSpaces { get; set; }
         internal bool Lazy { get; set; }
         internal OleDbServices OleDbServices { get; set; }
+        internal int CodePageIdentifier { get; set; }
 
         internal ExcelQueryArgs()
             : this(new ExcelQueryConstructorArgs())
@@ -54,6 +55,7 @@ namespace LinqToExcel.Query
                 PersistentConnection = orig.PersistentConnection;
                 TrimSpaces = orig.TrimSpaces;
                 OleDbServices = orig.OleDbServices;
+                CodePageIdentifier = orig.CodePageIdentifier;
             }
         }
 
@@ -68,6 +70,7 @@ namespace LinqToExcel.Query
             ReadOnly = args.ReadOnly;
             Lazy = args.Lazy;
             OleDbServices = args.OleDbServices;
+            CodePageIdentifier = args.CodePageIdentifier;
         }
 
         public override string ToString()

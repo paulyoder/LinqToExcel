@@ -58,6 +58,11 @@ namespace LinqToExcel
         /// </summary>
         public OleDbServices OleDbServices { get; set; }
 
+        /// <summary>
+        /// Gets or set the value of the Code Page Identifier
+        /// </summary>
+        public int? CodePageIdentifier { get; set; }
+
         public ExcelQueryFactory()
           : this(null, null) { }
 
@@ -225,6 +230,7 @@ namespace LinqToExcel
                 ReadOnly = ReadOnly,
                 Lazy = Lazy,
                 OleDbServices = OleDbServices,
+                CodePageIdentifier = CodePageIdentifier ?? 0
             };
         }
 
