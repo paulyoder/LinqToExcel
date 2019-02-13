@@ -1,5 +1,11 @@
 # Changelog
 
+### 2.0.0 (PRERELEASE-2)
+* Allow connstring suppression of TransactionScope. Thanks **@freakingawesome**.
+* Allow lazy queries using yield statements. Thanks **@freakingawesome**.
+* Add means to gather exceptions instead of throwing. Thanks **@freakingawesome**.
+* Implemented Source Link for easier debugging. Thanks **@MagicAndre1981**.
+
 ### 2.0.0 (PRERELEASE)
 
 * Remove support for Microsoft Jet as it was deprecated many years ago, and only works in 32-bit applications.
