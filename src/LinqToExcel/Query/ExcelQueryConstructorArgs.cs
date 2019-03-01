@@ -24,5 +24,6 @@ namespace LinqToExcel.Query
         internal TrimSpacesType TrimSpaces { get; set; }
         internal bool ReadOnly { get; set; }
         internal OleDbServices OleDbServices { get; set; }
+        internal int CodePageIdentifier { get; set; }
     }
 }

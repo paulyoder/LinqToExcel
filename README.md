@@ -331,3 +331,15 @@ var excel = new ExcelQueryFactory("excelFileName");
 excel.OleDbServices = Query.OleDbServices.AllServicesExceptPoolingAndAutoEnlistment;
 ```
 
+## Encoding
+
+If the file is in a different encoding use the CodePageIdentifer so the setting is passed to the engine.
+
+See [Code Page Identifiers](https://docs.microsoft.com/en-us/windows/desktop/intl/code-page-identifiers) for a complete 
+listing of Code Page Identifiers and their corresponding encoding.
+
+```c#
+var excel = new ExcelQueryFactory("excelFileName");
+//Set the encoding to UTF-8
+excel.CodePageIdentifier = 65001;
+```
