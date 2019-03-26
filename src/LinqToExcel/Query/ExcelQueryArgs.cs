@@ -10,7 +10,8 @@ namespace LinqToExcel.Query
     internal class ExcelQueryArgs
     {
         internal string FileName { get; set; }
-        internal string WorksheetName { get; set; }
+    internal DatabaseEngine DatabaseEngine { get; set; }
+    internal string WorksheetName { get; set; }
         internal int? WorksheetIndex { get; set; }
         internal Dictionary<string, string> ColumnMappings { get; set; }
         internal Dictionary<string, Func<string, object>> Transformations { get; private set; }
@@ -28,7 +29,7 @@ namespace LinqToExcel.Query
         internal int CodePageIdentifier { get; set; }
 
         internal ExcelQueryArgs()
-            : this(new ExcelQueryConstructorArgs())
+            : this(new ExcelQueryConstructorArgs() { DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine() })
         {
             OleDbServices = OleDbServices.AllServices;
         }
@@ -41,7 +42,8 @@ namespace LinqToExcel.Query
             if (orig != null)
             {
                 FileName = orig.FileName;
-                WorksheetName = orig.WorksheetName;
+        DatabaseEngine = orig.DatabaseEngine;
+        WorksheetName = orig.WorksheetName;
                 WorksheetIndex = orig.WorksheetIndex;
                 ColumnMappings = orig.ColumnMappings;
                 Transformations = orig.Transformations;
@@ -62,7 +64,8 @@ namespace LinqToExcel.Query
         internal ExcelQueryArgs(ExcelQueryConstructorArgs args)
         {
             FileName = args.FileName;
-            ColumnMappings = args.ColumnMappings ?? new Dictionary<string, string>();
+      DatabaseEngine = args.DatabaseEngine;
+      ColumnMappings = args.ColumnMappings ?? new Dictionary<string, string>();
             Transformations = args.Transformations ?? new Dictionary<string, Func<string, object>>();
             StrictMapping = args.StrictMapping ?? StrictMappingType.None;
             UsePersistentConnection = args.UsePersistentConnection;
