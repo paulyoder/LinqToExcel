@@ -65,6 +65,12 @@ namespace LinqToExcel
         /// </summary>
         public int? CodePageIdentifier { get; set; }
 
+        /// <summary>
+        /// If true, skips all empty rows
+        /// Default is false
+        /// </summary>
+        public bool SkipEmptyRows { get; set; }
+
         public ExcelQueryFactory()
           : this(null, null) { }
 
@@ -232,7 +238,8 @@ namespace LinqToExcel
                 ReadOnly = ReadOnly,
                 Lazy = Lazy,
                 OleDbServices = OleDbServices,
-                CodePageIdentifier = CodePageIdentifier ?? 0
+                CodePageIdentifier = CodePageIdentifier ?? 0,
+                SkipEmptyRows = SkipEmptyRows
             };
         }
 

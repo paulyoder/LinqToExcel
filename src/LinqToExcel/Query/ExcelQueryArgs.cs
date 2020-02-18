@@ -26,6 +26,7 @@ namespace LinqToExcel.Query
         internal bool Lazy { get; set; }
         internal OleDbServices OleDbServices { get; set; }
         internal int CodePageIdentifier { get; set; }
+        internal bool SkipEmptyRows { get; set; }
 
         internal ExcelQueryArgs()
             : this(new ExcelQueryConstructorArgs())
@@ -56,6 +57,7 @@ namespace LinqToExcel.Query
                 TrimSpaces = orig.TrimSpaces;
                 OleDbServices = orig.OleDbServices;
                 CodePageIdentifier = orig.CodePageIdentifier;
+                SkipEmptyRows = orig.SkipEmptyRows;
             }
         }
 
@@ -71,6 +73,7 @@ namespace LinqToExcel.Query
             Lazy = args.Lazy;
             OleDbServices = args.OleDbServices;
             CodePageIdentifier = args.CodePageIdentifier;
+            SkipEmptyRows = args.SkipEmptyRows;
         }
 
         public override string ToString()

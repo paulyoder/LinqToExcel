@@ -25,5 +25,6 @@ namespace LinqToExcel.Query
         internal bool ReadOnly { get; set; }
         internal OleDbServices OleDbServices { get; set; }
         internal int CodePageIdentifier { get; set; }
+        internal bool SkipEmptyRows { get; set; }
     }
 }

@@ -343,3 +343,12 @@ var excel = new ExcelQueryFactory("excelFileName");
 //Set the encoding to UTF-8
 excel.CodePageIdentifier = 65001;
 ```
+
+## Skip empty rows
+
+The `SkipEmptyRows` property can be used to skips all rows that do not have any values.
+
+```c#
+var excel = new ExcelQueryFactory("excelFileName");
+excel.SkipEmptyRows = true;
+```
