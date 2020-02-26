@@ -346,7 +346,7 @@ excel.CodePageIdentifier = 65001;
 
 ## Skip empty rows
 
-The `SkipEmptyRows` property can be used to skips all rows that do not have any values.
+The `SkipEmptyRows` property can be used to skip all rows that do not have any values.
 
 ```c#
 var excel = new ExcelQueryFactory("excelFileName");
