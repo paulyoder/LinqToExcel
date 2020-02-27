@@ -17,7 +17,7 @@ namespace LinqToExcel.Tests
         {
             var testDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var excelFilesDirectory = Path.Combine(testDirectory, "ExcelFiles");
-            _fileName = Path.Combine(excelFilesDirectory, "Companies.xls");
+            _fileName = Path.Combine(excelFilesDirectory, "EmptyRows.xls");
         }
 
         [SetUp]
