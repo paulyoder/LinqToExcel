@@ -49,6 +49,9 @@
     <None Include="ExcelFiles\NoHeader.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ExcelFiles\EmptyRows.xls">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Reference Include="System.Transactions" />
     <None Update="ExcelFiles\WorksheetNames.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

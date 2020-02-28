@@ -287,6 +287,11 @@ namespace LinqToExcel.Query
             var currentRowNumber = 0;
             while (data.Read())
             {
+                if (this._args.SkipEmptyRows && IsLineEmpty(data))
+                {
+                    continue;
+                }
+
                 currentRowNumber++;
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < columns.Count(); i++)
@@ -311,6 +316,11 @@ namespace LinqToExcel.Query
             var currentRowNumber = 0;
             while (data.Read())
             {
+                if (this._args.SkipEmptyRows && IsLineEmpty(data))
+                {
+                    continue;
+                }
+
                 currentRowNumber++;
                 IList<Cell> cells = new List<Cell>();
                 for (var i = 0; i < data.FieldCount; i++)
@@ -342,6 +352,11 @@ namespace LinqToExcel.Query
             var currentRowNumber = 0;
             while (data.Read())
             {
+                if (this._args.SkipEmptyRows && IsLineEmpty(data))
+                {
+                    continue;
+                }
+
                 currentRowNumber++;
                 var result = Activator.CreateInstance(fromType);
 
@@ -497,6 +512,13 @@ namespace LinqToExcel.Query
                     sqlLog.Debug(logMessage.ToString());
                 }
             }
+        }
+
+        private bool IsLineEmpty(IDataReader data)
+        {
+            var objects = new object[data.FieldCount];
+            data.GetValues(objects);
+            return objects.All(obj => obj is DBNull);
         }
     }
 }
