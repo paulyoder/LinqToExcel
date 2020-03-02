@@ -93,6 +93,7 @@ namespace LinqToExcel
         public ExcelQueryFactory(string fileName, ILogManagerFactory logManagerFactory)
         {
             FileName = fileName;
+            DatabaseEngine = ExcelUtilities.DefaultDatabaseEngine();
             OleDbServices = OleDbServices.AllServices;
 
             if (logManagerFactory != null) {
@@ -101,15 +102,22 @@ namespace LinqToExcel
             }
         }
 
-        #region Other Methods
-
         /// <summary>
-        /// Add a column to property mapping
+        /// Sets the database engine to use 
+        /// (Spreadsheets ending in xlsx, xlsm, and xlsb must use the Ace database engine)
+        /// (If running 64 bit this defaults to ACE (JET doesn't work anyway), if running 32 bit this detaults to JET)
         /// </summary>
-        /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
-        /// <param name="property">Class property to map to</param>
-        /// <param name="column">Worksheet column name to map from</param>
-        public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column)
+        public DatabaseEngine DatabaseEngine { get; set; }
+
+    #region Other Methods
+
+    /// <summary>
+    /// Add a column to property mapping
+    /// </summary>
+    /// <typeparam name="TSheetData">Class type to return row data as</typeparam>
+    /// <param name="property">Class property to map to</param>
+    /// <param name="column">Worksheet column name to map from</param>
+    public void AddMapping<TSheetData>(Expression<Func<TSheetData, object>> property, string column)
         {
             AddMapping(GetPropertyName(property), column);
         }
@@ -230,7 +238,8 @@ namespace LinqToExcel
             return new ExcelQueryConstructorArgs()
             {
                 FileName = FileName,
-                StrictMapping = StrictMapping,
+              DatabaseEngine = DatabaseEngine,
+              StrictMapping = StrictMapping,
                 ColumnMappings = _columnMappings,
                 Transformations = _transformations,
                 UsePersistentConnection = UsePersistentConnection,

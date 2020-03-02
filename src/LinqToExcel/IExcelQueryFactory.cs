@@ -284,5 +284,10 @@ namespace LinqToExcel
         /// </summary>
         /// <param name="worksheetName">Worksheet name to get the list of column names from</param>
         IEnumerable<string> GetColumnNames(string worksheetName);
-    }
+
+        /// <summary>
+        /// Sets the database engine to use (spreadsheets ending in xlsx, xlsm, xlsb will always use the Ace engine)
+        /// </summary>
+        DatabaseEngine DatabaseEngine { get; set; }
+  }
 }
