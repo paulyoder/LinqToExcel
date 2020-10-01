@@ -8,6 +8,6 @@ namespace LinqToExcel
 	/// </summary>
 	public interface IContainsUnmappedCells
 	{
-		IDictionary<string, Cell> UnmappedCells { get; }
+		IDictionary<string, Cell> UnmappedCells { get; set; }
 	}
 }

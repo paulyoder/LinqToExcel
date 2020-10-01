@@ -405,7 +405,9 @@ namespace LinqToExcel.Query
                 if (gatherUnmappedCells)
                 {
                     var gatherer = (IContainsUnmappedCells)result;
-                    if (gatherer.UnmappedCells != null)
+                    if(gatherer != null && gatherer.UnmappedCells == null)
+                        gatherer.UnmappedCells = new Dictionary<string, Cell>();
+                    if (gatherer != null)
                     {
                         foreach (var col in columns.Except(propMapping.Select(x => x.columnName)))
                         {
