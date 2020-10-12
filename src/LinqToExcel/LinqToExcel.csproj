@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net451;net46</TargetFrameworks>
-    <AssemblyVersion>2.0.0.2</AssemblyVersion>
+    <TargetFrameworks>net451;net46;netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <AssemblyVersion>2.0.0.4</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
-    <Version>2.0.0-PRERELEASE-2</Version>
+    <Version>2.0.0-PRERELEASE-4</Version>
     <Company>Yoder Web Solutions, LLC</Company>
     <Authors>Paul Yoder, Stephen Workman</Authors>
     <Description>Easily retrieve data from spreadsheets and csv files by using LINQ</Description>
-    <Copyright>Copyright © Paul Yoder 2019</Copyright>
+    <Copyright>Copyright © Paul Yoder 2020</Copyright>
     <PackageLicenseUrl>https://github.com/paulyoder/LinqToExcel/blob/master/License.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/paulyoder/LinqToExcel</PackageProjectUrl>
     <PackageTags>Linq Excel spreadsheet csv</PackageTags>
@@ -26,11 +26,16 @@
 
     <!-- Optional: Include the PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Remotion.Linq" Version="2.2.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' or '$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Data.OleDb" Version="4.7.1" />
   </ItemGroup>
 
   <ItemGroup>
