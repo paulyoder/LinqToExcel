@@ -27,7 +27,11 @@ namespace LinqToExcel.Query
                 ExcelColumnAttribute att = (ExcelColumnAttribute)Attribute.GetCustomAttribute(property, typeof(ExcelColumnAttribute));
                 if (att != null && !args.ColumnMappings.ContainsKey(property.Name))
                 {
-                    args.ColumnMappings.Add(property.Name, att.ColumnName);
+                    var columnNames = ExcelUtilities.GetColumnNames(args);
+
+                    args.ColumnMappings.Add(property.Name, !att.IsForced ? 
+                        att.ColumnName : 
+                        columnNames.ToList().Find(x => att.HasSimilarColumn(x))??att.ColumnName);
                 }
             }
         }

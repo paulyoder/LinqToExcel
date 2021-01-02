@@ -140,6 +140,22 @@ namespace LinqToExcel.Tests
         }
 
         [Test]
+        public void annotated_properties_map_to_similar_columns()
+        {
+            var companies = from c in _repo.Worksheet<CompanyWithSimilarColumnsAnnotations>(_worksheetName)
+                            where c.Name == "Taylor University"
+                            select c;
+
+            var rival = companies.ToList().First();
+            Assert.AreEqual(1, companies.ToList().Count, "Result Count");
+            Assert.AreEqual("Taylor University", rival.Name, "Name");
+            Assert.AreEqual("Your Mom", rival.CEO, "CEO");
+            Assert.AreEqual(400, rival.EmployeeCount, "EmployeeCount");
+            Assert.AreEqual(new DateTime(1988, 7, 26), rival.StartDate, "StartDate");
+            Assert.AreEqual("N", rival.IsActive, "IsActive");
+        }
+
+        [Test]
         public void two_transformations_with_the_same_property_but_in_different_types()
         {
             _repo.AddTransformation<Transformation1>(x => x.Value, x => x);
