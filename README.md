@@ -21,9 +21,11 @@ Checkout the [introduction video.](http://www.youtube.com/watch?v=t3BEUP0OTFM)
 You can use NuGet to quickly add LinqToExcel to your project. Just search for `linqtoexcel` and install the package.
 
 #### Access Database Engine
-In order to use LinqToExcel, you need to install the Microsoft [Microsoft Access Database Engine 2010 Redistributable](https://www.microsoft.com/en-in/download/details.aspx?id=13255). If it's not installed, you'll get the following exception:
+In order to use LinqToExcel, you need to install either of the [Microsoft Access Database Engine 2010 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=13255), [Microsoft Access 2013 Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=39358), [Microsoft Access 2016 Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=50040). If it's not installed, you'll get the following exception:
 
 	The 'Microsoft.ACE.OLEDB.12.0' provider is not registered on the local machine.'
+	The 'Microsoft.ACE.OLEDB.15.0' provider is not registered on the local machine.'
+	The 'Microsoft.ACE.OLEDB.16.0' provider is not registered on the local machine.'
 
 *Both a 32-bit and 64-bit version are available, select the one that matches your project settings.* You can only have one of them installed at a time.
 
