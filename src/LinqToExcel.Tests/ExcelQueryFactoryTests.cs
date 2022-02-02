@@ -1,15 +1,15 @@
-﻿using System.Linq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.IO;
-using System.Data;
+using System.Linq;
+using System.Transactions;
+
 using LinqToExcel.Domain;
+using LinqToExcel.Query;
+
+using NUnit.Framework;
 
 namespace LinqToExcel.Tests
 {
-    using LinqToExcel.Query;
-    using System.Transactions;
-
     [Author("Paul Yoder", "paulyoder@gmail.com")]
     [Category("Unit")]
     [TestFixture]

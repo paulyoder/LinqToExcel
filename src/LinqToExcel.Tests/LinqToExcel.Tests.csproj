@@ -1,24 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net451;net46</TargetFrameworks>
-    <DebugType>Full</DebugType>
+	<TargetFrameworks>net451;net46;netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <DebugType>portable</DebugType>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit.Console" Version="3.9.0" />
-    <PackageReference Include="NUnit.ConsoleRunner" Version="3.9.0" />
+    <PackageReference Include="log4net" Version="2.0.11" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit.Console" Version="3.11.1" />
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.11.1" />
     <PackageReference Include="NUnit.Extension.VSProjectLoader" Version="3.8.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
   </ItemGroup>
 
-  <!-- Run tests for .Net 3.5 in x64 mode, by default -->
-  <PropertyGroup Condition="'$(TargetFramework)|$(Platform)' == 'net35|AnyCPU'">
-    <PlatformTarget>x64</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net451' or '$(TargetFramework)' == 'net46'">
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' or '$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Data.OleDb" Version="4.7.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LinqToExcel\LinqToExcel.csproj" />
@@ -52,7 +56,6 @@
     <None Include="ExcelFiles\EmptyRows.xls">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Reference Include="System.Transactions" />
     <None Update="ExcelFiles\WorksheetNames.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
