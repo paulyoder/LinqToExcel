@@ -11,6 +11,6 @@ namespace LinqToExcel.Tests
 		}
 
 		public string Name { get; set; }
-		public IDictionary<string, Cell> UnmappedCells { get; private set; }
+		public IDictionary<string, Cell> UnmappedCells { get; set; }
 	}
 }
